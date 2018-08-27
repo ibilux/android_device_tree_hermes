@@ -19,6 +19,9 @@ TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a53
 
+#Misc
+BLOCK_BASED_OTA := false
+
 # Kernel
 TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/kernel
 BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 log_buf_len=8M androidboot.selinux=permissive
