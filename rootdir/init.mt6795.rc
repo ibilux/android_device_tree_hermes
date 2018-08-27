@@ -60,9 +60,6 @@ on post-fs
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/nvram /dev/block/platform/mtk-msdc.0/by-name/nvram
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/proinfo /dev/block/platform/mtk-msdc.0/by-name/proinfo
 
-    # Boot info
-    chown system system /proc/bootprof
-
 on post-fs-data
     # Create nvram folder for modem
     mkdir /data/nvram 0771 root system
@@ -109,6 +106,23 @@ on post-fs-data
     chown system system /sys/class/misc/m_acc_misc/accdelay
     chown system system /sys/class/misc/m_acc_misc/accbatch
     chown system system /sys/class/misc/m_acc_misc/accflush
+
+    chmod 0660 /sys/class/misc/m_alsps_misc/alsactive
+    chmod 0660 /sys/class/misc/m_alsps_misc/alsdelay
+    chmod 0660 /sys/class/misc/m_alsps_misc/alsbatch
+    chmod 0660 /sys/class/misc/m_alsps_misc/alsflush
+    chmod 0660 /sys/class/misc/m_alsps_misc/psactive
+    chmod 0660 /sys/class/misc/m_alsps_misc/psdelay
+    chmod 0660 /sys/class/misc/m_alsps_misc/psbatch
+    chmod 0660 /sys/class/misc/m_alsps_misc/psflush
+    chown system system /sys/class/misc/m_alsps_misc/alsactive
+    chown system system /sys/class/misc/m_alsps_misc/alsdelay
+    chown system system /sys/class/misc/m_alsps_misc/alsbatch
+    chown system system /sys/class/misc/m_alsps_misc/alsflush
+    chown system system /sys/class/misc/m_alsps_misc/psactive
+    chown system system /sys/class/misc/m_alsps_misc/psdelay
+    chown system system /sys/class/misc/m_alsps_misc/psbatch
+    chown system system /sys/class/misc/m_alsps_misc/psflush
 
     chmod 0660 /sys/class/misc/m_gyro_misc/gyroenablenodata
     chmod 0660 /sys/class/misc/m_gyro_misc/gyroactive
@@ -164,12 +178,6 @@ on post-fs-data
     chmod 0660 /dev/mtk_disp_mgr
     chown system graphics /dev/mtk_disp_mgr
 
-    chmod 0660 /dev/graphics/fb0
-    chown system graphics /dev/graphics/fb0
-
-    chmod 0666 /dev/sw_sync
-    chown system graphics /dev/sw_sync
-
     # Autok
     chown root system /sys/autok/debug
     chown root system /sys/autok/param_count
@@ -186,6 +194,9 @@ on post-fs-data
     chmod 0440 /dev/devmap
     chown root system /dev/devmap
 
+    # SecMem
+    chown system system /proc/secmem0
+
     # Camera
     chmod 0660 /dev/camera-fdvt
     chmod 0660 /dev/camera-isp
@@ -193,7 +204,9 @@ on post-fs-data
     chmod 0660 /dev/kd_camera_hw
     chmod 0660 /dev/kd_camera_hw_bus2
     chmod 0660 /dev/CAM_CAL_DRV
+    chmod 0660 /dev/OV13853_CAM_CAL_DRV
     chmod 0660 /dev/DW9761BAF
+    chmod 0660 /dev/BU6429AF
 
     chown system camera /dev/camera-fdvt
     chown system camera /dev/camera-isp
@@ -201,13 +214,15 @@ on post-fs-data
     chown system camera /dev/kd_camera_hw
     chown system camera /dev/kd_camera_hw_bus2
     chown system camera /dev/CAM_CAL_DRV
+    chown system camera /dev/OV13853_CAM_CAL_DRV
     chown system camera /dev/DW9761BAF
+    chown system camera /dev/BU6429AF
 
     # SMI
     chmod 0666 /dev/MTK_SMI
     chown system media /dev/MTK_SMI
 
-    chmod 0660 /sys/bus/platform/drivers/mem_bw_ctrl/concurrency_scenario
+    chmod 0666 /sys/bus/platform/drivers/mem_bw_ctrl/concurrency_scenario
     chown system media /sys/bus/platform/drivers/mem_bw_ctrl/concurrency_scenario
 
     # MTK_SCHED
@@ -247,6 +262,16 @@ on post-fs-data
     # Ignore permission check
     write /data/ccci_cfg/md_new_ver.1 "flag"
     chmod 0660 /data/ccci_cfg/md_new_ver.1
+
+    # MobiCore
+    mkdir /data/app/mcRegistry 0775 system system
+    mkdir /data/app/mcRegistry/TbStorage 0775 system system
+    chmod 0600 /dev/mobicore
+    chown system system /dev/mobicore
+    chmod 0666 /dev/mobicore-user
+    chown system system /dev/mobicore-user
+    start mobicore
+    chown system system /dev/goodix_fp_spi
 
     setprop vold.post_fs_data_done 1
 
@@ -481,11 +506,36 @@ service fuelgauged /vendor/bin/fuelgauged
     user system
     group system
 
+# Fingerprint
+service fingerprintd /system/bin/fingerprintd
+    class main
+    user system
+    group system
+
+service fpDaemon /vendor/bin/gxFpDaemon
+    class main
+    user system
+    group system
+    oneshot
+
+# TEE
+service mobicore /vendor/bin/mcDriverDaemon -r /vendor/app/mcRegistry/030b0000000000000000000000000000.drbin -r /vendor/app/mcRegistry/020f0000000000000000000000000000.drbin -r /system/app/mcRegistry/05120000000000000000000000000000.drbin -r /vendor/app/mcRegistry/070b0000000000000000000000000000.drbin -r /vendor/app/mcRegistry/04020000000000000000000000000000.drbin
+    user system
+    group system
+    class core
+    oneshot
+
 # Accelerometer and gyroscope
 service bmi160d /vendor/bin/bmi160d
     class main
     user system
     group system
+
+service lsm6ds3d /vendor/bin/lsm6ds3d
+    class main
+    user system
+    group system
+    oneshot
 
 # GPS
 service agpsd /vendor/bin/mtk_agpsd

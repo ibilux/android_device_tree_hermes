@@ -1,4 +1,4 @@
-LOCAL_PATH := device/xiaomi/hermes
+LOCAL_PATH := device/xiaomi/hennessy
 
 # Platform
 TARGET_BOOTLOADER_BOARD_NAME := mt6795
@@ -109,7 +109,7 @@ BOARD_RECOVERY_SWIPE := true
 TARGET_DOES_NOT_SUPPORT_SECCOMP := true
 
 # Sepolicy
-BOARD_SEPOLICY_DIRS += device/xiaomi/hermes/sepolicy
+BOARD_SEPOLICY_DIRS += device/xiaomi/hennessy/sepolicy
 POLICYVERS := 28
 
 # Build kernel without kernel sources

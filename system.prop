@@ -39,6 +39,9 @@ ro.sf.lcd_density=480
 # Audio
 persist.audio.dirac.speaker=true
 
+# TEE
+ro.mtk_trustonic_tee_support=1
+
 # Camera
 media.stagefright.legacyencoder=true
 media.stagefright.less-secure=true

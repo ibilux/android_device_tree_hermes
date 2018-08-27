@@ -15,6 +15,7 @@
 /dev/ccci*                            0660  radio      radio
 /dev/ttyC*                            0660  radio      radio
 /dev/ccci_aud                         0660  media      media
+/dev/fpc1020                          0666  system     system
 /sys/kernel/ccci         modem_info   0644  radio      radio
 /sys/kernel/ccci         md1_postfix  0644  radio      radio
 /sys/kernel/ccci         md2_postfix  0644  radio      radio
@@ -41,3 +42,4 @@
 /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/secro     0660  root  system
 /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/boot      0660  root  system
 /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/para      0660  root  system
+
