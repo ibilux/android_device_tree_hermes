@@ -21,7 +21,7 @@ TARGET_2ND_CPU_VARIANT := cortex-a53
 
 # Kernel
 TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/kernel
-BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 androidboot.selinux=permissive
+BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 log_buf_len=8M androidboot.selinux=permissive
 BOARD_MKBOOTIMG_ARGS := \
     --base 0x40078000 \
     --board mt6795 \
