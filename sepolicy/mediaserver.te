@@ -1,2 +1,0 @@
-allow mediaserver guiext-server:binder { transfer call };
-allow mediaserver guiext-server_service:service_manager find;

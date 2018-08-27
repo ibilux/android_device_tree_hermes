@@ -1,2 +1,0 @@
-allow system_server guiext-server:binder { transfer call };
-allow system_server guiext-server_service:service_manager find;

@@ -1,2 +1,0 @@
-allow platform_app guiext-server:binder { transfer call };
-allow platform_app guiext-server_service:service_manager find;
