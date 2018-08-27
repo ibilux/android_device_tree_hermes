@@ -148,7 +148,8 @@ PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_video_le.xml:system/etc/media_codecs_google_video_le.xml
 
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES := \
-     persist.sys.timezone=Europe/Moscow
+	persist.sys.usb.config=mtp,mass_storage \
+    persist.sys.timezone=Europe/Moscow
 
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.call_recording.enabled=true \
