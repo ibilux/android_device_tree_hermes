@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Included>
+    <Decoders>
+        <MediaCodec name="OMX.MTK.AUDIO.DECODER.MP3" >
+            <Type name="audio/mpeg" />
+            <Type name="audio/mpeg-L2" />
+            <Quirk name="decoder-lies-about-number-of-channels" />
+            <Quirk name="supports-multiple-frames-per-input-buffer" />
+        </MediaCodec>
+        <MediaCodec name="OMX.MTK.AUDIO.DECODER.ADPCM.MS" type="audio/x-adpcm-ms" />
+        <MediaCodec name="OMX.MTK.AUDIO.DECODER.ADPCM.DVI" type="audio/x-adpcm-dvi-ima" />
+        <MediaCodec name="OMX.MTK.AUDIO.DECODER.GSM" type="audio/gsm" />
+        <MediaCodec name="OMX.MTK.AUDIO.DECODER.RAW" type="audio/raw" />
+        <MediaCodec name="OMX.MTK.AUDIO.DECODER.G711.ALAW" type="audio/g711-alaw" >
+            <Quirk name="decoder-lies-about-number-of-channels" />
+        </MediaCodec>
+        <MediaCodec name="OMX.MTK.AUDIO.DECODER.G711.MLAW" type="audio/g711-mlaw" >
+            <Quirk name="decoder-lies-about-number-of-channels" />
+        </MediaCodec>
+        <MediaCodec name="OMX.MTK.AUDIO.DECODER.FLAC" type="audio/flac" />
+        <MediaCodec name="OMX.MTK.AUDIO.DECODER.ALAC" type="audio/alac" />
+    </Decoders>
+    <Encoders>
+        <MediaCodec name="OMX.MTK.AUDIO.ENCODER.VORBIS" type="audio/vorbis" />
+        <MediaCodec name="OMX.MTK.AUDIO.ENCODER.ADPCM.MS" type="audio/x-adpcm-ms" />
+        <MediaCodec name="OMX.MTK.AUDIO.ENCODER.ADPCM.DVI" type="audio/x-adpcm-dvi-ima" />
+    </Encoders>
+</Included>

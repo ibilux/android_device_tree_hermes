@@ -1,0 +1,29 @@
+From ecc002582a74a6e82e3b03434d76dcaee527b114 Mon Sep 17 00:00:00 2001
+From: Wang Xuerui <idontknw.wang@gmail.com>
+Date: Tue, 10 Jul 2018 12:12:18 +0200
+Subject: [PATCH] healthd: correctly report battery voltage on MTK kernels
+
+Change-Id: Ic9fffd709492b04c0187cbbd2d70cb4f32e574cc
+---
+ healthd/BatteryMonitor.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/healthd/BatteryMonitor.cpp b/healthd/BatteryMonitor.cpp
+index d2088ee..947e83e 100644
+--- a/healthd/BatteryMonitor.cpp
++++ b/healthd/BatteryMonitor.cpp
+@@ -228,7 +228,11 @@ bool BatteryMonitor::update(void) {
+     props.batteryLevel = mBatteryFixedCapacity ?
+         mBatteryFixedCapacity :
+         getIntField(mHealthdConfig->batteryCapacityPath);
++#ifndef MTK_HARDWARE
+     props.batteryVoltage = getIntField(mHealthdConfig->batteryVoltagePath) / 1000;
++#else
++    props.batteryVoltage = getIntField(mHealthdConfig->batteryVoltagePath);
++#endif
+ 
+     if (!mHealthdConfig->batteryCurrentNowPath.isEmpty())
+         props.batteryCurrent = getIntField(mHealthdConfig->batteryCurrentNowPath) / 1000;
+-- 
+2.7.4
+

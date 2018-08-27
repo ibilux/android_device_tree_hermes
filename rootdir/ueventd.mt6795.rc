@@ -1,0 +1,43 @@
+/dev/block/mmcblk0                    0660  root       system
+/dev/block/mmcblk0boot0               0660  root       system
+/dev/block/mmcblk0boot1               0660  root       system
+/dev/misc-sd                          0660  root       system
+/dev/stpbt                            0660  bluetooth  radio
+/dev/stpwmt                           0660  system     system
+/dev/wmtdetect                        0660  system     system
+/dev/wmtWifi                          0660  system     system
+/dev/fm                               0660  system     media
+/dev/gps                              0660  gps        system
+/dev/stpgps                           0660  gps        gps
+/dev/pvrsrvkm                         0666  root       root
+/dev/pvr_sync                         0666  root       root
+/dev/ion                              0666  system     graphics
+/dev/ccci*                            0660  radio      radio
+/dev/ttyC*                            0660  radio      radio
+/dev/ccci_aud                         0660  media      media
+/sys/kernel/ccci         modem_info   0644  radio      radio
+/sys/kernel/ccci         md1_postfix  0644  radio      radio
+/sys/kernel/ccci         md2_postfix  0644  radio      radio
+
+/sys/devices/platform/leds-mt65xx/leds/green   delay_on   0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/green   delay_off  0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/red     delay_on   0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/red     delay_off  0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/blue    delay_on   0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/blue    delay_off  0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/yellow  delay_on   0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/yellow  delay_off  0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/white   delay_on   0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/white   delay_off  0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/cyan    delay_on   0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/cyan    delay_off  0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/violet  delay_on   0664  system  system
+/sys/devices/platform/leds-mt65xx/leds/violet  delay_off  0664  system  system
+
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/recovery  0660  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/proinfo   0660  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/seccfg    0660  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/nvram     0660  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/secro     0660  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/boot      0660  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/para      0660  root  system

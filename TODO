@@ -1,0 +1,6 @@
+# Just not very common things are listed here:
+- XiaomiDoze, pickup re-done
+- Fix audio high volume bug(use miui audio blobs)
+- Check codecs
+- FM radio
+- Fix video recording

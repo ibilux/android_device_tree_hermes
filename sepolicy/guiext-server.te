@@ -1,0 +1,19 @@
+type guiext-server_exec, exec_type, file_type;
+type guiext-server, domain;
+
+init_daemon_domain(guiext-server)
+
+binder_service(guiext-server)
+binder_use(guiext-server)
+
+allow guiext-server system_server:binder call;
+allow guiext-server platform_app:binder call;
+allow guiext-server app_data_file:file write;
+allow guiext-server permission_service:service_manager find;
+allow {domain -init -isolated_app} guiext-server_service:service_manager find;
+allow guiext-server guiext-server_service:service_manager add;
+allow guiext-server surfaceflinger_service:service_manager find;
+allow guiext-server surfaceflinger:fifo_file {read write};
+allow guiext-server surfaceflinger:binder call;
+allow guiext-server surfaceflinger:fd use;
+allow guiext-server rootfs:lnk_file { getattr };

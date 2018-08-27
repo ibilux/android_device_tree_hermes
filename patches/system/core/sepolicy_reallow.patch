@@ -1,0 +1,34 @@
+From a71c64f0bd6f36f05e937d9c485c33dfcebbb743 Mon Sep 17 00:00:00 2001
+From: Wang Xuerui <idontknw.wang@gmail.com>
+Date: Tue, 10 Jul 2018 12:13:02 +0200
+Subject: [PATCH] init: Allow to start services without sepolicy defined
+
+Temperary, can be removed when we switch to enforcing
+
+Change-Id: I78145c0576115f6ec8dfa24d7b7bb88cab1cec23
+---
+ init/service.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/init/service.cpp b/init/service.cpp
+index 8127e70..a09fd8f 100644
+--- a/init/service.cpp
++++ b/init/service.cpp
+@@ -371,12 +371,14 @@ bool Service::Start() {
+             scon = ret_scon;
+             free(ret_scon);
+         }
++#if 0
+         if (rc == 0 && scon == mycon) {
+             ERROR("Service %s does not have a SELinux domain defined.\n", name_.c_str());
+             free(mycon);
+             free(fcon);
+             return false;
+         }
++#endif
+         free(mycon);
+         free(fcon);
+         if (rc < 0) {
+-- 
+2.7.4
+

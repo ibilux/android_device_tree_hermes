@@ -1,0 +1,50 @@
+From c8b7c0146cd50f62c437c25cdb6b591a99e09e74 Mon Sep 17 00:00:00 2001
+From: adi766 <adityakumarteli7846@gmail.com>
+Date: Sat, 23 Sep 2017 16:48:05 +0000
+Subject: [PATCH] Fix hwui
+
+---
+ libs/hwui/Caches.cpp                  | 13 +++----------
+ libs/hwui/renderthread/EglManager.cpp |  5 +----
+ 2 files changed, 4 insertions(+), 14 deletions(-)
+
+diff --git a/libs/hwui/Caches.cpp b/libs/hwui/Caches.cpp
+index a8ced9b2597..f263bdacd41 100644
+--- a/libs/hwui/Caches.cpp
++++ b/libs/hwui/Caches.cpp
+@@ -83,16 +83,9 @@ bool Caches::init() {
+ }
+ 
+ void Caches::initExtensions() {
+-    if (mExtensions.hasDebugMarker()) {
+-        eventMark = glInsertEventMarkerEXT;
+-
+-        startMark = glPushGroupMarkerEXT;
+-        endMark = glPopGroupMarkerEXT;
+-    } else {
+-        eventMark = eventMarkNull;
+-        startMark = startMarkNull;
+-        endMark = endMarkNull;
+-    }
++    eventMark = eventMarkNull;
++    startMark = startMarkNull;
++    endMark = endMarkNull;
+ }
+ 
+ void Caches::initConstraints() {
+diff --git a/libs/hwui/renderthread/EglManager.cpp b/libs/hwui/renderthread/EglManager.cpp
+index ac6a28fe628..b476ce5bc8c 100644
+--- a/libs/hwui/renderthread/EglManager.cpp
++++ b/libs/hwui/renderthread/EglManager.cpp
+@@ -335,10 +335,7 @@ bool EglManager::swapBuffers(const Frame& frame, const SkRect& screenDirty) {
+         fence();
+     }
+ 
+-    EGLint rects[4];
+-    frame.map(screenDirty, rects);
+-    eglSwapBuffersWithDamageKHR(mEglDisplay, frame.mSurface, rects,
+-            screenDirty.isEmpty() ? 0 : 1);
++    eglSwapBuffers(mEglDisplay, frame.mSurface);
+ 
+     EGLint err = eglGetError();
+     if (CC_LIKELY(err == EGL_SUCCESS)) {

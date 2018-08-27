@@ -1,0 +1,74 @@
+From 270eba85d51d00e6d731d257face871bceaf2c43 Mon Sep 17 00:00:00 2001
+From: Dinolek <dinolek@o2.pl>
+Date: Fri, 20 Jul 2018 16:02:10 +0200
+Subject: [PATCH] minijail: Add option to disable it
+
+Allow to disable if prebuilt kernel doesn't support it
+
+Change-Id: I702f8bb692fc35bbd4c719fadf4401a7779a7fab
+---
+ services/mediacodec/Android.mk                    | 3 +++
+ services/mediacodec/main_codecservice.cpp         | 2 ++
+ services/mediaextractor/Android.mk                | 3 +++
+ services/mediaextractor/main_extractorservice.cpp | 2 ++
+ 4 files changed, 10 insertions(+)
+
+diff --git a/services/mediacodec/Android.mk b/services/mediacodec/Android.mk
+index a5f0751..82fc503 100644
+--- a/services/mediacodec/Android.mk
++++ b/services/mediacodec/Android.mk
+@@ -24,6 +24,9 @@ LOCAL_C_INCLUDES := \
+ LOCAL_MODULE:= mediacodec
+ LOCAL_32_BIT_ONLY := true
+ LOCAL_INIT_RC := mediacodec.rc
++ifeq ($(TARGET_DOES_NOT_SUPPORT_SECCOMP),true)
++    LOCAL_CFLAGS += -DDISABLE_SECCOMP
++endif
+ include $(BUILD_EXECUTABLE)
+ 
+ include $(call all-makefiles-under, $(LOCAL_PATH))
+diff --git a/services/mediacodec/main_codecservice.cpp b/services/mediacodec/main_codecservice.cpp
+index a2868c1..cd1b628 100644
+--- a/services/mediacodec/main_codecservice.cpp
++++ b/services/mediacodec/main_codecservice.cpp
+@@ -36,7 +36,9 @@ int main(int argc __unused, char** argv)
+ {
+     ALOGI("@@@ mediacodecservice starting");
+     signal(SIGPIPE, SIG_IGN);
++#ifndef DISABLE_SECCOMP
+     MiniJail();
++#endif
+ 
+     strcpy(argv[0], "media.codec");
+     sp<ProcessState> proc(ProcessState::self());
+diff --git a/services/mediaextractor/Android.mk b/services/mediaextractor/Android.mk
+index a9a2d3c..6fa5863 100644
+--- a/services/mediaextractor/Android.mk
++++ b/services/mediaextractor/Android.mk
+@@ -20,6 +20,9 @@ LOCAL_MODULE:= mediaextractor
+ LOCAL_32_BIT_ONLY := true
+ LOCAL_INIT_RC := mediaextractor.rc
+ LOCAL_C_INCLUDES := frameworks/av/media/libmedia
++ifeq ($(TARGET_DOES_NOT_SUPPORT_SECCOMP),true)
++    LOCAL_CFLAGS += -DDISABLE_SECCOMP
++endif
+ include $(BUILD_EXECUTABLE)
+ 
+ include $(call all-makefiles-under, $(LOCAL_PATH))
+diff --git a/services/mediaextractor/main_extractorservice.cpp b/services/mediaextractor/main_extractorservice.cpp
+index 245489e..30a174f 100644
+--- a/services/mediaextractor/main_extractorservice.cpp
++++ b/services/mediaextractor/main_extractorservice.cpp
+@@ -42,7 +42,9 @@ int main(int argc __unused, char** argv)
+         20 /* upper limit as percentage of physical RAM */);
+ 
+     signal(SIGPIPE, SIG_IGN);
++#ifndef DISABLE_SECCOMP
+     MiniJail();
++#endif
+ 
+     InitializeIcuOrDie();
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,49 @@
+From ec75c922e8093ef6b93a12a9c675a09a926e5635 Mon Sep 17 00:00:00 2001
+From: Diogo Ferreira <defer@cyngn.com>
+Date: Wed, 25 Jul 2018 15:54:38 +0200
+Subject: [PATCH] mediatek: Port AV changes
+
+This ports the changes required to perform video decoding
+and enconding.
+
+The changes are ported from the mediatek BSP for mt6592
+with the minimum required feature set and confined to
+allow co-existance with changes from other vendors.
+
+[Trimmed down for L]
+[Ported to M (CM13.0) by @xen0n]
+[Ported to N (CM14.1) by @moyster]
+
+Change-Id: If55ea94e45fc0ca10e0d196dbffbfd812b5d97dd
+---
+ media/libstagefright/ACodec.cpp | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
+index a11494d..a4fdbfc 100644
+--- a/media/libstagefright/ACodec.cpp
++++ b/media/libstagefright/ACodec.cpp
+@@ -1036,11 +1036,20 @@ status_t ACodec::setupNativeWindowSizeFormatAndUsage(
+     setNativeWindowColorFormat(eNativeColorFormat);
+ #endif
+ 
++#ifdef MTK_HARDWARE
++    usage |= (GRALLOC_USAGE_SW_WRITE_OFTEN | GRALLOC_USAGE_SW_READ_OFTEN);
++#endif
++
+     ALOGV("gralloc usage: %#x(OMX) => %#x(ACodec)", omxUsage, usage);
+     err = setNativeWindowSizeFormatAndUsage(
+             nativeWindow,
++#ifdef MTK_HARDWARE
++            def.format.video.nStride,
++            def.format.video.nSliceHeight,
++#else
+             def.format.video.nFrameWidth,
+             def.format.video.nFrameHeight,
++#endif
+ #ifdef USE_SAMSUNG_COLORFORMAT
+             eNativeColorFormat,
+ #else
+-- 
+2.7.4
+
