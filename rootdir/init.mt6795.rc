@@ -55,10 +55,11 @@ on post-fs
     chown system system /protect_s
     chmod 0770 /protect_s
 
-    # Workaround for old nvram blobs
+    # Workaround for old nvram and ril blobs
     mkdir /dev/block/platform/mtk-msdc.0/by-name 0755 root system
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/nvram /dev/block/platform/mtk-msdc.0/by-name/nvram
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/proinfo /dev/block/platform/mtk-msdc.0/by-name/proinfo
+    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/secro /dev/block/platform/mtk-msdc.0/by-name/secro
 
 on post-fs-data
     # Create nvram folder for modem
