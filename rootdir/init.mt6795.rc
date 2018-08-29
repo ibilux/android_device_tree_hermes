@@ -521,7 +521,7 @@ service fpDaemon /vendor/bin/gxFpDaemon
     oneshot
 
 # TEE
-service mobicore /vendor/bin/mcDriverDaemon -r /vendor/app/mcRegistry/030b0000000000000000000000000000.drbin -r /vendor/app/mcRegistry/020f0000000000000000000000000000.drbin -r /system/app/mcRegistry/05120000000000000000000000000000.drbin -r /vendor/app/mcRegistry/070b0000000000000000000000000000.drbin -r /vendor/app/mcRegistry/04020000000000000000000000000000.drbin
+service mobicore /vendor/bin/mcDriverDaemon -r /vendor/app/mcRegistry/030b0000000000000000000000000000.drbin -r /vendor/app/mcRegistry/020f0000000000000000000000000000.drbin -r /vendor/app/mcRegistry/05120000000000000000000000000000.drbin -r /vendor/app/mcRegistry/070b0000000000000000000000000000.drbin -r /vendor/app/mcRegistry/04020000000000000000000000000000.drbin
     user system
     group system
     class core
