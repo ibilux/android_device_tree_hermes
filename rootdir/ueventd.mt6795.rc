@@ -46,6 +46,9 @@
 /sys/kernel/ccci         md1_postfix  0644  radio      radio
 /sys/kernel/ccci         md2_postfix  0644  radio      radio
 
+# OTP
+/dev/otp                              0660  root       system
+
 # leds
 /sys/devices/platform/leds-mt65xx/leds/green   delay_on   0664  system  system
 /sys/devices/platform/leds-mt65xx/leds/green   delay_off  0664  system  system
