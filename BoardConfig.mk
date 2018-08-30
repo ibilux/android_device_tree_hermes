@@ -21,7 +21,6 @@ TARGET_2ND_CPU_VARIANT := cortex-a53
 
 #Misc
 BLOCK_BASED_OTA := false
-WITH_SU := true
 
 # Kernel
 TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/kernel
