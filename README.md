@@ -1,7 +1,7 @@
-# LingeageOS 14 Device tree for Xiaomi Redmi Note 3 (HENNESSY)
+# LineageOS 14 Device tree for Xiaomi Redmi Note 3 (HENNESSY)
 
 ### NOT working:
-  - GPS
+  - Fingerprints
   - Video in camera
 
 ### Credits:
