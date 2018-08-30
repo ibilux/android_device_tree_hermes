@@ -18,8 +18,15 @@
             <Quirk name="decoder-lies-about-number-of-channels" />
         </MediaCodec>
         <MediaCodec name="OMX.MTK.AUDIO.DECODER.FLAC" type="audio/flac" />
+<!--         <MediaCodec name="OMX.MTK.AUDIO.DECODER.WMA" type="audio/x-ms-wma" />
+        <MediaCodec name="OMX.MTK.AUDIO.DECODER.WMAPRO" type="audio/x-ms-wmapro" />
+        <MediaCodec name="OMX.MTK.AUDIO.DECODER.APE" type="audio/ape" >
+            <Quirk name="decoder-lies-about-number-of-channels" />
+            <Quirk name="supports-multiple-frames-per-input-buffer" />
+        </MediaCodec> -->
         <MediaCodec name="OMX.MTK.AUDIO.DECODER.ALAC" type="audio/alac" />
     </Decoders>
+
     <Encoders>
         <MediaCodec name="OMX.MTK.AUDIO.ENCODER.VORBIS" type="audio/vorbis" />
         <MediaCodec name="OMX.MTK.AUDIO.ENCODER.ADPCM.MS" type="audio/x-adpcm-ms" />

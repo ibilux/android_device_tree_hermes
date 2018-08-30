@@ -25,10 +25,6 @@
             <Limit name="channel-count" max="8" />
             <Limit name="sample-rate" ranges="8000-192000" />
         </MediaCodec>
-        <MediaCodec name="OMX.ffmpeg.alac.decoder"   type="audio/alac" >
-            <Limit name="channel-count" max="8" />
-            <Limit name="sample-rate" ranges="8000-192000" />
-        </MediaCodec>
         <MediaCodec name="OMX.ffmpeg.ape.decoder"    type="audio/x-ape" >
             <Limit name="channel-count" max="8" />
             <Limit name="sample-rate" ranges="8000-192000" />
@@ -49,6 +45,10 @@
             <Limit name="channel-count" max="8" />
             <Limit name="sample-rate" ranges="8000-192000" />
         </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.mp3.decoder"    type="audio/mpeg-L2" >
+            <Limit name="channel-count" max="8" />
+            <Limit name="sample-rate" ranges="8000-192000" />
+        </MediaCodec>
         <MediaCodec name="OMX.ffmpeg.ra.decoder"     type="audio/vnd.rn-realaudio" >
             <Limit name="channel-count" max="8" />
             <Limit name="sample-rate" ranges="8000-192000" />
@@ -56,6 +56,76 @@
         <MediaCodec name="OMX.ffmpeg.wma.decoder"    type="audio/x-ms-wma" >
             <Limit name="channel-count" max="8" />
             <Limit name="sample-rate" ranges="8000-192000" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.alac.decoder"   type="audio/alac" >
+            <Limit name="channel-count" max="8" />
+            <Limit name="sample-rate" ranges="8000-192000" />
+        </MediaCodec>
+        <!--  ffmpeg video codecs -->
+        <MediaCodec name="OMX.ffmpeg.divx.decoder"   type="video/divx">
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.flv1.decoder"   type="video/x-flv">
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.h264.decoder"   type="video/avc" >
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.h263.decoder"   type="video/3gpp" >
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.hevc.decoder"   type="video/hevc" >
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.mpeg2.decoder"  type="video/mpeg2">
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.mpeg4.decoder"  type="video/mp4v-es">
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.rv.decoder"     type="video/vnd.rn-realvideo">
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.vc1.decoder"    type="video/vc1">
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.vp8.decoder" type="video/x-vnd.on2.vp8" >
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.vp9.decoder" type="video/x-vnd.on2.vp9" >
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.vtrial.decoder" type="video/ffmpeg">
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
+        </MediaCodec>
+        <MediaCodec name="OMX.ffmpeg.wmv.decoder"    type="video/x-ms-wmv">
+            <Limit name="size" min="16x16" max="1920x1080" />
+            <Limit name="alignment" value="16x16" />
+            <Feature name="adaptive-playback" />
         </MediaCodec>
     </Decoders>
 </Included>
