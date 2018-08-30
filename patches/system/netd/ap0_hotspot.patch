@@ -56,6 +56,15 @@ diff --git a/server/SoftapController.cpp b/server/SoftapController.cpp
 index 4a7c8d7..fa6650a 100755
 --- a/server/SoftapController.cpp
 +++ b/server/SoftapController.cpp
+@@ -53,7 +53,7 @@ using android::base::WriteStringToFile;
+ #include "wpa_ctrl.h"
+ #endif
+ 
+-std:: string hostapd_unix_file(StringPrintf("/data/misc/wifi/hostapd/wlan0"));
++std:: string hostapd_unix_file(StringPrintf("/data/misc/wifi/hostapd/ap0"));
+ #ifdef LIBWPA_CLIENT_EXISTS
+ static const char HOSTAPD_DHCP_DIR[]    = "/data/misc/dhcp";
+ #endif
 @@ -289,7 +289,7 @@ int SoftapController::setSoftap(int argc, char *argv[]) {
              "hw_mode=%c\n"
              "ignore_broadcast_ssid=%d\n"
