@@ -60,6 +60,13 @@ PRODUCT_PACKAGES += libcurl
 # DRM
 PRODUCT_PACKAGES += libmockdrmcryptoplugin
 
+# FM Radio
+PRODUCT_PACKAGES += \
+	FMRadio \
+	libfmjni \
+	libfmcust \
+	libfmmt6630
+	
 # Audio
 PRODUCT_PACKAGES += \
     audio.a2dp.default \
