@@ -178,7 +178,9 @@ on post-fs-data
 
     # Graphic
     chmod 0660 /dev/mtk_disp_mgr
+    chmod 0660 /dev/sw_sync
     chown system graphics /dev/mtk_disp_mgr
+    chown system graphics /dev/sw_sync
 
     # Autok
     chown root system /sys/autok/debug
