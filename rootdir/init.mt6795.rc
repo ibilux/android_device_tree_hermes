@@ -60,6 +60,7 @@ on post-fs
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/nvram /dev/block/platform/mtk-msdc.0/by-name/nvram
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/proinfo /dev/block/platform/mtk-msdc.0/by-name/proinfo
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/secro /dev/block/platform/mtk-msdc.0/by-name/secro
+    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/seccfg /dev/block/platform/mtk-msdc.0/by-name/seccfg
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/otp /dev/block/platform/mtk-msdc.0/by-name/otp
 
 on post-fs-data
@@ -200,6 +201,9 @@ on post-fs-data
 
     # SecMem
     chown system system /proc/secmem0
+    mknod /dev/sec c 182 0
+    chmod 0660 /dev/sec
+    chown root system /dev/sec
 
     # Camera
     chmod 0660 /dev/camera-fdvt
@@ -527,6 +531,12 @@ service mobicore /vendor/bin/mcDriverDaemon -r /vendor/app/mcRegistry/030b000000
     user system
     group system
     class core
+    oneshot
+
+service sbchk /vendor/bin/sbchk
+    class core
+    user system
+    group system
     oneshot
 
 # Accelerometer and gyroscope
