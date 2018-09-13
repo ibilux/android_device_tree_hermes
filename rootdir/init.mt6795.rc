@@ -177,6 +177,10 @@ on post-fs-data
     chmod 0666 /dev/MJC
     chown system media /dev/MJC
 
+    # Boot mode
+    chmod 0664 /sys/class/BOOT/BOOT/boot/boot_mode
+    chown system system /sys/class/BOOT/BOOT/boot/boot_mode
+
     # Graphic
     chmod 0660 /dev/mtk_disp_mgr
     chmod 0660 /dev/sw_sync
