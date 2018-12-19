@@ -35,3 +35,12 @@ LOCAL_MODULE := libshim_xlog
 LOCAL_CFLAGS := -Wno-unused-variable -Wno-unused-parameter
 LOCAL_PROPRIETARY_MODULE := true
 include $(BUILD_SHARED_LIBRARY)
+
+# libshim_netutils
+include $(CLEAR_VARS)
+LOCAL_SRC_FILES := libnetutils.cpp
+LOCAL_SHARED_LIBRARIES := libbinder libnetutils liblog
+LOCAL_MODULE := libshim_netutils
+LOCAL_CFLAGS := -Wno-unused-variable -Wno-unused-parameter
+LOCAL_PROPRIETARY_MODULE := true
+include $(BUILD_SHARED_LIBRARY)

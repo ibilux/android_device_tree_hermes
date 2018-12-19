@@ -16,7 +16,9 @@ on init
         /system/lib/libstagefright.so|libshim_stagefright.so: \
         /system/lib64/libstagefright.so|libshim_stagefright.so: \
         /system/lib/liblog.so|libshim_xlog.so: \
-        /system/lib64/liblog.so|libshim_xlog.so"
+        /system/lib64/liblog.so|libshim_xlog.so: \
+        /system/lib/libnetutils.so|libshim_netutils.so: \
+        /system/lib64/libnetutils.so|libshim_netutils.so"
 
     # Protect
     mkdir /protect_f 0771 system system

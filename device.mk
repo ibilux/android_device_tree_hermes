@@ -34,7 +34,8 @@ PRODUCT_PACKAGES += \
     libshim_stagefright \
     libshim_ui \
     libshim_wvm \
-    libshim_xlog
+    libshim_xlog \
+    libshim_netutils
 
 # Power HAL
 PRODUCT_PACKAGES += power.mt6795
