@@ -3,6 +3,10 @@
 ### NOT working:
   - Fingerprints
   - Video in camera
+  - Hardware codecs
+
+### Bugs:
+  - Graphical glitches
 
 ### Credits:
   - Dinolek
