@@ -1,0 +1,40 @@
+From 10e6c197c9f9ed1df87d0b4d5e4bd30563ea3968 Mon Sep 17 00:00:00 2001
+From: Smosia <0stas0@mail.ru>
+Date: Tue, 25 Dec 2018 15:46:55 +0300
+Subject: [PATCH] FM Radio: support of miui LP audio hal [2/3]
+
+Change-Id: Iee853ae3a607a091ab043983bcd047dba8be40b0
+---
+ api/system-current.txt                      | 2 +-
+ media/java/android/media/MediaRecorder.java | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/api/system-current.txt b/api/system-current.txt
+index 6b6f7e9..ade30cd 100644
+--- a/api/system-current.txt
++++ b/api/system-current.txt
+@@ -22889,7 +22889,7 @@ package android.media {
+     field public static final int DEFAULT = 0; // 0x0
+     field public static final int HOTWORD = 1999; // 0x7cf
+     field public static final int MIC = 1; // 0x1
+-    field public static final int RADIO_TUNER = 1998; // 0x7ce
++    field public static final int RADIO_TUNER = 99; // 0x63
+     field public static final int REMOTE_SUBMIX = 8; // 0x8
+     field public static final int UNPROCESSED = 9; // 0x9
+     field public static final int VOICE_CALL = 4; // 0x4
+diff --git a/media/java/android/media/MediaRecorder.java b/media/java/android/media/MediaRecorder.java
+index c5a16c0..c10f14d 100755
+--- a/media/java/android/media/MediaRecorder.java
++++ b/media/java/android/media/MediaRecorder.java
+@@ -281,7 +281,7 @@ public class MediaRecorder
+          * @hide
+          */
+         @SystemApi
+-        public static final int RADIO_TUNER = 1998;
++        public static final int RADIO_TUNER = 99;
+ 
+         /**
+          * Audio source for preemptible, low-priority software hotword detection
+-- 
+1.9.1
+

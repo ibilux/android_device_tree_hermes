@@ -1,0 +1,27 @@
+From e772e4a9fcb9b48d8e747b4aadc0f1dee452ee85 Mon Sep 17 00:00:00 2001
+From: Smosia <0stas0@mail.ru>
+Date: Tue, 25 Dec 2018 15:38:16 +0300
+Subject: [PATCH] FM Radio: support of miui LP audio hal [3/3] This patch only
+ for Android 7.1 (api 25)
+
+Change-Id: I638ad70ea51c94a78f3a6aa7bc9324148d78a58c
+---
+ system-api/25.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/system-api/25.txt b/system-api/25.txt
+index b3d0169..ef51d6c 100644
+--- a/system-api/25.txt
++++ b/system-api/25.txt
+@@ -22888,7 +22888,7 @@ package android.media {
+     field public static final int DEFAULT = 0; // 0x0
+     field public static final int HOTWORD = 1999; // 0x7cf
+     field public static final int MIC = 1; // 0x1
+-    field public static final int RADIO_TUNER = 1998; // 0x7ce
++    field public static final int RADIO_TUNER = 99; // 0x63
+     field public static final int REMOTE_SUBMIX = 8; // 0x8
+     field public static final int UNPROCESSED = 9; // 0x9
+     field public static final int VOICE_CALL = 4; // 0x4
+-- 
+1.9.1
+

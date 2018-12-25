@@ -1,6 +1,6 @@
 #!/bin/sh
 rootdirectory="$PWD"
-dirs="frameworks/av frameworks/base frameworks/native system/core system/netd system/sepolicy packages/apps/FMRadio"
+dirs="frameworks/av frameworks/base frameworks/native system/core system/media system/netd system/sepolicy packages/apps/FMRadio prebuilts/sdk"
 
 for dir in $dirs ; do
 	cd $rootdirectory
