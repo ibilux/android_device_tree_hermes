@@ -1,4 +1,4 @@
-# Lineage OS 14 Device tree for Xiaomi Redmi Note 2 (HERMES)
+# LineageOS 14 Device tree for Xiaomi Redmi Note 2 (HERMES)
 
 ### NOT working:
   - Hardware codecs

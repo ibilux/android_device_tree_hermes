@@ -274,16 +274,6 @@ on post-fs-data
     write /data/ccci_cfg/md_new_ver.1 "flag"
     chmod 0660 /data/ccci_cfg/md_new_ver.1
 
-    # MobiCore
-    mkdir /data/app/mcRegistry 0775 system system
-    mkdir /data/app/mcRegistry/TbStorage 0775 system system
-    chmod 0600 /dev/mobicore
-    chown system system /dev/mobicore
-    chmod 0666 /dev/mobicore-user
-    chown system system /dev/mobicore-user
-    start mobicore
-    chown system system /dev/goodix_fp_spi
-
     setprop vold.post_fs_data_done 1
 
     # Clear the sim switch flag
@@ -516,19 +506,6 @@ service fuelgauged /vendor/bin/fuelgauged
     class main
     user system
     group system
-
-service fpDaemon /vendor/bin/gxFpDaemon
-    class main
-    user system
-    group system
-    oneshot
-
-# TEE
-service mobicore /vendor/bin/mcDriverDaemon -r /vendor/app/mcRegistry/030b0000000000000000000000000000.drbin -r /vendor/app/mcRegistry/020f0000000000000000000000000000.drbin -r /vendor/app/mcRegistry/05120000000000000000000000000000.drbin -r /vendor/app/mcRegistry/070b0000000000000000000000000000.drbin -r /vendor/app/mcRegistry/04020000000000000000000000000000.drbin
-    user system
-    group system
-    class core
-    oneshot
 
 service sbchk /vendor/bin/sbchk
     class core
