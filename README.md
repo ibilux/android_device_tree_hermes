@@ -1,12 +1,13 @@
-# LineageOS 14 Device tree for Xiaomi Redmi Note 3 (HENNESSY)
+# Lineage OS 14 Device tree for Xiaomi Redmi Note 2 (HERMES)
 
 ### NOT working:
-  - Fingerprints
-  - Video in camera
   - Hardware codecs
 
 ### Bugs:
-  - Graphical glitches
+  - Video recording in camera
+  - Graphical glitches in chrome (at 60fps)
 
 ### Credits:
   - Dinolek
+  - Smosia
+  - Azizb750

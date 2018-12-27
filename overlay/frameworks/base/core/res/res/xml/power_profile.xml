@@ -94,7 +94,7 @@
   <item name="cpu.awake">100</item>
 
   <!-- This is the battery capacity in mAh -->
-  <item name="battery.capacity">4050</item>
+  <item name="battery.capacity">3060</item>
 
   <array name="wifi.batchedscan">
       <value>.2</value>

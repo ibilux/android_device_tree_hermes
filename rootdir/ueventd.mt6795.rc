@@ -35,9 +35,6 @@
 # Change ION driver permission
 /dev/ion                              0666  system     graphics
 
-# fpc fingerprint
-/dev/fpc1020                          0666  system     system
-
 # ccci
 /dev/ccci*                            0660  radio      radio
 /dev/ttyC*                            0660  radio      radio

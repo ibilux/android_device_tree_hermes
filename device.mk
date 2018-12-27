@@ -1,7 +1,7 @@
-LOCAL_PATH := device/xiaomi/hennessy
+LOCAL_PATH := device/xiaomi/hermes
 
 # Vendor
-$(call inherit-product, vendor/xiaomi/hennessy/hennessy-vendor.mk)
+$(call inherit-product, vendor/xiaomi/hermes/hermes-vendor.mk)
 
 # Dalvik/HWUI
 $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-dalvik-heap.mk)
@@ -19,13 +19,10 @@ PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 
 # Recovery allowed devices
-TARGET_OTA_ASSERT_DEVICE := hennessy
+TARGET_OTA_ASSERT_DEVICE := hermes
 
 # Compile apps
 PRODUCT_PACKAGES += Snap
-
-# Fingerprint
-PRODUCT_PACKAGES += fingerprintd
 
 # Shim symbols
 PRODUCT_PACKAGES += \
@@ -99,7 +96,6 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.front.xml:system/etc/permissions/android.hardware.camera.front.xml \
     frameworks/native/data/etc/android.hardware.consumerir.xml:system/etc/permissions/android.hardware.consumerir.xml \
     frameworks/native/data/etc/android.hardware.ethernet.xml:system/etc/permissions/android.hardware.ethernet.xml \
-    frameworks/native/data/etc/android.hardware.fingerprint.xml:system/etc/permissions/android.hardware.fingerprint.xml \
     frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
     frameworks/native/data/etc/android.hardware.sensor.accelerometer.xml:system/etc/permissions/android.hardware.sensor.accelerometer.xml \
     frameworks/native/data/etc/android.hardware.sensor.compass.xml:system/etc/permissions/android.hardware.compass.xml \

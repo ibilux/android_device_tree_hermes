@@ -218,9 +218,8 @@ on post-fs-data
     chmod 0660 /dev/kd_camera_hw
     chmod 0660 /dev/kd_camera_hw_bus2
     chmod 0660 /dev/CAM_CAL_DRV
-    chmod 0660 /dev/OV13853_CAM_CAL_DRV
     chmod 0660 /dev/DW9761BAF
-    chmod 0660 /dev/BU6429AF
+
 
     chown system camera /dev/camera-fdvt
     chown system camera /dev/camera-isp
@@ -228,9 +227,7 @@ on post-fs-data
     chown system camera /dev/kd_camera_hw
     chown system camera /dev/kd_camera_hw_bus2
     chown system camera /dev/CAM_CAL_DRV
-    chown system camera /dev/OV13853_CAM_CAL_DRV
     chown system camera /dev/DW9761BAF
-    chown system camera /dev/BU6429AF
 
     # SMI
     chmod 0666 /dev/MTK_SMI
@@ -520,12 +517,6 @@ service fuelgauged /vendor/bin/fuelgauged
     user system
     group system
 
-# Fingerprint
-service fingerprintd /system/bin/fingerprintd
-    class main
-    user system
-    group system
-
 service fpDaemon /vendor/bin/gxFpDaemon
     class main
     user system
@@ -608,3 +599,129 @@ on property:sys.boot_completed=1
     write /sys/block/mmcblk0/queue/read_ahead_kb 128
     write /sys/block/mmcblk0/queue/nr_requests 128
     write /sys/block/mmcblk0/queue/iostats 1
+
+####### JUST SOME ADD ON FROM OLD NOUGAT TREE #######
+####### CHECK THIS FOR ANY BUGS #####################
+    # Boot info
+    chown system system /proc/bootprof
+
+    # Atmel calibration
+    chown root root /system/etc/init.atmel_ts.sh
+    chmod 777 /system/etc/init.atmel_ts.sh
+
+    # BATTERY proc
+    chown radio system /proc/mtk_battery_cmd/current_cmd
+    chown radio system /proc/mtk_battery_cmd/discharging_cmd
+    chown radio system /proc/mtk_battery_cmd/battery_cmd
+    chmod 0664 /proc/mtk_battery_cmd/current_cmd
+    chmod 0664 /proc/mtk_battery_cmd/discharging_cmd
+    chmod 0664 /proc/mtk_battery_cmd/battery_cmd
+
+    # BT
+    chmod 0666 /dev/stpbt
+    chown radio bluetooth /dev/stpbt
+
+    # BT relayer
+    chmod 0666 /dev/ttyGS2
+    chown bluetooth radio /dev/ttyGS2
+
+    # ION device
+    chmod 0666 /dev/ion
+
+    # Selinux
+    restorecon /dev/wmtWifi
+    restorecon /dev/stpwmt
+    restorecon /dev/stpbt
+    restorecon /dev/stpgps
+
+    # Wi-Fi
+    chmod 0666 /dev/wmtWifi
+    chown system system /dev/wmtWifi
+
+    chmod 0666 /dev/stpwmt
+    chown system system /dev/stpwmt
+
+    chmod 0666 /dev/wmtdetect
+    chown system system /dev/wmtdetect
+
+
+    #Charging Battery
+    chown radio radio /sys/devices/platform/battery/Charging_CallState
+
+    #EM eint
+    chown root diag /sys/bus/platform/drivers/eint/current_eint
+
+    #pmu
+    chown root radio /sys/devices/platform/mt-pmic/pmic_access
+    chmod 0664 /sys/devices/platform/mt-pmic/pmic_access
+
+    # EM CPU Speed Stress
+    chown root radio /proc/cpu_ss/cpu_ss_debug_mode
+    chown root radio /proc/cpu_ss/cpu_ss_mode
+    chown root radio /proc/cpu_ss/cpu_ss_period
+    chown root radio /proc/cpu_ss/cpu_ss_period_mode
+    chmod 0664 /proc/cpu_ss/cpu_ss_debug_mode
+    chmod 0664 /proc/cpu_ss/cpu_ss_mode
+    chmod 0664 /proc/cpu_ss/cpu_ss_period
+    chmod 0664 /proc/cpu_ss/cpu_ss_period_mode
+
+    # EM baseband file
+    chown root diag /system/bin/baseband_regdump
+    chmod 4750 /system/bin/baseband_regdump
+
+    # FM Radio
+    chmod 0666 /dev/fm
+    chown system media /dev/fm
+
+    # GPS
+    chmod 0666 /dev/gps
+    chown system gps /dev/gps
+
+    chmod 0666 /dev/stpgps
+    chown gps gps /dev/stpgps
+
+    # Graphic
+    chmod 0660 /dev/graphics/fb0
+    chown system graphics /dev/graphics/fb0
+    chmod 0660 /dev/mtkfb_vsync
+    chown system graphics /dev/mtkfb_vsync
+    chmod 0660 /sys/devices/platform/mtk_disp_mgr.0/rgb
+    chown system system /sys/devices/platform/mtk_disp_mgr.0/rgb
+
+    # Perfservice
+    chown system system /sys/devices/system/cpu/cpufreq/hotplug/cpu_num_base
+    chmod 0666 /sys/devices/system/cpu/cpufreq/hotplug/cpu_num_base
+    chown system system /proc/hps/num_base_perf_serv
+    chmod 0666 /proc/hps/num_base_perf_serv
+    chown system system /proc/hps/num_limit_power_serv
+    chmod 0666 /proc/hps/num_limit_power_serv
+    chown system system /proc/hps/rush_boost_enabled
+    chmod 0666 /proc/hps/rush_boost_enabled
+    chown system system /proc/cpufreq/cpufreq_limited_by_hevc
+    chmod 0666 /proc/cpufreq/cpufreq_limited_by_hevc
+    chown system system /proc/cpufreq/cpufreq_limited_max_freq_by_user
+    chmod 0666 /proc/cpufreq/cpufreq_limited_max_freq_by_user
+    chown system system /d/ged/hal/total_gpu_freq_level_count
+    chmod 0666 /d/ged/hal/total_gpu_freq_level_count
+    chown system system /d/ged/hal/custom_boost_gpu_freq
+    chmod 0666 /d/ged/hal/custom_boost_gpu_freq
+    chown system system /d/ged/hal/custom_upbound_gpu_freq
+    chmod 0666 /d/ged/hal/custom_upbound_gpu_freq
+
+    # Modem related nodes
+    chown media audio /dev/ccci_aud
+    chown radio radio /dev/ccci_fs
+    chown radio radio /dev/ccci_ioctl0
+    chown radio radio /dev/ccci_ioctl1
+    chown radio radio /dev/ccci_ipc_1220_0
+    chown radio radio /dev/ccci_monitor
+
+    # Camera
+    #chmod 0660 /dev/OV13853_CAM_CAL_DRV
+    #chmod 0660 /dev/BU6429AF
+    #chown system camera /dev/OV13853_CAM_CAL_DRV
+    #chown system camera /dev/BU6429AF
+
+    # Boot mode (i think it's wrong !)
+    chmod 666 /sys/devices/virtual/BOOT/BOOT/boot/boot_mode
+    chown system system /sys/devices/virtual/BOOT/BOOT/boot/boot_mode

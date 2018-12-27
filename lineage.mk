@@ -21,19 +21,16 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 # Inherit some common CM stuff.
 $(call inherit-product, vendor/cm/config/common_full_phone.mk)
 
-# Inherit from hennessy device
-$(call inherit-product, device/xiaomi/hennessy/device.mk)
+# Inherit from hermes device
+$(call inherit-product, device/xiaomi/hermes/device.mk)
 
-PRODUCT_DEVICE := hennessy
-PRODUCT_NAME := lineage_hennessy
+PRODUCT_DEVICE := hermes
+PRODUCT_NAME := lineage_hermes
 PRODUCT_BRAND := Xiaomi
-PRODUCT_MODEL := Redmi Note 3
+PRODUCT_MODEL := Redmi Note 2
 PRODUCT_MANUFACTURER := Xiaomi
 
-# SDcard
-PRODUCT_CHARACTERISTICS := nosdcard
-
 PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
-#BUILD_FINGERPRINT := "Xiaomi/hennessy/hennessy:5.0.2/LRX22G/V9.5.4.0.LHMMIFA:user/release-keys"
+#BUILD_FINGERPRINT := "Xiaomi/hermes/hermes:5.0.2/LRX22G/V9.5.4.0.LHMMIFA:user/release-keys"
 #PRODUCT_BUILD_PROP_OVERRIDES += \
-#    PRIVATE_BUILD_DESC="hennessy-user 5.0.2 LRX22G V9.5.4.0.LHMMIFA release-keys"
+#    PRIVATE_BUILD_DESC="hermes-user 5.0.2 LRX22G V9.5.4.0.LHMMIFA release-keys"
