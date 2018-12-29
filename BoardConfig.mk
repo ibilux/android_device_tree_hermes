@@ -117,3 +117,42 @@ POLICYVERS := 28
 
 # Build kernel without kernel sources
 $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
+
+#
+# Oreo board
+#
+
+# Google codecs
+PRODUCT_COPY_FILES += \
+    frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:vendor/etc/media_codecs_google_audio.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:vendor/etc/media_codecs_google_telephony.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_video_le.xml:vendor/etc/media_codecs_google_video_le.xml
+
+# Audio
+PRODUCT_COPY_FILES += $(LOCAL_PATH)/configs/audio/audio_effects.xml:system/etc/audio_effects.xml
+
+# GPS
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/gps/slp_conf:vendor/etc/slp_conf \
+    $(LOCAL_PATH)/configs/gps/gps.conf:vendor/etc/gps.conf \
+    $(LOCAL_PATH)/configs/gps/agps_profiles_conf2.xml:vendor/etc/agps_profiles_conf2.xml
+
+# Bluetooth
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/bluetooth/auto_pair_devlist.conf:vendor/etc/bluetooth/auto_pair_devlist.conf \
+    $(LOCAL_PATH)/configs/bluetooth/bt_stack.conf.debug:vendor/etc/bluetooth/bt_stack.conf.debug \
+    $(LOCAL_PATH)/configs/bluetooth/bt_did.conf:vendor/etc/bluetooth/bt_did.conf \
+    $(LOCAL_PATH)/configs/bluetooth/bt_stack.conf:vendor/etc/bluetooth/bt_stack.conf \
+    $(LOCAL_PATH)/configs/bluetooth/bt_stack.conf.sqc:vendor/etc/bluetooth/bt_stack.conf.sqc
+
+# Telephony
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/telephony/ecc_list.xml:system/etc/ecc_list.xml \
+    $(LOCAL_PATH)/configs/telephony/spn-conf.xml:system/etc/spn-conf.xml
+
+# Wifi
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/wifi/p2p_supplicant_overlay.conf:vendor/etc/wifi/p2p_supplicant_overlay.conf \
+    $(LOCAL_PATH)/configs/wifi/wpa_supplicant.conf:vendor/etc/wifi/wpa_supplicant.conf \
+    $(LOCAL_PATH)/configs/wifi/wpa_supplicant_overlay.conf:vendor/etc/wifi/wpa_supplicant_overlay.conf
+
