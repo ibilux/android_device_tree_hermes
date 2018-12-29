@@ -1,0 +1,30 @@
+From c6d89066b1faf271626144e26ea57614ebbba999 Mon Sep 17 00:00:00 2001
+From: Ricardo Cerqueira <ricardo@cyngn.com>
+Date: Wed, 16 Mar 2016 20:02:38 +0000
+Subject: [PATCH] CameraClient: MTK Support
+
+Return on MTK hardware, the HAL does this internally and duplicating it
+here causes an infinite loop.
+
+Change-Id: I5bdb925ddb49980747b58dfae4543f812cef4c7d
+---
+ services/camera/libcameraservice/api1/CameraClient.cpp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/services/camera/libcameraservice/api1/CameraClient.cpp b/services/camera/libcameraservice/api1/CameraClient.cpp
+index 0d764b1f4..0df04d71e 100644
+--- a/services/camera/libcameraservice/api1/CameraClient.cpp
++++ b/services/camera/libcameraservice/api1/CameraClient.cpp
+@@ -780,6 +780,9 @@ void CameraClient::disableMsgType(int32_t msgType) {
+ 
+ #define CHECK_MESSAGE_INTERVAL 10 // 10ms
+ bool CameraClient::lockIfMessageWanted(int32_t msgType) {
++#ifdef MTK_HARDWARE
++    return true;
++#endif
+     int sleepCount = 0;
+     while (mMsgEnabled & msgType) {
+         if (mLock.tryLock() == NO_ERROR) {
+-- 
+2.11.0
+
