@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rootdirectory="$PWD"
-dirs="bionic frameworks/av frameworks/base frameworks/native system/core"
+dirs="build/make/core build/soong hardware/interfaces frameworks/av frameworks/base frameworks/native system/core system/media system/netd system/sepolicy packages/apps/FMRadio prebuilts/sdk"
 
 for dir in $dirs ; do
 	cd $rootdirectory
