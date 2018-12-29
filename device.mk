@@ -50,15 +50,18 @@ PRODUCT_PACKAGES += \
     wificond
 
 # Graphic
-PRODUCT_PACKAGES += \
-    libGLES_android \
-    libion
+PRODUCT_PACKAGES += libGLES_android
+    
+# Ion
+PRODUCT_PACKAGES += libion
 
 # Doze
 PRODUCT_PACKAGES += XiaomiDoze
 
 # GPS
-PRODUCT_PACKAGES += libcurl
+PRODUCT_PACKAGES += \
+    libcurl \
+    libnl_2
 
 # DRM
 PRODUCT_PACKAGES += libmockdrmcryptoplugin
