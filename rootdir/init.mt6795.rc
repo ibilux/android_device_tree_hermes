@@ -3,11 +3,11 @@ import init.mt6795.usb.rc
 on early-init
     mount debugfs /sys/kernel/debug /sys/kernel/debug mode=755
 
-    # Turn off backlight on blank
+# Turn off backlight on blank
     write /sys/class/leds/lcd-backlight/trigger "backlight"
 
 on init
-    # Shim libs
+# Shim libs
     export LD_SHIM_LIBS \
         "/system/lib/libc.so|libshim_c.so: \
         /system/lib64/libc.so|libshim_c.so: \
@@ -20,19 +20,19 @@ on init
         /system/lib/libnetutils.so|libshim_netutils.so: \
         /system/lib64/libnetutils.so|libshim_netutils.so"
 
-    # Protect
+# Protect
     mkdir /protect_f 0771 system system
     mkdir /protect_s 0771 system system
 
-    # Kernel logs
+# Kernel logs
     chown root system /dev/kmsg
     chmod 0660 /dev/kmsg
 
-    # OTG
+# OTG
     mkdir /mnt/media_rw/usbotg 0700 media_rw media_rw
     mkdir /storage/usbotg 0700 root root
 
-    # RIL
+# RIL
     chown root system /proc/lk_env
     chmod 0660 /proc/lk_env
 
@@ -40,24 +40,24 @@ on fs
     mount_all /fstab.mt6795
 
 on late-fs
-    # boot time fs tune
+# boot time fs tune
     write /sys/block/mmcblk0/queue/iostats 0
     write /sys/block/mmcblk0/queue/iosched/slice_idle 0
     write /sys/block/mmcblk0/queue/read_ahead_kb 2048
     write /sys/block/mmcblk0/queue/nr_requests 256
 
 on post-fs
-    # Internal storage
+# Internal storage
     symlink /sdcard /storage/sdcard0
 
-    # Protect
+# Protect
     chown system system /protect_f
     chmod 0770 /protect_f
 
     chown system system /protect_s
     chmod 0770 /protect_s
 
-    # Workaround for old nvram and ril blobs
+# Workaround for old nvram and ril blobs
     mkdir /dev/block/platform/mtk-msdc.0/by-name 0755 root system
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/nvram /dev/block/platform/mtk-msdc.0/by-name/nvram
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/proinfo /dev/block/platform/mtk-msdc.0/by-name/proinfo
@@ -66,14 +66,14 @@ on post-fs
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/otp /dev/block/platform/mtk-msdc.0/by-name/otp
 
 on post-fs-data
-    # Create nvram folder for modem
+# Create nvram folder for modem
     mkdir /data/nvram 0771 root system
     mkdir /data/nvram/media 0771 media audio
 
-    # Create for muxd pts device node to operate without root
+# Create for muxd pts device node to operate without root
     mkdir /dev/radio 0770 radio radio
 
-    # GPS
+# GPS
     mkdir /data/gps_mnl 0771 gps system
     mkdir /data/misc/gps 0770 gps gps
     chown gps gps /sys/class/gpsdrv/gps/pwrctl
@@ -82,16 +82,16 @@ on post-fs-data
     chown gps gps /sys/class/gpsdrv/gps/pwrsave
     chown gps gps /sys/class/gpsdrv/gps/status
 
-    # Watch dog kicker
+# Watch dog kicker
     write /proc/wdk "0 20 30"
 
-    # Set ptmx group to non-root
+# Set ptmx group to non-root
     chown root radio /dev/ptmx
 
-    # Set mlock limit to infinate (for m4u operation)
+# Set mlock limit to infinate (for m4u operation)
     setrlimit 8 -1 -1
 
-    # Sensors
+# Sensors
     chmod 0660 /dev/hwmsensor
     chmod 0660 /dev/gyroscope
     chmod 0660 /dev/gsensor
@@ -168,28 +168,28 @@ on post-fs-data
     chown system system /sys/class/misc/m_step_c_misc/step_cbatch
     chown system system /sys/class/misc/m_step_c_misc/step_cflush
 
-    # VideoCodec
+# VideoCodec
     chmod 0666 /dev/Vcodec
     chown system media /dev/Vcodec
 
     chmod 0664 /proc/mcdi/sodi_en
     chown media /proc/mcdi/sodi_en
 
-    # MJC
+# MJC
     chmod 0666 /dev/MJC
     chown system media /dev/MJC
 
-    # Boot mode
+# Boot mode
     chmod 0664 /sys/class/BOOT/BOOT/boot/boot_mode
     chown system system /sys/class/BOOT/BOOT/boot/boot_mode
 
-    # Graphic
+# Graphic
     chmod 0660 /dev/mtk_disp_mgr
     chmod 0660 /dev/sw_sync
     chown system graphics /dev/mtk_disp_mgr
     chown system graphics /dev/sw_sync
 
-    # Autok
+# Autok
     chown root system /sys/autok/debug
     chown root system /sys/autok/param_count
     chown root system /sys/autok/ready
@@ -201,17 +201,17 @@ on post-fs-data
     chown root system /sys/autok/stage1/3/LOG
     chown root system /sys/autok/stage2/3
 
-    # Device info /proc interface
+# Device info /proc interface
     chmod 0440 /dev/devmap
     chown root system /dev/devmap
 
-    # SecMem
+# SecMem
     chown system system /proc/secmem0
     mknod /dev/sec c 182 0
     chmod 0660 /dev/sec
     chown root system /dev/sec
 
-    # Camera
+# Camera
     chmod 0660 /dev/camera-fdvt
     chmod 0660 /dev/camera-isp
     chmod 0660 /dev/kd_camera_flashlight
@@ -229,54 +229,54 @@ on post-fs-data
     chown system camera /dev/CAM_CAL_DRV
     chown system camera /dev/DW9761BAF
 
-    # SMI
+# SMI
     chmod 0666 /dev/MTK_SMI
     chown system media /dev/MTK_SMI
 
     chmod 0666 /sys/bus/platform/drivers/mem_bw_ctrl/concurrency_scenario
     chown system media /sys/bus/platform/drivers/mem_bw_ctrl/concurrency_scenario
 
-    # MTK_SCHED
+# MTK_SCHED
     chmod 0660 /dev/mtk_sched
     chown system media /dev/mtk_sched
 
-    # AGPS
+# AGPS
     mkdir /data/agps_supl 0771 gps system
     restorecon_recursive /data/misc/gps
 
-    # BT/FM/GPS
+# BT/FM/GPS
     chmod 0660 /dev/ttyMT2
     chown system system /dev/ttyMT2
 
-    # Wi-Fi
+# Wi-Fi
     mkdir /data/misc/wifi 0770 wifi wifi
     mkdir /data/misc/wifi/sockets 0770 wifi wifi
     chown wifi wifi /data/misc/wifi
 
-    # Thermal
+# Thermal
     mkdir /data/.tp/ 0775 system system
 
-    # Consumerir
+# Consumerir
     chmod 0660 /dev/consumerir
     chown system system /dev/consumerir
 
-    # Modem related nodes
+# Modem related nodes
     mkdir /data/nvram/md 0770 root system
     mkdir /data/ccci_cfg 0770 system radio
     chown radio radio /sys/kernel/ccci/boot
 
-    # Selinux
+# Selinux
     restorecon /data/ccci_cfg
     restorecon_recursive /protect_f
     restorecon_recursive /protect_s
 
-    # Ignore permission check
+# Ignore permission check
     write /data/ccci_cfg/md_new_ver.1 "flag"
     chmod 0660 /data/ccci_cfg/md_new_ver.1
 
     setprop vold.post_fs_data_done 1
 
-    # Clear the sim switch flag
+# Clear the sim switch flag
     setprop persist.radio.simswitch ""
 
 on charger
@@ -288,10 +288,10 @@ on charger
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 403000
 
 on boot
-    # default is root radio 0440
+# default is root radio 0440
     chmod 0644 /proc/cmdline
 
-    # boot time tune
+# boot time tune
     write /dev/cpuset/top-app/cpus 0-7
     write /dev/cpuset/foreground/cpus 0-7
     write /dev/cpuset/foreground/boost/cpus 0-7
@@ -300,15 +300,15 @@ on boot
 
     write /proc/sys/vm/dirty_writeback_centisecs 300
 
-    # Screen brightness
+# Screen brightness
     chmod 0664 /sys/class/leds/lcd-backlight/brightness
     chown system system /sys/class/leds/lcd-backlight/brightness
 
-    # Buttons backlight
+# Buttons backlight
     chmod 0664 /sys/class/leds/button-backlight/brightness
     chown system system /sys/class/leds/button-backlight/brightness
 
-    # Leds
+# Leds
     chown system system /sys/class/leds/red/brightness
     chown system system /sys/class/leds/red/trigger
     chown system system /sys/class/leds/green/brightness
@@ -324,10 +324,10 @@ on boot
     chown system system /sys/class/leds/violet/brightness
     chown system system /sys/class/leds/violet/trigger
 
-    # RIL
+# RIL
     chown radio system /sys/power/vcorefs/pwr_ctrl
 
-    # Perfservice
+# Perfservice
     chown system system /proc/hps/num_base_perf_serv
     chown system system /proc/hps/num_limit_power_serv
     chown system system /proc/cpufreq/cpufreq_limited_by_hevc
@@ -340,7 +340,7 @@ on boot
     chown system system /d/ged/hal/custom_upbound_gpu_freq
     chmod 0660 /d/ged/hal/custom_upbound_gpu_freq
 
-    # change default prebuilt kernel settings
+# change default prebuilt kernel settings
     write /proc/gpufreq/gpufreq_input_boost 0
     write /proc/hps/input_boost_enabled 0
     write /proc/hps/rush_boost_enabled 0
@@ -366,7 +366,7 @@ on boot
 
     exec /variant_check.sh
 
-    # WMT loader
+# WMT loader
     chown shell system /proc/driver/wmt_aee
     chown shell system /proc/driver/wmt_dbg
 
@@ -565,7 +565,7 @@ on property:ril.muxreport=1
     start muxreport-daemon
 
 on property:sys.boot_completed=1
-    # end boot time tune
+# end boot time tune
     write /dev/cpuset/top-app/cpus 0-7
     write /dev/cpuset/foreground/cpus 0-5
     write /dev/cpuset/foreground/boost/cpus 0-5
@@ -579,14 +579,14 @@ on property:sys.boot_completed=1
 
 ####### JUST SOME ADD ON FROM OLD NOUGAT TREE #######
 ####### CHECK THIS FOR ANY BUGS #####################
-    # Boot info
+# Boot info
     chown system system /proc/bootprof
 
-    # Atmel calibration
+# Atmel calibration
     chown root root /system/etc/init.atmel_ts.sh
     chmod 777 /system/etc/init.atmel_ts.sh
 
-    # BATTERY proc
+# BATTERY proc
     chown radio system /proc/mtk_battery_cmd/current_cmd
     chown radio system /proc/mtk_battery_cmd/discharging_cmd
     chown radio system /proc/mtk_battery_cmd/battery_cmd
@@ -594,24 +594,24 @@ on property:sys.boot_completed=1
     chmod 0664 /proc/mtk_battery_cmd/discharging_cmd
     chmod 0664 /proc/mtk_battery_cmd/battery_cmd
 
-    # BT
+# BT
     chmod 0666 /dev/stpbt
     chown radio bluetooth /dev/stpbt
 
-    # BT relayer
+# BT relayer
     chmod 0666 /dev/ttyGS2
     chown bluetooth radio /dev/ttyGS2
 
-    # ION device
+# ION device
     chmod 0666 /dev/ion
 
-    # Selinux
+# Selinux
     restorecon /dev/wmtWifi
     restorecon /dev/stpwmt
     restorecon /dev/stpbt
     restorecon /dev/stpgps
 
-    # Wi-Fi
+# Wi-Fi
     chmod 0666 /dev/wmtWifi
     chown system system /dev/wmtWifi
 
@@ -632,7 +632,7 @@ on property:sys.boot_completed=1
     chown root radio /sys/devices/platform/mt-pmic/pmic_access
     chmod 0664 /sys/devices/platform/mt-pmic/pmic_access
 
-    # EM CPU Speed Stress
+# EM CPU Speed Stress
     chown root radio /proc/cpu_ss/cpu_ss_debug_mode
     chown root radio /proc/cpu_ss/cpu_ss_mode
     chown root radio /proc/cpu_ss/cpu_ss_period
@@ -642,22 +642,22 @@ on property:sys.boot_completed=1
     chmod 0664 /proc/cpu_ss/cpu_ss_period
     chmod 0664 /proc/cpu_ss/cpu_ss_period_mode
 
-    # EM baseband file
+# EM baseband file
     chown root diag /system/bin/baseband_regdump
     chmod 4750 /system/bin/baseband_regdump
 
-    # FM Radio
+# FM Radio
     chmod 0666 /dev/fm
     chown system media /dev/fm
 
-    # GPS
+# GPS
     chmod 0666 /dev/gps
     chown system gps /dev/gps
 
     chmod 0666 /dev/stpgps
     chown gps gps /dev/stpgps
 
-    # Graphic
+# Graphic
     chmod 0660 /dev/graphics/fb0
     chown system graphics /dev/graphics/fb0
     chmod 0660 /dev/mtkfb_vsync
@@ -665,7 +665,7 @@ on property:sys.boot_completed=1
     chmod 0660 /sys/devices/platform/mtk_disp_mgr.0/rgb
     chown system system /sys/devices/platform/mtk_disp_mgr.0/rgb
 
-    # Perfservice
+# Perfservice
     chown system system /sys/devices/system/cpu/cpufreq/hotplug/cpu_num_base
     chmod 0666 /sys/devices/system/cpu/cpufreq/hotplug/cpu_num_base
     chown system system /proc/hps/num_base_perf_serv
@@ -685,7 +685,7 @@ on property:sys.boot_completed=1
     chown system system /d/ged/hal/custom_upbound_gpu_freq
     chmod 0666 /d/ged/hal/custom_upbound_gpu_freq
 
-    # Modem related nodes
+# Modem related nodes
     chown media audio /dev/ccci_aud
     chown radio radio /dev/ccci_fs
     chown radio radio /dev/ccci_ioctl0
@@ -693,12 +693,12 @@ on property:sys.boot_completed=1
     chown radio radio /dev/ccci_ipc_1220_0
     chown radio radio /dev/ccci_monitor
 
-    # Camera
+# Camera
     #chmod 0660 /dev/OV13853_CAM_CAL_DRV
     #chmod 0660 /dev/BU6429AF
     #chown system camera /dev/OV13853_CAM_CAL_DRV
     #chown system camera /dev/BU6429AF
 
-    # Boot mode (i think it's wrong !)
+# Boot mode (i think it's wrong !)
     chmod 666 /sys/devices/virtual/BOOT/BOOT/boot/boot_mode
     chown system system /sys/devices/virtual/BOOT/BOOT/boot/boot_mode

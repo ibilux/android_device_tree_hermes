@@ -19,7 +19,7 @@ TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a53
 
-#Misc
+# Build old-style zip files (required for ota updater)
 BLOCK_BASED_OTA := false
 
 # Kernel
