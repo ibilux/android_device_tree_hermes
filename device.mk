@@ -61,16 +61,20 @@ PRODUCT_PACKAGES += \
 # Graphic
 PRODUCT_PACKAGES += \
     libGLES_android \
-    libion \
     libgralloc_extra \
     libgui_ext \
     libui_ext
+
+# Ion
+PRODUCT_PACKAGES += libion
 
 # Doze
 #PRODUCT_PACKAGES += XiaomiDoze
 
 # GPS
-PRODUCT_PACKAGES += libcurl
+PRODUCT_PACKAGES += \
+    libcurl \
+    libnl_2
 
 # DRM
 PRODUCT_PACKAGES += libmockdrmcryptoplugin
