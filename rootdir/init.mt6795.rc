@@ -9,16 +9,14 @@ on early-init
 on init
 # Shim libs
     export LD_SHIM_LIBS \
-        "/system/lib/libc.so|libshim_c.so: \
-        /system/lib64/libc.so|libshim_c.so: \
-        /system/lib/libmedia.so|libshim_media.so: \
-        /system/lib64/libmedia.so|libshim_media.so: \
-        /system/lib/libstagefright.so|libshim_stagefright.so: \
-        /system/lib64/libstagefright.so|libshim_stagefright.so: \
-        /system/lib/liblog.so|libshim_xlog.so: \
-        /system/lib64/liblog.so|libshim_xlog.so: \
-        /system/lib/libnetutils.so|libshim_netutils.so: \
-        /system/lib64/libnetutils.so|libshim_netutils.so"
+         "/system/lib/libc.so|libshims_bionic.so:/system/lib64/libc.so|libshims_bionic.so: \
+         /system/lib/liblog.so|libshim_xlog.so:/system/lib64/liblog.so|libshim_xlog.so: \
+         /system/lib/libmedia.so|libshim_snd.so:/system/lib64/libmedia.so|libshim_snd.so: \
+         /system/lib/libnetutils.so|libnetutils.so:/system/lib64/libnetutils.so|libnetutils.so: \
+         /system/lib/liblog.so|libshim_xlog.so:/system/lib64/liblog.so|libshim_xlog.so: \
+         /system/lib/libgui.so|libshim_gui.so:/system/lib64/libgui.so|libshim_gui.so: \
+         /vendor/bin/mtk_agpsd|libshim_agps.so: \
+         /vendor/lib/libMtkOmxVdec.so|libshim_omx.so"
 
 # Protect
     mkdir /protect_f 0771 system system
