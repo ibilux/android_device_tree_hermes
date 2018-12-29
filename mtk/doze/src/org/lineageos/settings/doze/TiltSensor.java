@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015 The CyanogenMod Project
- * Copyright (C) 2017 The LineageOS Project
+ * 		 2017 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package com.cyanogenmod.settings.doze;
+package org.lineageos.settings.doze;
 
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.SystemClock;
 import android.util.Log;
 
 public class TiltSensor implements SensorEventListener {
@@ -30,22 +31,32 @@ public class TiltSensor implements SensorEventListener {
     private static final String TAG = "TiltSensor";
 
     private static final int BATCH_LATENCY_IN_MS = 100;
+    private static final int MIN_PULSE_INTERVAL_MS = 2500;
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
     private Context mContext;
 
+    private long mEntryTimestamp;
+
     public TiltSensor(Context context) {
         mContext = context;
         mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_TILT_DETECTOR);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (DEBUG) Log.d(TAG, "Got sensor event: y = " + event.values[1]);
+        if (DEBUG) Log.d(TAG, "Got sensor event: " + event.values[0]);
 
-        if (event.values[1] > 7.5) {
+        long delta = SystemClock.elapsedRealtime() - mEntryTimestamp;
+        if (delta < MIN_PULSE_INTERVAL_MS) {
+            return;
+        } else {
+            mEntryTimestamp = SystemClock.elapsedRealtime();
+        }
+
+        if (event.values[0] == 1) {
             Utils.launchDozePulse(mContext);
         }
     }
@@ -59,6 +70,7 @@ public class TiltSensor implements SensorEventListener {
         if (DEBUG) Log.d(TAG, "Enabling");
         mSensorManager.registerListener(this, mSensor,
                 SensorManager.SENSOR_DELAY_NORMAL, BATCH_LATENCY_IN_MS * 1000);
+        mEntryTimestamp = SystemClock.elapsedRealtime();
     }
 
     protected void disable() {

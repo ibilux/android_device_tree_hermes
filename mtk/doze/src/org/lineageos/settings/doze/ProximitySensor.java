@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.cyanogenmod.settings.doze;
+package org.lineageos.settings.doze;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -50,7 +50,7 @@ public class ProximitySensor implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        boolean isNear = event.values[0] < 5;
+        boolean isNear = event.values[0] < mSensor.getMaximumRange();
         if (mSawNear && !isNear) {
             if (shouldPulse(event.timestamp)) {
                 Utils.launchDozePulse(mContext);
