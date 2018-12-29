@@ -1,0 +1,39 @@
+From 897791a4eaae4cd5c9659ed52529c8ccf253a278 Mon Sep 17 00:00:00 2001
+From: Mister Oyster <oysterized@gmail.com>
+Date: Sat, 23 Dec 2017 14:57:11 +0100
+Subject: [PATCH] TEMP: TWRP: fix recovery build with f2fs on LOS-15.x tree
+
+---
+ Android.mk          | 2 +-
+ prebuilt/Android.mk | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Android.mk b/Android.mk
+index 11bf006b..c7d4431d 100644
+--- a/Android.mk
++++ b/Android.mk
+@@ -487,7 +487,7 @@ else
+ endif
+ endif
+ ifeq ($(TARGET_USERIMAGES_USE_F2FS), true)
+-ifeq ($(shell test $(CM_PLATFORM_SDK_VERSION) -ge 3; echo $$?),0)
++ifeq ($(shell test $(LINEAGE_PLATFORM_SDK_VERSION) -ge 3; echo $$?),0)
+     LOCAL_ADDITIONAL_DEPENDENCIES += \
+         fsck.f2fs \
+         mkfs.f2fs
+diff --git a/prebuilt/Android.mk b/prebuilt/Android.mk
+index 7b950fce..23c9af5f 100644
+--- a/prebuilt/Android.mk
++++ b/prebuilt/Android.mk
+@@ -226,7 +226,7 @@ ifneq ($(TW_EXCLUDE_ENCRYPTED_BACKUPS), true)
+     RELINK_SOURCE_FILES += $(TARGET_OUT_SHARED_LIBRARIES)/libopenaes.so
+ endif
+ ifeq ($(TARGET_USERIMAGES_USE_F2FS), true)
+-    ifeq ($(shell test $(CM_PLATFORM_SDK_VERSION) -ge 4; echo $$?),0)
++    ifeq ($(shell test $(LINEAGE_PLATFORM_SDK_VERSION) -ge 4; echo $$?),0)
+         RELINK_SOURCE_FILES += $(TARGET_OUT_EXECUTABLES)/mkfs.f2fs
+         RELINK_SOURCE_FILES += $(TARGET_OUT_SHARED_LIBRARIES)/libf2fs.so
+     else ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 26; echo $$?),0)
+-- 
+2.11.0
+
