@@ -40,12 +40,16 @@ PRODUCT_PACKAGES += \
 # Power HAL
 PRODUCT_PACKAGES += power.mt6795
 
-# Wi-Fi
+# Wifi mtk wpa_supp lib
+PRODUCT_PACKAGES += lib_driver_cmd_mt66xx
+
+# Wifi tools
 PRODUCT_PACKAGES += \
-    hostapd \
-    lib_driver_cmd_mt66xx \
     libwpa_client \
-    wpa_supplicant
+    hostapd \
+    wpa_supplicant \
+    wifilogd \
+    wificond
 
 # Graphic
 PRODUCT_PACKAGES += \

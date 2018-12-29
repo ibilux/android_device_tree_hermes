@@ -40,6 +40,12 @@ static int wpa_driver_mediatek_set_country(void *priv, const char *alpha2_arg)
     struct iwreq iwr;
     int ret = -1;
     char buf[11];
+#ifdef MTK_TC1_FEATURE
+    char replace_ifname[IFNAMSIZ+1];
+
+    memset(replace_ifname, 0, IFNAMSIZ+1);
+    os_strlcpy(replace_ifname, "wlan0", os_strlen("wlan0")+1);
+#endif
 
     wpa_printf(MSG_DEBUG, "wpa_driver_nl80211_set_country");
     ioctl_sock = socket(PF_INET, SOCK_DGRAM, 0);
@@ -48,7 +54,18 @@ static int wpa_driver_mediatek_set_country(void *priv, const char *alpha2_arg)
         return -1;
     }
     os_memset(&iwr, 0, sizeof(iwr));
+#ifdef MTK_TC1_FEATURE
+    // convert 'p2p0' -> 'wlan0' :
+    // when iface name is p2p0, COUNTRY driver command doesn't support in MTK solution.
+    if (os_strncmp(drv->first_bss->ifname, "p2p0", os_strlen("p2p0")) == 0) {
+        wpa_printf(MSG_DEBUG, "Change interface name : p2p0->wlan0");
+        os_strlcpy(iwr.ifr_name, replace_ifname, IFNAMSIZ );
+    } else {
+        os_strlcpy(iwr.ifr_name, drv->first_bss->ifname, IFNAMSIZ);
+    }
+#else
     os_strlcpy(iwr.ifr_name, drv->first_bss->ifname, IFNAMSIZ);
+#endif
     sprintf(buf, "COUNTRY %s", alpha2_arg);
     iwr.u.data.pointer = buf;
     iwr.u.data.length = strlen(buf);
@@ -112,7 +129,8 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
 
     if (os_strcmp(bss->ifname, "ap0") == 0) {
         hapd = (struct hostapd_data *)(drv->ctx);
-    } else {
+    }
+    else {
         wpa_s = (struct wpa_supplicant *)(drv->ctx);
         if (wpa_s->conf == NULL) {
             wpa_printf(MSG_ERROR, "%s: wpa_s->conf is NULL. Exiting", __func__);
@@ -138,6 +156,7 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
             ret = 0;
         } else {
             wpa_printf(MSG_INFO, "set country: %s", cmd+8);
+            // ret = wpa_drv_set_country(wpa_s, cmd+8);
             ret = wpa_driver_mediatek_set_country(priv, cmd+8);
             if (ret == 0) {
                 wpa_printf(MSG_DEBUG, "Update channel list after country code changed");
@@ -168,6 +187,7 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
         }
     } else if (os_strncasecmp(cmd, "getpower", 8) == 0) {
         u32 mode;
+        // ret = wpa_driver_wext_driver_get_power(drv, &mode);
         if (ret == 0) {
             ret = snprintf(buf, buf_len, "powermode = %u\n", mode);
             wpa_printf(MSG_DEBUG, "%s", buf);
@@ -176,6 +196,7 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
         }
     } else if (os_strncasecmp(cmd, "get-rts-threshold", 17) == 0) {
         u32 thd;
+        // ret = wpa_driver_wext_driver_get_rts(drv, &thd);
         if (ret == 0) {
             ret = snprintf(buf, buf_len, "rts-threshold = %u\n", thd);
             wpa_printf(MSG_DEBUG, "%s", buf);
@@ -186,8 +207,11 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
         u32 thd = 0;
         char *cp = cmd + 17;
         char *endp;
-        if (*cp != '\0')
+        if (*cp != '\0') {
             thd = (u32)strtol(cp, &endp, 0);
+            // if (endp != cp)
+                // ret = wpa_driver_wext_driver_set_rts(drv, thd);
+        }
     } else if (os_strcasecmp(cmd, "btcoexscan-start") == 0) {
         ret = 0; /* mt5921 linux driver not implement yet */
     } else if (os_strcasecmp(cmd, "btcoexscan-stop") == 0) {
@@ -239,3 +263,4 @@ int wpa_driver_set_ap_wps_p2p_ie(void *priv, const struct wpabuf *beacon,
     wpa_printf(MSG_DEBUG, "iface %s set_ap_wps_p2p_ie, ignored", bss->ifname);
     return 0;
 }
+
