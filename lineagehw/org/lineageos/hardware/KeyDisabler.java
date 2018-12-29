@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.cyanogenmod.hardware;
+package org.lineageos.hardware;
 
 import android.util.Log;
-
 /*
  * Disable capacitive keys
  *
@@ -55,4 +54,5 @@ public class KeyDisabler {
         Log.i("KeyDisabler", "setActive " + state);
         return isActive;
     }
+
 }
