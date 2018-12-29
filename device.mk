@@ -164,3 +164,8 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES := \
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.call_recording.enabled=true \
     persist.call_recording.src=4
+
+# HIDL Manifest
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/manifest.xml:system/vendor/manifest.xml
+
