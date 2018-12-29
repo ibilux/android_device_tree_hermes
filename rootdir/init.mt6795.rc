@@ -259,11 +259,19 @@ on post-fs-data
     mkdir /data/nvram/md 0770 root system
     mkdir /data/ccci_cfg 0770 system radio
     chown radio radio /sys/kernel/ccci/boot
+    mkdir /vendor/nvdata/md  0770 root system
+    mkdir /vendor/nvdata/md3  0770 root system
+    mkdir /data/md3	0770 root system
+#  Build-in Modified - S
+#    insmod /vendor/lib/modules/ccci_plat.ko
+#    insmod /vendor/lib/modules/ccci.ko
+#  Build-in Modified - E
+#   chown radio radio /sys/class/BOOT/BOOT/boot/md
 
 # Selinux
     restorecon /data/ccci_cfg
-    restorecon_recursive /protect_f
-    restorecon_recursive /protect_s
+    restorecon_recursive /vendor/protect_f
+    restorecon_recursive /vendor/protect_s
 
 # Ignore permission check
     write /data/ccci_cfg/md_new_ver.1 "flag"
@@ -420,12 +428,22 @@ service ccci_fsd /vendor/bin/ccci_fsd 0
 
     oneshot
 
+service ccci3_fsd /vendor/bin/ccci_fsd 2
+    user radio
+    group  radio system
+    class core
+    oneshot
 service ccci_mdinit /vendor/bin/ccci_mdinit 0
     class core
     user system
     group radio system
     oneshot
 
+service ccci3_mdinit /vendor/bin/ccci_mdinit 2
+    user system
+    group radio system
+    class core
+    oneshot
 service gsm0710muxd /vendor/bin/gsm0710muxd -s /dev/ttyC0 -f 512 -n 8 -m basic
     class core
     user root
@@ -452,6 +470,10 @@ service ril-daemon-mtk /vendor/bin/mtkrild
     socket rild2 stream 660 root radio
     socket rild3 stream 660 root radio
     socket rild4 stream 660 root radio
+    socket mrild stream 660 root radio
+    socket mrild2 stream 660 root radio
+    socket mrild3 stream 660 root radio
+    socket mrild4 stream 660 root radio
     socket rild-ims stream 660 root radio
     socket rild-debug stream 660 radio system
     socket rild-oem stream 660 radio system
@@ -459,6 +481,14 @@ service ril-daemon-mtk /vendor/bin/mtkrild
     socket rild-mtk-ut-2 stream 660 radio net_bt
     socket rild-mtk-modem stream 660 radio system
     socket rild-atci stream 660 root radio
+    socket rild-mal stream 660 radio system
+    socket rild-mal-at stream 660 radio system
+    socket rild-vsim stream 660 root radio
+    socket rild-vsim2 stream 660 root radio
+    socket rild-vsim3 stream 660 root radio
+    socket rild-mbim stream 660 root radio
+    socket msap_uim_socket1 stream 660 radio radio
+    socket msap_uim_socket2 stream 660 radio radio
     socket sap_uim_socket1 stream 660 bluetooth bluetooth
     socket sap_uim_socket2 stream 660 bluetooth bluetooth
     socket sap_uim_socket3 stream 660 bluetooth bluetooth
@@ -468,12 +498,12 @@ service ril-daemon-mtk /vendor/bin/mtkrild
     disabled
     oneshot
 
-service start_modem /vendor/bin/md_ctrl 1
+service stop_modem /vendor/bin/md_ctrl 0
     class main
     disabled
     oneshot
 
-service stop_modem /vendor/bin/md_ctrl 0
+service start_modem /vendor/bin/md_ctrl 1
     class main
     disabled
     oneshot
@@ -488,6 +518,7 @@ service wmt_loader /vendor/bin/wmt_loader
 service thermal_manager /vendor/bin/thermal_manager
     class main
     user root
+    group system
     oneshot
 
 # Charging
@@ -498,8 +529,8 @@ service charger /charger
 
 service fuelgauged /vendor/bin/fuelgauged
     class main
-    user system
-    group system
+    user root
+    group root
 
 service sbchk /vendor/bin/sbchk
     class core
@@ -523,10 +554,10 @@ service lsm6ds3d /vendor/bin/lsm6ds3d
 service agpsd /vendor/bin/mtk_agpsd
     class main
     socket agpsd stream 660 gps system
-    socket agpsd2 stream 660 system inet
-    socket agpsd3 stream 660 system inet
+    socket agpsd2 stream 660 gps inet
+    socket agpsd3 stream 660 gps inet
     user gps
-    group gps inet sdcard_r sdcard_rw misc radio
+    group gps radio inet sdcard_r sdcard_rw misc system
 
 service wifi2agps /vendor/bin/wifi2agps
     class main
@@ -555,6 +586,9 @@ on property:vold.decrypt=trigger_shutdown_framework
 
 on property:ril.muxreport=1
     start muxreport-daemon
+
+on property:ril.mtk=1
+    start ril-daemon-mtk
 
 on property:sys.boot_completed=1
 # end boot time tune
