@@ -1,0 +1,4 @@
+# device specific syscalls
+clock_gettime: 1
+# ffmpeg needs this
+nanosleep: 1
