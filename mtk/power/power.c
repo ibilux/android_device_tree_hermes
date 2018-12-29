@@ -27,19 +27,24 @@
 #include <hardware/power.h>
 
 #define MT_RUSH_BOOST_PATH "/proc/hps/rush_boost_enabled"
+#define MT_FPS_UPPER_BOUND_PATH "/d/ged/hal/fps_upper_bound"
+
 
 #define POWER_HINT_POWER_SAVING 0x00000101
 #define POWER_HINT_PERFORMANCE_BOOST 0x00000102
 #define POWER_HINT_BALANCE  0x00000103
 
-static void power_init(struct power_module *module) {
-    ALOGI("Mediatek power hal init");
+static void power_init(struct power_module *module)
+{
+    ALOGI("MTK power HAL initing.");
 }
 
-static void power_set_interactive(struct power_module *module, int on) {
+static void power_set_interactive(struct power_module *module, int on)
+{
 }
 
-static void power_fwrite(const char *path, char *s) {
+static void power_fwrite(const char *path, char *s)
+{
     char buf[64];
     int len;
     int fd = open(path, O_WRONLY);
@@ -63,10 +68,13 @@ static void power_hint(struct power_module *module, power_hint_t hint,
                        void *data) {
     switch (hint) {
         case POWER_HINT_LOW_POWER:
-            if (data)
+            if (data) {
+                power_fwrite(MT_FPS_UPPER_BOUND_PATH, "30");
                 power_fwrite(MT_RUSH_BOOST_PATH, "0");
-            else
+            } else {
+                power_fwrite(MT_FPS_UPPER_BOUND_PATH, "60");
                 power_fwrite(MT_RUSH_BOOST_PATH, "1");
+            }
             ALOGI("POWER_HINT_LOW_POWER");
             break;
         case POWER_HINT_VSYNC:
@@ -84,11 +92,50 @@ static void power_hint(struct power_module *module, power_hint_t hint,
     }
 }
 
-void set_feature(struct power_module *module, feature_t feature, int state) {
+void set_feature(struct power_module *module, feature_t feature, int state)
+{
+#ifdef TAP_TO_WAKE_NODE
+    char tmp_str[64];
+    if (feature == POWER_FEATURE_DOUBLE_TAP_TO_WAKE) {
+        snprintf(tmp_str, 64, "%d", state);
+        power_fwrite(TAP_TO_WAKE_NODE, tmp_str);
+        return;
+    }
+#endif
+}
+
+static int power_open(const hw_module_t* module, const char* name,
+                    hw_device_t** device)
+{
+    ALOGD("%s: enter; name=%s", __FUNCTION__, name);
+    int retval = 0; /* 0 is ok; -1 is error */
+
+    if (strcmp(name, POWER_HARDWARE_MODULE_ID) == 0) {
+        power_module_t *dev = (power_module_t *)calloc(1,
+                sizeof(power_module_t));
+
+        if (dev) {
+            /* Common hw_device_t fields */
+            dev->common.tag = HARDWARE_DEVICE_TAG;
+            dev->common.module_api_version = POWER_MODULE_API_VERSION_0_2;
+            dev->common.hal_api_version = HARDWARE_HAL_API_VERSION;
+
+            dev->init = power_init;
+            dev->powerHint = power_hint;
+
+            *device = (hw_device_t*)dev;
+        } else
+            retval = -ENOMEM;
+    } else {
+        retval = -EINVAL;
+    }
+
+    ALOGD("%s: exit %d", __FUNCTION__, retval);
+    return retval;
 }
 
 static struct hw_module_methods_t power_module_methods = {
-    .open = NULL,
+    .open = power_open,
 };
 
 struct power_module HAL_MODULE_INFO_SYM = {
