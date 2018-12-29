@@ -11,6 +11,9 @@ $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-hwui
 # Properties
 include $(LOCAL_PATH)/props.mk
 
+# HIDL (HAL Interface Definition Language)
+-include $(LOCAL_PATH)/hidl.mk
+
 # Overlays
 DEVICE_PACKAGE_OVERLAYS += \
          $(LOCAL_PATH)/overlay \
@@ -161,3 +164,7 @@ PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/etc/media_codecs_google_telephony.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_video_le.xml:system/etc/media_codecs_google_video_le.xml
+
+# HIDL Manifest
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/manifest.xml:system/vendor/manifest.xml

@@ -117,3 +117,10 @@ BOARD_SECCOMP_POLICY := $(LOCAL_PATH)/seccomp
 
 # Build kernel without kernel sources
 $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
+
+#
+# Oreo board
+#
+
+# HIDL Manifest
+DEVICE_MANIFEST_FILE := $(LOCAL_PATH)/configs/manifest.xml
