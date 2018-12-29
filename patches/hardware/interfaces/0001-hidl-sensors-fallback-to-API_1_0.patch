@@ -1,0 +1,36 @@
+From 1e135798ddfb54a51d73e571221385b2d6dbaf11 Mon Sep 17 00:00:00 2001
+From: Mister Oyster <oysterized@gmail.com>
+Date: Tue, 31 Oct 2017 16:46:31 +0100
+Subject: [PATCH] hidl: sensors: fallback to API_1_0
+
+Prevents such crashes :
+10-29 09:05:04.292   885   885 F DEBUG   : Abort message:
+'Sensors.cpp:98] Check failed: getHalDeviceVersion() >= ((((1) & 0xff)
+<< 24) | (((3) & 0xff) << 16) | ((1) & 0xffff))
+(getHalDeviceVersion()=16777217, ((((1) & 0xff) << 24) | (((3) & 0xff)
+<< 16) | ((1) & 0xffff))=16973825) '
+
+Change-Id: I2e4e48d0d606c23860a61ccfcce53f736431f814
+---
+ sensors/1.0/default/Sensors.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/sensors/1.0/default/Sensors.cpp b/sensors/1.0/default/Sensors.cpp
+index 1100dd6a..36a7b4a1 100644
+--- a/sensors/1.0/default/Sensors.cpp
++++ b/sensors/1.0/default/Sensors.cpp
+@@ -95,7 +95,11 @@ Sensors::Sensors()
+ 
+     // Require all the old HAL APIs to be present except for injection, which
+     // is considered optional.
++#ifdef MTK_HARDWARE
++    CHECK_GE(getHalDeviceVersion(), SENSORS_DEVICE_API_VERSION_1_0);
++#else
+     CHECK_GE(getHalDeviceVersion(), SENSORS_DEVICE_API_VERSION_1_3);
++#endif
+ 
+     if (getHalDeviceVersion() == SENSORS_DEVICE_API_VERSION_1_4) {
+         if (mSensorDevice->inject_sensor_data == nullptr) {
+-- 
+2.11.0
+
