@@ -122,6 +122,9 @@ $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
 # Oreo board
 #
 
+# Disable dex pre-opt
+WITH_DEXPREOPT := false
+
 # Google codecs
 PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:vendor/etc/media_codecs_google_audio.xml \
