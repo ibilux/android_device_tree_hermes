@@ -26,12 +26,13 @@ PRODUCT_PACKAGES += Snap
 
 # Shim symbols
 PRODUCT_PACKAGES += \
-    libshim_c \
-    libshim_media \
-    libshim_stagefright \
+    libshim_bionic \
+    libshim_snd \
+    libshim_omx \
     libshim_ui \
-    libshim_wvm \
     libshim_xlog \
+    libshim_gui \
+    libshim_agps \
     libshim_netutils
 
 # Power HAL
