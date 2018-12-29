@@ -1,0 +1,12 @@
+# device specific syscalls
+# extension of services/mediacodec/minijail/seccomp_policy/mediacodec-arm.policy
+sched_getscheduler: 1
+sched_setaffinity: 1
+sched_getparam: 1
+pselect6: 1
+eventfd2: 1
+sendto: 1
+recvfrom: 1
+getsockopt: 1
+# ffmpeg needs this
+getdents64: 1
