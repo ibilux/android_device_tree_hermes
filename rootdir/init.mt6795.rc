@@ -274,8 +274,8 @@ on post-fs-data
 
 # Selinux
     restorecon /data/ccci_cfg
-    restorecon_recursive /vendor/protect_f
-    restorecon_recursive /vendor/protect_s
+    restorecon_recursive /protect_f
+    restorecon_recursive /protect_s
 
 # Ignore permission check
     write /data/ccci_cfg/md_new_ver.1 "flag"
