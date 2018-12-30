@@ -8,7 +8,9 @@ $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-dalv
 $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-hwui-memory.mk)
 
 # Overlays
-DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
+DEVICE_PACKAGE_OVERLAYS += \
+         $(LOCAL_PATH)/overlay \
+         $(LOCAL_PATH)/overlay-lineage
 
 # Display
 TARGET_SCREEN_HEIGHT := 1920
@@ -175,4 +177,3 @@ PRODUCT_COPY_FILES += \
 
 # include from product/*.mk
 -include $(LOCAL_PATH)/product/*.mk
-
