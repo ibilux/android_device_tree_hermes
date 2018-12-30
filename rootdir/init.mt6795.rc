@@ -62,6 +62,7 @@ on post-fs
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/secro /dev/block/platform/mtk-msdc.0/by-name/secro
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/seccfg /dev/block/platform/mtk-msdc.0/by-name/seccfg
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/otp /dev/block/platform/mtk-msdc.0/by-name/otp
+    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name /dev/block/platform/mtk-msdc.0/by-name
 
 on post-fs-data
 # Create nvram folder for modem
@@ -427,27 +428,29 @@ service autokd /vendor/bin/autokd
     group system
 
 service ccci_fsd /vendor/bin/ccci_fsd 0
-    user radio
+    user root
     group radio system
     class core
     oneshot
 
 service ccci3_fsd /vendor/bin/ccci_fsd 2
-    user radio
+    user root
     group  radio system
     class core
     oneshot
+
 service ccci_mdinit /vendor/bin/ccci_mdinit 0
-    user system
+    user root
     group radio system
     class core
     oneshot
 
 service ccci3_mdinit /vendor/bin/ccci_mdinit 2
-    user system
+    user root
     group radio system
     class core
     oneshot
+
 service gsm0710muxd /vendor/bin/gsm0710muxd -s /dev/ttyC0 -f 512 -n 8 -m basic
     class core
     user root
@@ -457,7 +460,7 @@ service gsm0710muxd /vendor/bin/gsm0710muxd -s /dev/ttyC0 -f 512 -n 8 -m basic
 
 service muxreport-daemon /vendor/bin/muxreport
     class core
-    user radio
+    user root
     group radio cache inet misc
     disabled
     oneshot
@@ -465,7 +468,7 @@ service muxreport-daemon /vendor/bin/muxreport
 service nvram_daemon /vendor/bin/nvram_daemon
     class main
     user root
-    group system
+    group root system
     oneshot
 
 service ril-daemon-mtk /vendor/bin/mtkrild
