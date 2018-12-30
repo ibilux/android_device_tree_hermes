@@ -134,6 +134,9 @@ BOARD_USE_SOFT_GATEKEEPER := true
 # Camera flags
 TARGET_USES_NON_TREBLE_CAMERA := true
 
+# 
+SUPPRESS_MTK_AUDIO_BLOB_ERR_MSG := true
+
 # Google codecs
 PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:vendor/etc/media_codecs_google_audio.xml \
