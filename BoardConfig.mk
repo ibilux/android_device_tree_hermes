@@ -134,8 +134,11 @@ BOARD_USE_SOFT_GATEKEEPER := true
 # Camera flags
 TARGET_USES_NON_TREBLE_CAMERA := true
 
-# 
+# suppress MTK audio blob error message flag
 SUPPRESS_MTK_AUDIO_BLOB_ERR_MSG := true
+
+# MTK av blob flag
+LEGACY_MTK_AV_BLOB := true
 
 # Google codecs
 PRODUCT_COPY_FILES += \
