@@ -117,7 +117,7 @@ TARGET_DOES_NOT_SUPPORT_SECCOMP := true
 
 # Sepolicy
 BOARD_SEPOLICY_DIRS += device/xiaomi/hermes/sepolicy
-POLICYVERS := 28
+BOARD_SEPOLICY_VERS := 28.0
 
 # Build kernel without kernel sources
 $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
@@ -197,3 +197,5 @@ DEVICE_MANIFEST_FILE := $(LOCAL_PATH)/configs/manifest.xml
     #LIBSHIM_ATOMIC_SYMBOLS := true
     #LIBSHIM_NETUTILS_SYMBOLS := true
 
+# Treble
+#PRODUCT_SHIPPING_API_LEVEL := 21
