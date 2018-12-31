@@ -235,3 +235,6 @@ PRODUCT_PACKAGES += \
 	fsck.ntfs \
 	mkfs.ntfs \
 	mount.ntfs
+
+# dalvik GC tag
+PRODUCT_TAGS += dalvik.gc.type-precise
