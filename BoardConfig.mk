@@ -50,6 +50,7 @@ TARGET_USERIMAGES_USE_EXT4 := true
 
 # Hardware
 BOARD_USES_MTK_HARDWARE := true
+BOARD_USES_LEGACY_MTK_AV_BLOB := true
 
 # Display
 BOARD_EGL_CFG := $(LOCAL_PATH)/configs/egl.cfg
