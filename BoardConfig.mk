@@ -52,6 +52,9 @@ TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_USES_MTK_HARDWARE := true
 BOARD_USES_LEGACY_MTK_AV_BLOB := true
 
+# disable hardware id match check
+BOARD_DISABLE_HW_ID_MATCH_CHECK := true
+
 # Display
 BOARD_EGL_CFG := $(LOCAL_PATH)/configs/egl.cfg
 TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS := true
