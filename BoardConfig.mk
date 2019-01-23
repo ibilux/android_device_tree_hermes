@@ -118,5 +118,8 @@ BOARD_RECOVERY_SWIPE := true
 BOARD_SEPOLICY_DIRS += device/xiaomi/hermes/sepolicy
 #POLICYVERS := 28
 
+# Seccomp policy
+BOARD_SECCOMP_POLICY += $(LOCAL_PATH)/seccomp
+
 # Build kernel without kernel sources
 $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
