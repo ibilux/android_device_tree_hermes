@@ -115,7 +115,7 @@ BOARD_RECOVERY_SWIPE := true
 #TARGET_DOES_NOT_SUPPORT_SECCOMP := true
 
 # Sepolicy
-BOARD_SEPOLICY_DIRS += device/xiaomi/hermes/sepolicy
+BOARD_SEPOLICY_DIRS += $(LOCAL_PATH)/sepolicy
 #POLICYVERS := 28
 
 # Seccomp policy
