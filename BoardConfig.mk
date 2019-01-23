@@ -112,11 +112,11 @@ BOARD_SUPPRESS_EMMC_WIPE := true
 BOARD_RECOVERY_SWIPE := true
 
 # Seccomp
-TARGET_DOES_NOT_SUPPORT_SECCOMP := true
+#TARGET_DOES_NOT_SUPPORT_SECCOMP := true
 
 # Sepolicy
 BOARD_SEPOLICY_DIRS += device/xiaomi/hermes/sepolicy
-POLICYVERS := 28
+#POLICYVERS := 28
 
 # Build kernel without kernel sources
 $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
