@@ -1,0 +1,2740 @@
+From e65bdb5ad8e4bdb42cada4c534010fed9a62a2a0 Mon Sep 17 00:00:00 2001
+From: Smosia <0stas0@mail.ru>
+Date: Fri, 11 Jan 2019 18:02:24 +0300
+Subject: [PATCH] Add mtk camera profiles
+
+Support mt6795 lolipop blobs
+
+Change-Id: Ib93dbffc363e09066440238b79755fd9356ed058
+---
+ include/media/MediaProfiles.h      |   93 ++++
+ include/media/val_types_public.h   |  572 ++++++++++++++++++++
+ include/media/venc_drv_if_public.h |  895 ++++++++++++++++++++++++++++++++
+ media/libmedia/Android.mk          |    4 +
+ media/libmedia/MediaProfiles.cpp   | 1006 ++++++++++++++++++++++++++++++++++++
+ 5 files changed, 2570 insertions(+)
+ create mode 100644 include/media/val_types_public.h
+ create mode 100644 include/media/venc_drv_if_public.h
+
+diff --git a/include/media/MediaProfiles.h b/include/media/MediaProfiles.h
+index b1c7c15..bf0f90b 100644
+--- a/include/media/MediaProfiles.h
++++ b/include/media/MediaProfiles.h
+@@ -34,7 +34,23 @@ enum camcorder_quality {
+     CAMCORDER_QUALITY_1080P = 6,
+     CAMCORDER_QUALITY_QVGA = 7,
+     CAMCORDER_QUALITY_2160P = 8,
++#ifdef MTK_HARDWARE
++    CAMCORDER_QUALITY_MTK_LOW              = 108,
++    CAMCORDER_QUALITY_MTK_MEDIUM           = 109,
++    CAMCORDER_QUALITY_MTK_HIGH             = 110,
++    CAMCORDER_QUALITY_MTK_FINE             = 111,
++    CAMCORDER_QUALITY_MTK_NIGHT_LOW        = 112,
++    CAMCORDER_QUALITY_MTK_NIGHT_MEDIUM     = 113,
++    CAMCORDER_QUALITY_MTK_NIGHT_HIGH       = 114,
++    CAMCORDER_QUALITY_MTK_NIGHT_FINE       = 115,
++    CAMCORDER_QUALITY_MTK_LIVE_EFFECT      = 116,
++    CAMCORDER_QUALITY_MTK_H264_HIGH        = 117,
++    CAMCORDER_QUALITY_MTK_MPEG4_1080P      = 118,
++    CAMCORDER_QUALITY_MTK_FINE_4K2K        = 123,
++    CAMCORDER_QUALITY_LIST_END             = 123,
++#else//not MTK_HARDWARE
+     CAMCORDER_QUALITY_LIST_END = 8,
++#endif//MTK_HARDWARE
+ 
+     CAMCORDER_QUALITY_TIME_LAPSE_LIST_START = 1000,
+     CAMCORDER_QUALITY_TIME_LAPSE_LOW  = 1000,
+@@ -46,7 +62,23 @@ enum camcorder_quality {
+     CAMCORDER_QUALITY_TIME_LAPSE_1080P = 1006,
+     CAMCORDER_QUALITY_TIME_LAPSE_QVGA = 1007,
+     CAMCORDER_QUALITY_TIME_LAPSE_2160P = 1008,
++#ifdef MTK_HARDWARE
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_LOW              = 1108,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_MEDIUM           = 1109,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_HIGH             = 1110,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE             = 1111,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_LOW        = 1112,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_MEDIUM     = 1113,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_HIGH       = 1114,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_FINE       = 1115,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_LIVE_EFFECT      = 1116,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_H264_HIGH        = 1117,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_MPEG4_1080P      = 1118,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE_4K2K        = 1123,
++    CAMCORDER_QUALITY_TIME_LAPSE_LIST_END             = 1123,
++#else//not MTK_HARDWARE
+     CAMCORDER_QUALITY_TIME_LAPSE_LIST_END = 1008,
++#endif//MTK_HARDWARE
+ 
+     CAMCORDER_QUALITY_HIGH_SPEED_LIST_START = 2000,
+     CAMCORDER_QUALITY_HIGH_SPEED_LOW  = 2000,
+@@ -55,7 +87,24 @@ enum camcorder_quality {
+     CAMCORDER_QUALITY_HIGH_SPEED_720P = 2003,
+     CAMCORDER_QUALITY_HIGH_SPEED_1080P = 2004,
+     CAMCORDER_QUALITY_HIGH_SPEED_2160P = 2005,
++#ifdef MTK_HARDWARE
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_LIST_START    = 2219,
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_LOW           = 2219,
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_MEDIUM        = 2220,
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_HIGH          = 2221,
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_FINE          = 2222,
++
++    CAMCORDER_QUALITY_MTK_VGA_120                   = 2231,
++    CAMCORDER_QUALITY_MTK_720P_60                   = 2240,
++    CAMCORDER_QUALITY_MTK_720P_120                  = 2241,
++    CAMCORDER_QUALITY_MTK_720P_180                  = 2242,
++    CAMCORDER_QUALITY_MTK_1080P_60                  = 2250,
++    CAMCORDER_QUALITY_MTK_1080P_120                 = 2251,
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_LIST_END      = 2251,
++    CAMCORDER_QUALITY_HIGH_SPEED_LIST_END           = 2251,
++#else //not MTK_HARDWARE
+     CAMCORDER_QUALITY_HIGH_SPEED_LIST_END = 2005,
++#endif//MTK_HARDWARE
+ 
+     CAMCORDER_QUALITY_VENDOR_START = 10000,
+     CAMCORDER_QUALITY_VGA = 10000,
+@@ -80,6 +129,17 @@ enum audio_decoder {
+     AUDIO_DECODER_WMA,
+ };
+ 
++#ifdef MTK_HARDWARE
++enum camcorder_mode {
++    CAMCORDER_DAY_MODE   = 1,
++    CAMCORDER_NIGHT_MODE = 2,
++};
++
++enum camera_id {
++    BACK_CAMERA  = 0,
++    FRONT_CAMERA = 1,
++};
++#endif//MTK_HARDWARE
+ 
+ class MediaProfiles
+ {
+@@ -183,6 +243,12 @@ public:
+      */
+     int getStartTimeOffsetMs(int cameraId) const;
+ 
++#ifdef MTK_HARDWARE
++    String8 getCamcorderProfilesCaps(int id = 0);
++    size_t getCamcorderProfilesNum(int id = 0);
++    void dumpProfiles();
++#endif//MTK_HARDWARE
++
+ private:
+     enum {
+         // Camcorder profiles (high/low) and timelapse profiles (high/low)
+@@ -460,6 +526,33 @@ private:
+ 
+     RequiredProfiles *mRequiredProfileRefs;
+     Vector<int>              mCameraIds;
++#ifdef MTK_HARDWARE
++    static video_encoder eHighestCodec;
++    static uint32_t sMaxWdith;
++    static uint32_t sMaxHeight;
++    static uint32_t sMaxBitrate;
++    static uint32_t sMaxFramerate;
++    static uint32_t sMemoryIsLarge;
++    static uint32_t eChipVariant;
++
++    static VideoEncoderCap* createDefaultH264VideoEncoderCap();
++    static VideoEncoderCap* createDefaultHEVCVideoEncoderCap();
++
++    static void createMTKCamcorderProfiles(MediaProfiles *profiles);
++    //divide functions for createMTKCamcorderProfiles
++    static void createStandardCamcorderProfiles(MediaProfiles *profiles);
++    static void createMTKLegacyCamcorderProfiles(MediaProfiles *profiles);
++    static void createMTKSlowMotionCamcorderProfiles(MediaProfiles *profiles);
++
++    static CamcorderProfile *createMTKCamcorderProfile
++        (camcorder_quality quality, camcorder_mode CamMode, camera_id CamId);
++    //new version
++    //divide functions for createMTKCamcorderProfile
++    static VideoCodec *createMTKLowVideoProfile(camcorder_mode CamMode, camera_id CamId);
++    static VideoCodec *createMTKMediumVideoProfile(camcorder_mode CamMode, camera_id CamId);
++    static VideoCodec *createMTKHighVideoProfile(camcorder_mode CamMode, camera_id CamId);
++    static VideoCodec *createMTKFineVideoProfile(camcorder_mode CamMode, camera_id CamId);
++#endif//MTK_HARDWARE
+ };
+ 
+ }; // namespace android
+diff --git a/include/media/val_types_public.h b/include/media/val_types_public.h
+new file mode 100644
+index 0000000..2bd4bfa
+--- /dev/null
++++ b/include/media/val_types_public.h
+@@ -0,0 +1,572 @@
++/**
++ * @file
++ *   val_types_public.h
++ *
++ * @par Project:
++ *   Video
++ *
++ * @par Description:
++ *   Video Abstraction Layer Type Definitions for external use
++ *
++ * @par Author:
++ *   Jackal Chen (mtk02532)
++ *
++ * @par $Revision: #1 $
++ * @par $Modtime:$
++ * @par $Log:$
++ *
++ */
++
++#ifndef _VAL_TYPES_PUBLIC_H_
++#define _VAL_TYPES_PUBLIC_H_
++
++#include <sys/types.h>
++#include <linux/ion.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#define IRQ_STATUS_MAX_NUM 16                   ///< support max 16 return register values when HW done
++
++#define VCODEC_THREAD_MAX_NUM 16                ///< support max 16 multiple thread currently
++
++/*=============================================================================
++ *                              Type definition
++ *===========================================================================*/
++
++typedef void                VAL_VOID_T;         ///< void type definition
++typedef char                VAL_BOOL_T;         ///< char type definition
++typedef char                VAL_CHAR_T;         ///< char type definition
++typedef signed char         VAL_INT8_T;         ///< signed char type definition
++typedef signed short        VAL_INT16_T;        ///< signed short type definition
++typedef signed int         VAL_INT32_T;        ///< signed int type definition
++typedef unsigned char       VAL_UCHAR_T;        ///< unsigned char type definition
++typedef unsigned char       VAL_UINT8_T;        ///< unsigned char type definition
++typedef unsigned short      VAL_UINT16_T;       ///< unsigned short definition
++typedef unsigned int       VAL_UINT32_T;       ///< unsigned int type definition
++typedef unsigned long long  VAL_UINT64_T;       ///< unsigned long long type definition
++typedef long long           VAL_INT64_T;        ///< long long type definition
++typedef unsigned long       VAL_HANDLE_T;       ///< unsigned int (handle) type definition
++typedef signed long         VAL_LONG_T;       ///
++typedef unsigned long       VAL_ULONG_T;       ///
++
++#define VAL_NULL        (0)                     ///< VAL_NULL = 0
++#define VAL_TRUE        (1)                     ///< VAL_TRUE = 1
++#define VAL_FALSE       (0)                     ///< VAL_FALSE = 0
++
++#define VAL_RESOLUTION_CHANGED       (2)        ///< VAL_RESOLUTION_CHANGED = 2, used to video resolution changed during playback
++
++
++/**
++ * @par Enumeration
++ *   VAL_MEM_CODEC_T
++ * @par Description
++ *   This is the item used to memory usage for video encoder or video decoder
++ */
++typedef enum _VAL_MEM_CODEC_T
++{
++    VAL_MEM_CODEC_FOR_VENC = 0,                 ///< Memory for Video Encoder
++    VAL_MEM_CODEC_FOR_VDEC,                     ///< Memory for Video Decoder
++    VAL_MEM_CODEC_MAX = 0xFFFFFFFF              ///< Max Value
++} VAL_MEM_CODEC_T;
++
++
++/**
++ * @par Enumeration
++ *   VAL_CHIP_NAME_T
++ * @par Description
++ *   This is the item for query chip name for HAL interface
++ */
++typedef enum _VAL_CHIP_NAME_T
++{
++    VAL_CHIP_NAME_MT6516 = 0,                   ///< MT6516
++    VAL_CHIP_NAME_MT6571,                       ///< MT6571
++    VAL_CHIP_NAME_MT6572,                       ///< MT6572
++    VAL_CHIP_NAME_MT6573,                       ///< MT6573
++    VAL_CHIP_NAME_MT6575,                       ///< MT6575
++    VAL_CHIP_NAME_MT6577,                       ///< MT6577
++    VAL_CHIP_NAME_MT6589,                       ///< MT6589
++    VAL_CHIP_NAME_MT6582,                       ///< MT6582
++    VAL_CHIP_NAME_MT8135,                       ///< MT8135
++    VAL_CHIP_NAME_ROME,                         ///< ROME
++    VAL_CHIP_NAME_MT6592,                       ///< MT6592
++    VAL_CHIP_NAME_MT8127,                       ///< MT8127
++    VAL_CHIP_NAME_MT6752,                       ///<MT6752
++    VAL_CHIP_NAME_MT6795,                       ///< MT6795
++    VAL_CHIP_NAME_MT6735,                       ///< MT6735,  Denali-1
++    VAL_CHIP_NAME_MT6735M,                      ///< MT6735M, Denali-2
++    VAL_CHIP_NAME_MT6753,                       ///< MT6753,  Denali-3
++    VAL_CHIP_NAME_MAX = 0xFFFFFFFF              ///< Max Value
++} VAL_CHIP_NAME_T;
++
++/**
++ * @par Enumeration
++ *   VAL_CHIP_VARIANT_T
++ * @par Description
++ *   This is the item for query chip variant for HAL interface
++ */
++typedef enum _VAL_CHIP_VARIANT_T
++{
++    VAL_CHIP_VARIANT_MT6571L = 0,       ///< MT6571L
++    VAL_CHIP_VARIANT_MAX = 0xFFFFFFFF  ///< Max Value
++} VAL_CHIP_VARIANT_T;
++
++
++/**
++ * @par Enumeration
++ *   VAL_CHIP_VERSION_T
++ * @par Description
++ *   This is the item used to GetChipVersionAPI()
++ */
++typedef enum _VAL_CHIP_VERSION_T
++{
++    VAL_CHIP_VERSION_HW_CODE = 0,       ///< The data will be "6595" for 6595 series; "6795" for 6795 series, ...
++    VAL_CHIP_VERSION_SW_VER,            ///< The data will be "0000" for E1; "0001" for E2, ...
++    VAL_CHIP_VERSION_MAX = 0xFFFFFFFF   ///< Max Value
++} VAL_CHIP_VERSION_T;
++
++
++/**
++ * @par Enumeration
++ *   VAL_DRIVER_TYPE_T
++ * @par Description
++ *   This is the item for driver type
++ */
++typedef enum _VAL_DRIVER_TYPE_T
++{
++    VAL_DRIVER_TYPE_NONE = 0,                   ///< None
++    VAL_DRIVER_TYPE_MP4_ENC,                    ///< MP4 encoder
++    VAL_DRIVER_TYPE_MP4_DEC,                    ///< MP4 decoder
++    VAL_DRIVER_TYPE_H263_ENC,                   ///< H.263 encoder
++    VAL_DRIVER_TYPE_H263_DEC,                   ///< H.263 decoder
++    VAL_DRIVER_TYPE_H264_ENC,                   ///< H.264 encoder
++    VAL_DRIVER_TYPE_H264_DEC,                   ///< H.264 decoder
++    VAL_DRIVER_TYPE_SORENSON_SPARK_DEC,         ///< Sorenson Spark decoder
++    VAL_DRIVER_TYPE_VC1_SP_DEC,                 ///< VC-1 simple profile decoder
++    VAL_DRIVER_TYPE_RV9_DEC,                    ///< RV9 decoder
++    VAL_DRIVER_TYPE_MP1_MP2_DEC,                ///< MPEG1/2 decoder
++    VAL_DRIVER_TYPE_XVID_DEC,                   ///< Xvid decoder
++    VAL_DRIVER_TYPE_DIVX4_DIVX5_DEC,            ///< Divx4/5 decoder
++    VAL_DRIVER_TYPE_VC1_MP_WMV9_DEC,            ///< VC-1 main profile (WMV9) decoder
++    VAL_DRIVER_TYPE_RV8_DEC,                    ///< RV8 decoder
++    VAL_DRIVER_TYPE_WMV7_DEC,                   ///< WMV7 decoder
++    VAL_DRIVER_TYPE_WMV8_DEC,                   ///< WMV8 decoder
++    VAL_DRIVER_TYPE_AVS_DEC,                    ///< AVS decoder
++    VAL_DRIVER_TYPE_DIVX_3_11_DEC,              ///< Divx3.11 decoder
++    VAL_DRIVER_TYPE_H264_DEC_MAIN,              ///< H.264 main profile decoder (due to different packet) == 20
++    VAL_DRIVER_TYPE_H264_DEC_MAIN_CABAC,        ///< H.264 main profile decoder for CABAC type but packet is the same, just for reload.
++    VAL_DRIVER_TYPE_VP8_DEC,                    ///< VP8 decoder
++    VAL_DRIVER_TYPE_MP2_DEC,                    ///< MPEG2 decoder
++    VAL_DRIVER_TYPE_VP9_DEC,                    ///< VP9 decoder
++    VAL_DRIVER_TYPE_VP8_ENC,                    ///< VP8 encoder
++    VAL_DRIVER_TYPE_VC1_ADV_DEC,                ///< VC1 advance decoder
++    VAL_DRIVER_TYPE_VC1_DEC,                    ///< VC1 simple/main/advance decoder
++    VAL_DRIVER_TYPE_JPEG_ENC,                   ///< JPEG encoder
++    VAL_DRIVER_TYPE_HEVC_ENC,                   ///< HEVC encoder
++    VAL_DRIVER_TYPE_HEVC_DEC,                   ///< HEVC decoder
++    VAL_DRIVER_TYPE_H264_ENC_LIVEPHOTO,         // LivePhoto type
++    VAL_DRIVER_TYPE_MAX = 0xFFFFFFFF            ///< Max driver type
++} VAL_DRIVER_TYPE_T;
++
++
++/**
++ * @par Enumeration
++ *   VAL_RESULT_T
++ * @par Description
++ *   This is the return status of each OSAL function
++ */
++typedef enum _VAL_RESULT_T
++{
++    VAL_RESULT_NO_ERROR = 0,                    ///< The function work successfully
++    VAL_RESULT_INVALID_DRIVER,                  ///< Error due to invalid driver
++    VAL_RESULT_INVALID_PARAMETER,               ///< Error due to invalid parameter
++    VAL_RESULT_INVALID_MEMORY,                  ///< Error due to invalid memory
++    VAL_RESULT_INVALID_ISR,                     ///< Error due to invalid isr request
++    VAL_RESULT_ISR_TIMEOUT,                     ///< Error due to invalid isr request
++    VAL_RESULT_UNKNOWN_ERROR,                   ///< Unknown error
++    VAL_RESULT_RESTARTSYS,                      ///< Restart sys
++    VAL_RESULT_MAX = 0xFFFFFFFF                 ///< Max result
++} VAL_RESULT_T;
++
++
++/**
++ * @par Enumeration
++ *   VAL_MEM_ALIGN_T
++ * @par Description
++ *   This is the item for allocation memory byte alignment
++ */
++typedef enum _VAL_MEM_ALIGN_T
++{
++    VAL_MEM_ALIGN_1 = 1,                        ///< 1 byte alignment
++    VAL_MEM_ALIGN_2 = (1 << 1),                 ///< 2 byte alignment
++    VAL_MEM_ALIGN_4 = (1 << 2),                 ///< 4 byte alignment
++    VAL_MEM_ALIGN_8 = (1 << 3),                 ///< 8 byte alignment
++    VAL_MEM_ALIGN_16 = (1 << 4),                ///< 16 byte alignment
++    VAL_MEM_ALIGN_32 = (1 << 5),                ///< 32 byte alignment
++    VAL_MEM_ALIGN_64 = (1 << 6),                ///< 64 byte alignment
++    VAL_MEM_ALIGN_128 = (1 << 7),               ///< 128 byte alignment
++    VAL_MEM_ALIGN_256 = (1 << 8),               ///< 256 byte alignment
++    VAL_MEM_ALIGN_512 = (1 << 9),               ///< 512 byte alignment
++    VAL_MEM_ALIGN_1K = (1 << 10),               ///< 1K byte alignment
++    VAL_MEM_ALIGN_2K = (1 << 11),               ///< 2K byte alignment
++    VAL_MEM_ALIGN_4K = (1 << 12),               ///< 4K byte alignment
++    VAL_MEM_ALIGN_8K = (1 << 13),               ///< 8K byte alignment
++    VAL_MEM_ALIGN_MAX = 0xFFFFFFFF              ///< Max memory byte alignment
++} VAL_MEM_ALIGN_T;
++
++
++/**
++ * @par Enumeration
++ *   VAL_MEM_TYPE_T
++ * @par Description
++ *   This is the item for allocation memory type
++ */
++typedef enum _VAL_MEM_TYPE_T
++{
++    VAL_MEM_TYPE_FOR_SW = 0,                    ///< External memory foe SW
++    VAL_MEM_TYPE_FOR_HW_CACHEABLE,              ///< External memory for HW Cacheable
++    VAL_MEM_TYPE_FOR_HW_CACHEABLE_MCI,          ///< External memory for HW Cacheable, with MCI port config
++    VAL_MEM_TYPE_FOR_HW_NONCACHEABLE,           ///< External memory for HW Non-Cacheable
++    VAL_MEM_TYPE_MAX = 0xFFFFFFFF               ///< Max memory type
++} VAL_MEM_TYPE_T;
++
++
++/**
++ * @par Structure
++ *  VAL_MEM_ADDR_T
++ * @par Description
++ *  This is a structure for memory address
++ */
++typedef struct _VAL_MEM_ADDR_T
++{
++    VAL_ULONG_T    u4VA;                       ///< [IN/OUT] virtual address
++    VAL_ULONG_T    u4PA;                       ///< [IN/OUT] physical address
++    VAL_ULONG_T    u4Size;                     ///< [IN/OUT] size
++} VAL_MEM_ADDR_T;
++
++
++/**
++ * @par Structure
++ *  VAL_VCODEC_THREAD_ID_T
++ * @par Description
++ *  This is a structure for thread info
++ */
++typedef struct _VAL_VCODEC_THREAD_ID_T
++{
++    VAL_UINT32_T    u4tid1; ///< [IN/OUT] thread id for single core
++    VAL_UINT32_T    u4tid2; ///< [IN/OUT] thread id for single core
++    VAL_UINT32_T    u4VCodecThreadNum;                          ///< [IN/OUT] thread num
++    VAL_UINT32_T    u4VCodecThreadID[VCODEC_THREAD_MAX_NUM];    ///< [IN/OUT] thread id for each thread
++} VAL_VCODEC_THREAD_ID_T;
++
++
++/**
++ * @par Structure
++ *  VAL_VCODEC_CPU_LOADING_INFO_T
++ * @par Description
++ *  This is a structure for CPU loading info
++ */
++typedef struct _VAL_VCODEC_CPU_LOADING_INFO_T
++{
++    unsigned long long  _cpu_idle_time;         ///< [OUT] cpu idle time
++    unsigned long long  _thread_cpu_time;       ///< [OUT] thread cpu time
++    unsigned long long  _sched_clock;           ///< [OUT] sched clock
++    unsigned int        _inst_count;            ///< [OUT] inst count
++} VAL_VCODEC_CPU_LOADING_INFO_T;
++
++
++/**
++ * @par Structure
++ *  VAL_VCODEC_CPU_OPP_LIMIT_T
++ * @par Description
++ *  This is a structure for CPU opp limit info
++ */
++typedef struct _VAL_VCODEC_CPU_OPP_LIMIT_T
++{
++    int limited_freq;                           ///< [IN] limited freq
++    int limited_cpu;                            ///< [IN] limited cpu
++    int enable;                                 ///< [IN] enable
++} VAL_VCODEC_CPU_OPP_LIMIT_T;
++
++
++/**
++ * @par Structure
++ *  VAL_VCODEC_M4U_BUFFER_CONFIG_T
++ * @par Description
++ *  This is a structure for m4u buffer config
++ */
++typedef struct _VAL_VCODEC_M4U_BUFFER_CONFIG_T
++{
++    VAL_MEM_CODEC_T eMemCodec;                  ///< [IN] memory usage for encoder or decoder
++    VAL_UINT32_T    cache_coherent;             ///< [IN] cache coherent or not
++    VAL_UINT32_T    security;                   ///< [IN] security or not
++} VAL_VCODEC_M4U_BUFFER_CONFIG_T;
++
++
++/**
++ * @par Structure
++ *  VAL_MEMORY_T
++ * @par Description
++ *  This is a parameter for memory usaged function
++ */
++typedef struct _VAL_MEMORY_T
++{
++    VAL_MEM_TYPE_T  eMemType;                   ///< [IN]     The allocation memory type
++    VAL_ULONG_T     u4MemSize;                  ///< [IN]     The size of memory allocation
++    VAL_VOID_T      *pvMemVa;                   ///< [IN/OUT] The memory virtual address
++    VAL_VOID_T      *pvMemPa;                   ///< [IN/OUT] The memory physical address
++    VAL_MEM_ALIGN_T eAlignment;                 ///< [IN]     The memory byte alignment setting
++    VAL_VOID_T      *pvAlignMemVa;              ///< [IN/OUT] The align memory virtual address
++    VAL_VOID_T      *pvAlignMemPa;              ///< [IN/OUT] The align memory physical address
++    VAL_MEM_CODEC_T eMemCodec;                  ///< [IN]     The memory codec for VENC or VDEC
++    VAL_UINT32_T    i4IonShareFd;
++    ion_user_handle_t pIonBufhandle;
++    VAL_VOID_T      *pvReserved;                ///< [IN/OUT] The reserved parameter
++    VAL_ULONG_T     u4ReservedSize;             ///< [IN]     The size of reserved parameter structure
++#ifdef __EARLY_PORTING__
++    VAL_VOID_T      *pvReservedPmem;            ///< [IN/OUT] The reserved parameter
++#endif
++} VAL_MEMORY_T;
++
++/**
++ * @par Structure
++ *  VAL_RECORD_SIZE_T
++ * @par Description
++ *  This is a parameter for setting record size to EMI controller
++ */
++typedef struct __VAL_RECORD_SIZE_T
++{
++    VAL_UINT32_T    u4FrmWidth;                 ///< [IN] Frame Width, (may not 16 byte-align)
++    VAL_UINT32_T    u4FrmHeight;                ///< [IN] Frame Height, (may not 16 byte-align)
++    VAL_UINT32_T    u4BufWidth;                 ///< [IN] Buffer Width, (must 16 byte-align)
++    VAL_UINT32_T    u4BufHeight;                ///< [IN] Buffer Height, (must 16 byte-align)
++} VAL_RECORD_SIZE_T;
++
++
++/**
++ * @par Structure
++ *  VAL_ATOI_T
++ * @par Description
++ *  This is a parameter for eVideoAtoi()
++ */
++typedef struct _VAL_ATOI_T
++{
++    VAL_VOID_T      *pvStr;                     ///< [IN]     Null-terminated String to be converted
++    VAL_INT32_T     i4Result;                   ///< [Out]    returns the int value produced by interpreting the input characters as a number.
++    VAL_VOID_T      *pvReserved;                ///< [IN/OUT] The reserved parameter
++    VAL_UINT32_T    u4ReservedSize;             ///< [IN]     The size of reserved parameter structure
++} VAL_ATOI_T;
++
++
++/**
++ * @par Structure
++ *  VAL_STRSTR_T
++ * @par Description
++ *  This is a parameter for eVideoStrStr()
++ */
++typedef struct _VAL_STRSTR_T
++{
++    VAL_VOID_T      *pvStr;                     ///< [IN]     Null-terminated string to search.
++    VAL_VOID_T      *pvStrSearch;               ///< [IN]     Null-terminated string to search for
++    VAL_VOID_T      *pvStrResult;               ///< [Out]    Returns a pointer to the first occurrence of strSearch in str, or NULL if strSearch does not appear in str.
++    VAL_VOID_T      *pvReserved;                ///< [IN/OUT] The reserved parameter
++    VAL_UINT32_T    u4ReservedSize;             ///< [IN]     The size of reserved parameter structure
++} VAL_STRSTR_T;
++
++
++/**
++ * @par Structure
++ *  VAL_ISR_T
++ * @par Description
++ *  This is a parameter for ISR related function
++ */
++typedef struct _VAL_ISR_T
++{
++    VAL_VOID_T          *pvHandle;              ///< [IN]     The video codec driver handle
++    VAL_UINT32_T        u4HandleSize;           ///< [IN]     The size of video codec driver handle
++    VAL_DRIVER_TYPE_T   eDriverType;            ///< [IN]     The driver type
++    VAL_VOID_T          *pvIsrFunction;         ///< [IN]     The isr function
++    VAL_VOID_T          *pvReserved;            ///< [IN/OUT] The reserved parameter
++    VAL_UINT32_T        u4ReservedSize;         ///< [IN]     The size of reserved parameter structure
++    VAL_UINT32_T        u4TimeoutMs;            ///< [IN]     The timeout in ms
++    VAL_UINT32_T        u4IrqStatusNum;                     ///< [IN]     The num of return registers when HW done
++    VAL_UINT32_T        u4IrqStatus[IRQ_STATUS_MAX_NUM];    ///< [IN/OUT] The value of return registers when HW done
++} VAL_ISR_T;
++
++
++/**
++ * @par Structure
++ *  VAL_HW_LOCK_T
++ * @par Description
++ *  This is a parameter for HW Lock/UnLock related function
++ */
++typedef struct _VAL_HW_LOCK_T
++{
++    VAL_VOID_T          *pvHandle;              ///< [IN]     The video codec driver handle
++    VAL_UINT32_T        u4HandleSize;           ///< [IN]     The size of video codec driver handle
++    VAL_VOID_T          *pvLock;                ///< [IN/OUT] The Lock discriptor
++    VAL_UINT32_T        u4TimeoutMs;            ///< [IN]     The timeout ms
++    VAL_VOID_T          *pvReserved;            ///< [IN/OUT] The reserved parameter
++    VAL_UINT32_T        u4ReservedSize;         ///< [IN]     The size of reserved parameter structure
++    VAL_DRIVER_TYPE_T   eDriverType;            ///< [IN]     The driver type
++    VAL_BOOL_T          bSecureInst;            ///< [IN]     True if this is a secure instance // MTK_SEC_VIDEO_PATH_SUPPORT
++} VAL_HW_LOCK_T;
++
++
++/**
++ * @par Structure
++ *  VAL_TIME_T
++ * @par Description
++ *  This is a structure for system time.
++ */
++typedef struct _VAL_TIME_T
++{
++    VAL_UINT32_T    u4Sec;                      ///< [IN/OUT] second
++    VAL_UINT32_T    u4uSec;                     ///< [IN/OUT] micro second
++} VAL_TIME_T;
++
++
++/**
++ * @par Enumeration
++ *   VAL_SET_TYPE_T
++ * @par Description
++ *   This is the item for setting val parameter
++ */
++typedef enum _VAL_SET_TYPE_T
++{
++    VAL_SET_TYPE_CURRENT_SCENARIO,              ///< Set current scenario
++    VAL_SET_TYPE_MCI_PORT_CONFIG,               ///< Set MCI port config
++    VAL_SET_TYPE_M4U_PORT_CONFIG,               ///< Set M4U port config
++    VAL_SET_TYPE_SET_TCM_ON,                    ///< Set TCM on
++    VAL_SET_TYPE_SET_TCM_OFF,                   ///< Set TCM off
++} VAL_SET_TYPE_T;
++
++/**
++ * @par Enumeration
++ *   VAL_GET_TYPE_T
++ * @par Description
++ *   This is the item for getting val parameter
++ */
++typedef enum _VAL_GET_TYPE_T
++{
++    VAL_GET_TYPE_CURRENT_SCENARIO_CNT,          ///< Get current scenario reference count
++    VAL_GET_TYPE_LCM_INFO,                      ///< Get LCM info
++} VAL_GET_TYPE_T;
++
++/**
++ * @par Enumeration
++ *   VAL_VCODEC_SCENARIO
++ * @par Description
++ *   This is the item for get/setting current vcodec scenario
++ */
++typedef enum _VAL_VCODEC_SCENARIO_T
++{
++    VAL_VCODEC_SCENARIO_VENC_1080P  = 0x1,          ///< Camera recording 1080P
++    VAL_VCODEC_SCENARIO_VDEC_1080P  = 0x2,          ///< Playback 1080P
++    VAL_VCODEC_SCENARIO_VENC_WFD    = 0x4,          ///< Wifi-display encoding
++} VAL_VCODEC_SCENARIO_T;
++
++/**
++ * @par Structure
++ *  VAL_CURRENT_SCENARIO_T
++ * @par Description
++ *  This is a structure for set/get current scenario
++ */
++typedef struct _VAL_CURRENT_SCENARIO_T
++{
++    VAL_UINT32_T    u4Scenario;             ///< [IN/OUT] set/get current scenario
++    VAL_UINT32_T    u4OnOff;                ///< [IN] set on/off (increment/decrement) 1 = inc, 0 = dec
++} VAL_CURRENT_SCENARIO_T;
++
++/**
++ * @par Structure
++ *  VAL_CURRENT_SCENARIO_CNT_T
++ * @par Description
++ *  This is a structure for set/get current scenario reference count
++ */
++typedef struct _VAL_CURRENT_SCENARIO_CNT_T
++{
++    VAL_UINT32_T    u4Scenario;             ///< [IN] current scenario type
++    VAL_UINT32_T    u4ScenarioRefCount;     ///< [OUT] current scenario reference count
++} VAL_CURRENT_SCENARIO_CNT_T;
++
++
++/**
++ * @par Structure
++ *  VAL_MCI_PORT_CONFIG_T
++ * @par Description
++ *  This is a structure for set/get MCI port config
++ */
++typedef struct _VAL_MCI_PORT_CONFIG_T
++{
++    VAL_MEM_CODEC_T    eMemCodecType;       ///< [IN] memory type - decoder/encoder
++    VAL_UINT32_T       u4Config;            ///< [IN] set port config
++} VAL_MCI_PORT_CONFIG_T;
++
++/**
++ * @par Structure
++ *  VAL_LCM_INFO_T
++ * @par Description
++ *  This is a structure for get LCM info
++ */
++typedef struct _VAL_LCM_INFO_T
++{
++    VAL_UINT32_T        u4Width;            ///< [OUT] width
++    VAL_UINT32_T        u4Height;           ///< [OUT] height
++} VAL_LCM_INFO_T;
++
++#define VAL_M4U_PORT_ALL       (-1)        ///< VAL_M4UPORT_DEFAULT_ALL = 1, config all M4U port for VENC or VDEC
++
++/**
++ * @par Structure
++ *  VAL_M4U_MPORT_CONFIG_T
++ * @par Description
++ *  This is a parameter for eVideoSetParam() input structure
++ */
++typedef struct _VAL_M4U_MPORT_CONFIG_T
++{
++    VAL_MEM_CODEC_T eMemCodec;                  ///< [IN]  The memory codec for VENC or VDEC
++    VAL_UINT32_T        i4M4UPortID;                     ///< [IN]  config port ID (VAL_M4U_PORT_ALL[-1] = config all VENC or VDEC)
++    VAL_BOOL_T          bSecurity;                           ///< [IN]  config port security
++    VAL_BOOL_T          bVirtuality;                           ///< [IN]  config port virtuality
++} VAL_M4U_MPORT_CONFIG_T;
++
++
++/* for DirectLink Meta Mode + */
++#define META_HANDLE_LIST_MAX    50
++
++typedef struct _VAL_MetaBufInfo
++{
++    void               *pNativeHandle;
++    VAL_ULONG_T         u4VA;
++    VAL_ULONG_T         u4PA;
++    VAL_UINT32_T        u4BuffSize;
++    VAL_BOOL_T          bUseION;
++    int                 fd;
++    ion_user_handle_t   pIonBufhandle;
++} VAL_MetaBufInfo;
++
++typedef struct _VAL_MetaHandleList
++{
++    int                 mIonDevFd;
++    VAL_MetaBufInfo     rMetaBufInfo[META_HANDLE_LIST_MAX];
++    VAL_BOOL_T          fgSeqHdrEncoded;
++} VAL_MetaHandleList;
++
++typedef struct _VAL_BufInfo
++{
++    VAL_UINT8_T         fgIsConfigData;
++    VAL_ULONG_T         u4BSVA;
++    VAL_UINT8_T         fgBSStatus;
++    VAL_UINT8_T         fgIsKeyFrame;
++    VAL_UINT32_T        u4BSSize;
++} VAL_BufInfo;
++/* for DirectLink Meta Mode - */
++
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif // #ifndef _VAL_TYPES_PUBLIC_H_
+diff --git a/include/media/venc_drv_if_public.h b/include/media/venc_drv_if_public.h
+new file mode 100644
+index 0000000..72b16a1
+--- /dev/null
++++ b/include/media/venc_drv_if_public.h
+@@ -0,0 +1,895 @@
++/**
++ * @file
++ *   venc_drv_if_public.h
++ *
++ * @par Project:
++ *   Video
++ *
++ * @par Description:
++ *   Video Encoder Driver Interface for external use
++ *
++ * @par Author:
++ *   Jackal Chen (mtk02532)
++ *
++ * @par $Revision: #1 $
++ * @par $Modtime:$
++ * @par $Log:$
++ *
++ */
++
++#ifndef _VENC_DRV_IF_PUBLIC_H_
++#define _VENC_DRV_IF_PUBLIC_H_
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#include "val_types_public.h"
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_QUERY_TYPE_T
++ * @par Description
++ *   This is the item used for query driver
++ */
++typedef enum __VENC_DRV_QUERY_TYPE_T
++{
++    VENC_DRV_QUERY_TYPE_NONE,                   ///< Default value (not used)
++    VENC_DRV_QUERY_TYPE_VIDEO_FORMAT,           ///< Query the driver capability
++    VENC_DRV_QUERY_TYPE_VIDEO_PROPERTY,         ///< Query the video property
++    VENC_DRV_QUERY_TYPE_VIDEO_PROPERTY_LIST,    ///< Query the video property list
++    VENC_DRV_QUERY_TYPE_PROPERTY,               ///< Get the driver property
++    VENC_DRV_QUERY_TYPE_MCI_SUPPORTED,          ///< Query if the codec support MCI
++    VENC_DRV_QUERY_TYPE_CHIP_NAME,              ///< Query chip name
++    VENC_DRV_QUERY_TYPE_INPUT_BUF_LIMIT,        ///< Query input buffer stride and sliceheight
++    VENC_DRV_QUERY_TYPE_NORMAL_PRIO,            ///< Query if recorder scenario adjust to normal priority, for 6571.
++    VENC_DRV_QUERY_TYPE_VIDEO_CAMCORDER_CAP,    ///< Query spec. for MediaProfile
++    VENC_DRV_QUERY_TYPE_MAX = 0xFFFFFFFF        ///< Max VENC_DRV_QUERY_TYPE_T value
++}
++VENC_DRV_QUERY_TYPE_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_YUV_FORMAT_T
++ * @par Description
++ *   This is the item used for input YUV buffer format
++ */
++typedef enum __VENC_DRV_YUV_FORMAT_T
++{
++    VENC_DRV_YUV_FORMAT_NONE,                   ///< Default value (not used)
++    VENC_DRV_YUV_FORMAT_GRAY,                   ///< GRAY YUV format
++    VENC_DRV_YUV_FORMAT_422,                    ///< 422 YUV format
++    VENC_DRV_YUV_FORMAT_420,                    ///< 420 YUV format
++    VENC_DRV_YUV_FORMAT_411,                    ///< 411 YUV format
++    VENC_DRV_YUV_FORMAT_YV12,                   ///< Android YV12 (16/16/16) YUV format
++    VENC_DRV_YUV_FORMAT_NV12,                   ///< NV12 YUV format
++    VENC_DRV_YUV_FORMAT_NV21,                   ///< NV21 YUV format
++    VENC_DRV_YUV_FORMAT_BLK16X32,               ///< Block 16x32 YUV format
++    VENC_DRV_YUV_FORMAT_BLK64X32,               ///< Block 64x32 YUV format
++    VENC_DRV_YUV_FORMAT_YV12_1688,              ///< YV12 YUV format
++    VENC_DRV_YUV_FORMAT_MAX = 0xFFFFFFFF        ///< Max VENC_DRV_YUV_FORMAT_T value
++} VENC_DRV_YUV_FORMAT_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_VIDEO_FORMAT_T
++ * @par Description
++ *   This is the item used for encode video format
++ */
++typedef enum __VENC_DRV_VIDEO_FORMAT_T
++{
++    VENC_DRV_VIDEO_FORMAT_NONE,                 ///< Default value (not used)
++    VENC_DRV_VIDEO_FORMAT_MPEG4,                ///< MPEG4 video format
++    VENC_DRV_VIDEO_FORMAT_MPEG4_1080P,          ///< MPEG4 video format for 1080p
++    VENC_DRV_VIDEO_FORMAT_MPEG4_SHORT,          ///< MPEG4_SHORT (H.263 baseline profile) video format
++    VENC_DRV_VIDEO_FORMAT_H263,                 ///< H.263 video format
++    VENC_DRV_VIDEO_FORMAT_H264,                 ///< H.264 video format
++    VENC_DRV_VIDEO_FORMAT_H264_VGA,             ///< H.264 video format for VGA
++    VENC_DRV_VIDEO_FORMAT_WMV9,                 ///< WMV9 video format
++    VENC_DRV_VIDEO_FORMAT_VC1,                  ///< VC1 video format
++    VENC_DRV_VIDEO_FORMAT_VP8,                  ///< VP8 video format
++    VENC_DRV_VIDEO_FORMAT_JPEG,                 ///< JPEG picture format
++    VENC_DRV_VIDEO_FORMAT_HEVC,                 ///< HEVC video format
++    VENC_DRV_VIDEO_FORMAT_H264SEC,              ///<: Secure H.264
++    VENC_DRV_VIDEO_FORMAT_MAX = 0xFFFFFFFF      ///< Max VENC_DRV_VIDEO_FORMAT_T value
++} VENC_DRV_VIDEO_FORMAT_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_FRAME_RATE_T
++ * @par Description
++ *   This is the item used for encode frame rate
++ */
++typedef enum __VENC_DRV_FRAME_RATE_T
++{
++    VENC_DRV_FRAME_RATE_NONE    = 0,            ///< Default value (not used)
++    VENC_DRV_FRAME_RATE_7_5     = 75,           ///< 7.5
++    VENC_DRV_FRAME_RATE_10      = 10,           ///< 10
++    VENC_DRV_FRAME_RATE_15      = 15,           ///< 15
++    VENC_DRV_FRAME_RATE_20      = 20,           ///< 20
++    VENC_DRV_FRAME_RATE_24      = 24,           ///< 24
++    VENC_DRV_FRAME_RATE_25      = 25,           ///< 25
++    VENC_DRV_FRAME_RATE_29_97   = 2997,         ///< 29.97
++    VENC_DRV_FRAME_RATE_30      = 30,           ///< 30
++    VENC_DRV_FRAME_RATE_60      = 60,           ///< 60
++    VENC_DRV_FRAME_RATE_120     = 120,          ///< 120
++    VENC_DRV_FRAME_RATE_180     = 180,          ///< 180
++    VENC_DRV_FRAME_RATE_240     = 240,          ///< 240
++    VENC_DRV_FRAME_RATE_480     = 480,          ///< 480
++    VENC_DRV_FRAME_RATE_MAX     = 0xFFFFFFFF    ///< Max VENC_DRV_FRAME_RATE_T value
++} VENC_DRV_FRAME_RATE_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_START_OPT_T
++ * @par Description
++ *   This is the item used for encode frame type
++ */
++typedef enum __VENC_DRV_START_OPT_T
++{
++    VENC_DRV_START_OPT_NONE,                                ///< Default value (not used)
++    VENC_DRV_START_OPT_ENCODE_SEQUENCE_HEADER,              ///< Encode a Sequence header
++    VENC_DRV_START_OPT_ENCODE_SEQUENCE_HEADER_H264_SPS,     ///< Encode a Sequence header H264 SPS
++    VENC_DRV_START_OPT_ENCODE_SEQUENCE_HEADER_H264_PPS,     ///< Encode a Sequence header H264 PPS
++    VENC_DRV_START_OPT_ENCODE_FRAME,                        ///< Encode a frame
++    VENC_DRV_START_OPT_ENCODE_KEY_FRAME,                    ///< Encode a key frame
++    VENC_DRV_START_OPT_ENCODE_FINAL,                        ///< Final encode (Only use to encode final frame)
++    VENC_DRV_START_OPT_ENCODE_DUMMY_NAL,                    ///< Encode a dummy NAL for WFD
++    VENC_DRV_START_OPT_MAX = 0xFFFFFFFF                     ///< Max VENC_DRV_START_OPT_T value
++} VENC_DRV_START_OPT_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_MESSAGE_T
++ * @par Description
++ *   This is the item used for encode frame status
++ */
++typedef enum __VENC_DRV_MESSAGE_T
++{
++    VENC_DRV_MESSAGE_NONE,                      ///< Default value (not used)
++    VENC_DRV_MESSAGE_OK,                        ///< Encode ok
++    VENC_DRV_MESSAGE_ERR,                       ///< Encode error
++    VENC_DRV_MESSAGE_TIMEOUT,                   ///< Encode timeout
++    VENC_DRV_MESSAGE_PARTIAL,                   ///< Encode partial frame (ok means EOF)
++    VENC_DRV_MESSAGE_MAX = 0xFFFFFFFF           ///< Max VENC_DRV_MESSAGE_T value
++} VENC_DRV_MESSAGE_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_H264_VIDEO_PROFILE_T
++ * @par Description
++ *   This is the item used for h.264 encoder profile capability
++ */
++typedef enum __VENC_DRV_H264_VIDEO_PROFILE_T
++{
++    VENC_DRV_H264_VIDEO_PROFILE_UNKNOWN              = 0,           ///< Default value (not used)
++    VENC_DRV_H264_VIDEO_PROFILE_BASELINE             = (1 << 0),    ///< Baseline
++    VENC_DRV_H264_VIDEO_PROFILE_CONSTRAINED_BASELINE = (1 << 1),    ///< Constrained Baseline
++    VENC_DRV_H264_VIDEO_PROFILE_MAIN                 = (1 << 2),    ///< Main
++    VENC_DRV_H264_VIDEO_PROFILE_EXTENDED             = (1 << 3),    ///< Extended
++    VENC_DRV_H264_VIDEO_PROFILE_HIGH                 = (1 << 4),    ///< High
++    VENC_DRV_H264_VIDEO_PROFILE_HIGH_10              = (1 << 5),    ///< High 10
++    VENC_DRV_H264_VIDEO_PROFILE_HIGH422              = (1 << 6),    ///< High 422
++    VENC_DRV_H264_VIDEO_PROFILE_HIGH444              = (1 << 7),    ///< High 444
++    VENC_DRV_H264_VIDEO_PROFILE_HIGH_10_INTRA        = (1 << 8),    ///< High 10 Intra (Amendment 2)
++    VENC_DRV_H264_VIDEO_PROFILE_HIGH422_INTRA        = (1 << 9),    ///< High 422 Intra (Amendment 2)
++    VENC_DRV_H264_VIDEO_PROFILE_HIGH444_INTRA        = (1 << 10),   ///< High 444 Intra (Amendment 2)
++    VENC_DRV_H264_VIDEO_PROFILE_CAVLC444_INTRA       = (1 << 11),   ///< CAVLC 444 Intra (Amendment 2)
++    VENC_DRV_H264_VIDEO_PROFILE_HIGH444_PREDICTIVE   = (1 << 12),   ///< High 444 Predictive (Amendment 2)
++    VENC_DRV_H264_VIDEO_PROFILE_SCALABLE_BASELINE    = (1 << 13),   ///< Scalable Baseline (Amendment 3)
++    VENC_DRV_H264_VIDEO_PROFILE_SCALABLE_HIGH        = (1 << 14),   ///< Scalable High (Amendment 3)
++    VENC_DRV_H264_VIDEO_PROFILE_SCALABLE_HIGH_INTRA  = (1 << 15),   ///< Scalable High Intra (Amendment 3)
++    VENC_DRV_H264_VIDEO_PROFILE_MULTIVIEW_HIGH       = (1 << 16),   ///< Multiview High (Corrigendum 1 (2009))
++    VENC_DRV_H264_VIDEO_PROFILE_MAX                  = 0xFFFFFFFF   ///< Max VENC_DRV_H264_VIDEO_PROFILE_T value
++} VENC_DRV_H264_VIDEO_PROFILE_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_HEVC_VIDEO_PROFILE_T
++ * @par Description
++ *   This is the item used for hevc encoder profile capability
++ */
++typedef enum __VENC_DRV_HEVC_VIDEO_PROFILE_T
++{
++    VENC_DRV_HEVC_VIDEO_PROFILE_UNKNOWN              = 0,           ///< Default value (not used)
++    VENC_DRV_HEVC_VIDEO_PROFILE_BASELINE             = (1 << 0),    ///< Baseline
++    VENC_DRV_HEVC_VIDEO_PROFILE_CONSTRAINED_BASELINE = (1 << 1),    ///< Constrained Baseline
++    VENC_DRV_HEVC_VIDEO_PROFILE_MAIN                 = (1 << 2),    ///< Main
++    VENC_DRV_HEVC_VIDEO_PROFILE_EXTENDED             = (1 << 3),    ///< Extended
++    VENC_DRV_HEVC_VIDEO_PROFILE_HIGH                 = (1 << 4),    ///< High
++    VENC_DRV_HEVC_VIDEO_PROFILE_HIGH_10              = (1 << 5),    ///< High 10
++    VENC_DRV_HEVC_VIDEO_PROFILE_HIGH422              = (1 << 6),    ///< High 422
++    VENC_DRV_HEVC_VIDEO_PROFILE_HIGH444              = (1 << 7),    ///< High 444
++    VENC_DRV_HEVC_VIDEO_PROFILE_HIGH_10_INTRA        = (1 << 8),    ///< High 10 Intra (Amendment 2)
++    VENC_DRV_HEVC_VIDEO_PROFILE_HIGH422_INTRA        = (1 << 9),    ///< High 422 Intra (Amendment 2)
++    VENC_DRV_HEVC_VIDEO_PROFILE_HIGH444_INTRA        = (1 << 10),   ///< High 444 Intra (Amendment 2)
++    VENC_DRV_HEVC_VIDEO_PROFILE_CAVLC444_INTRA       = (1 << 11),   ///< CAVLC 444 Intra (Amendment 2)
++    VENC_DRV_HEVC_VIDEO_PROFILE_HIGH444_PREDICTIVE   = (1 << 12),   ///< High 444 Predictive (Amendment 2)
++    VENC_DRV_HEVC_VIDEO_PROFILE_SCALABLE_BASELINE    = (1 << 13),   ///< Scalable Baseline (Amendment 3)
++    VENC_DRV_HEVC_VIDEO_PROFILE_SCALABLE_HIGH        = (1 << 14),   ///< Scalable High (Amendment 3)
++    VENC_DRV_HEVC_VIDEO_PROFILE_SCALABLE_HIGH_INTRA  = (1 << 15),   ///< Scalable High Intra (Amendment 3)
++    VENC_DRV_HEVC_VIDEO_PROFILE_MULTIVIEW_HIGH       = (1 << 16),   ///< Multiview High (Corrigendum 1 (2009))
++    VENC_DRV_HEVC_VIDEO_PROFILE_MAX                  = 0xFFFFFFFF   ///< Max VENC_DRV_HEVC_VIDEO_PROFILE_T value
++} VENC_DRV_HEVC_VIDEO_PROFILE_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_MPEG_VIDEO_PROFILE_T
++ * @par Description
++ *   This is the item used for h.263, mpeg2, mpeg4 encoder profile capability
++ */
++typedef enum __VENC_DRV_MPEG_VIDEO_PROFILE_T
++{
++    VENC_DRV_MPEG_VIDEO_PROFILE_UNKNOWN               = 0,          ///< Default value (not used)
++    VENC_DRV_MPEG_VIDEO_PROFILE_H263_0                = (1 << 0),   ///< H.263 0
++    VENC_DRV_MPEG_VIDEO_PROFILE_H263_1                = (1 << 1),   ///< H.263 1
++    VENC_DRV_MPEG_VIDEO_PROFILE_H263_2                = (1 << 2),   ///< H.263 2
++    VENC_DRV_MPEG_VIDEO_PROFILE_H263_3                = (1 << 3),   ///< H.263 3
++    VENC_DRV_MPEG_VIDEO_PROFILE_H263_4                = (1 << 4),   ///< H.263 4
++    VENC_DRV_MPEG_VIDEO_PROFILE_H263_5                = (1 << 5),   ///< H.263 5
++    VENC_DRV_MPEG_VIDEO_PROFILE_H263_6                = (1 << 6),   ///< H.263 6
++    VENC_DRV_MPEG_VIDEO_PROFILE_H263_7                = (1 << 7),   ///< H.263 7
++    VENC_DRV_MPEG_VIDEO_PROFILE_H263_8                = (1 << 8),   ///< H.263 8
++    VENC_DRV_MPEG_VIDEO_PROFILE_MPEG2_SIMPLE          = (1 << 9),   ///< MPEG2 Simple
++    VENC_DRV_MPEG_VIDEO_PROFILE_MPEG2_MAIN            = (1 << 10),  ///< MPEG2 Main
++    VENC_DRV_MPEG_VIDEO_PROFILE_MPEG2_SNR             = (1 << 11),  ///< MPEG2 SNR
++    VENC_DRV_MPEG_VIDEO_PROFILE_MPEG2_SPATIAL         = (1 << 12),  ///< MPEG2 Spatial
++    VENC_DRV_MPEG_VIDEO_PROFILE_MPEG2_HIGH            = (1 << 13),  ///< MPEG2 High
++    VENC_DRV_MPEG_VIDEO_PROFILE_MPEG4_SIMPLE          = (1 << 14),  ///< MPEG4 Simple
++    VENC_DRV_MPEG_VIDEO_PROFILE_MPEG4_ADVANCED_SIMPLE = (1 << 15),  ///< MPEG4 Advanced Simple
++    VENC_DRV_MPEG_VIDEO_PROFILE_MAX                   = 0xFFFFFFFF  ///< Max VENC_DRV_MPEG_VIDEO_PROFILE_T value
++} VENC_DRV_MPEG_VIDEO_PROFILE_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_MS_VIDEO_PROFILE_T
++ * @par Description
++ *   This is the item used for MS encoder profile capability
++ */
++typedef enum __VENC_DRV_MS_VIDEO_PROFILE_T
++{
++    VENC_DRV_MS_VIDEO_PROFILE_UNKNOWN      = 0,             ///< Default value (not used)
++    VENC_DRV_MS_VIDEO_PROFILE_VC1_SIMPLE   = (1 << 0),      ///< VC1 Simple
++    VENC_DRV_MS_VIDEO_PROFILE_VC1_MAIN     = (1 << 1),      ///< VC1 Main
++    VENC_DRV_MS_VIDEO_PROFILE_VC1_ADVANCED = (1 << 2),      ///< VC1 Advanced
++    VENC_DRV_MS_VIDEO_PROFILE_WMV9_SIMPLE  = (1 << 3),      ///< WMV9 Simple
++    VENC_DRV_MS_VIDEO_PROFILE_WMV9_MAIN    = (1 << 4),      ///< WMV9 Main
++    VENC_DRV_MS_VIDEO_PROFILE_WMV9_COMPLEX = (1 << 5),      ///< WMV9 Complex
++    VENC_DRV_MS_VIDEO_PROFILE_MAX          = 0xFFFFFFFF     ///< Max VENC_DRV_MS_VIDEO_PROFILE_T value
++} VENC_DRV_MS_VIDEO_PROFILE_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_VIDEO_LEVEL_T
++ * @par Description
++ *   This is the item used for encoder level capability
++ */
++typedef enum __VENC_DRV_VIDEO_LEVEL_T
++{
++    VENC_DRV_VIDEO_LEVEL_UNKNOWN = 0,       ///< Default value (not used)
++    VENC_DRV_VIDEO_LEVEL_0,                 ///< VC1
++    VENC_DRV_VIDEO_LEVEL_1,                 ///< H264, HEVC, VC1, MPEG4
++    VENC_DRV_VIDEO_LEVEL_1b,                ///< H264, HEVC
++    VENC_DRV_VIDEO_LEVEL_1_1,               ///< H264, HEVC
++    VENC_DRV_VIDEO_LEVEL_1_2,               ///< H264, HEVC
++    VENC_DRV_VIDEO_LEVEL_1_3,               ///< H264, HEVC
++    VENC_DRV_VIDEO_LEVEL_2,                 ///< H264, HEVC, VC1, MPEG4
++    VENC_DRV_VIDEO_LEVEL_2_1,               ///< H264, HEVC
++    VENC_DRV_VIDEO_LEVEL_2_2,               ///< H264, HEVC
++    VENC_DRV_VIDEO_LEVEL_3,                 ///< H264, HEVC, VC1, MPEG4
++    VENC_DRV_VIDEO_LEVEL_3_1,               ///< H264, HEVC
++    VENC_DRV_VIDEO_LEVEL_3_2,               ///< H264, HEVC
++    VENC_DRV_VIDEO_LEVEL_4,                 ///< H264, HEVC, VC1
++    VENC_DRV_VIDEO_LEVEL_4_1,               ///< H264, HEVC
++    VENC_DRV_VIDEO_LEVEL_4_2,               ///< H264, HEVC
++    VENC_DRV_VIDEO_LEVEL_5,                 ///< H264, HEVC, HEVC
++    VENC_DRV_VIDEO_LEVEL_5_1,               ///< H264, HEVC
++    VENC_DRV_VIDEO_LEVEL_LOW,               ///< VC1, MPEG2
++    VENC_DRV_VIDEO_LEVEL_MEDIUM,            ///< VC1, MPEG2
++    VENC_DRV_VIDEO_LEVEL_HIGH1440,          ///< MPEG2
++    VENC_DRV_VIDEO_LEVEL_HIGH,              ///< VC1, MPEG2
++    VENC_DRV_VIDEO_LEVEL_MAX = 0xFFFFFFFF   ///< Max VENC_DRV_VIDEO_LEVEL_T value
++} VENC_DRV_VIDEO_LEVEL_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_RESOLUTION_T
++ * @par Description
++ *   This is the item used for encoder resolution capability
++ */
++typedef enum __VENC_DRV_RESOLUTION_T
++{
++    VENC_DRV_RESOLUTION_UNKNOWN = 0,                ///< Default value (not used)
++    VENC_DRV_RESOLUTION_SUPPORT_QCIF,               ///< CIF
++    VENC_DRV_RESOLUTION_SUPPORT_QVGA,               ///< QVGA
++    VENC_DRV_RESOLUTION_SUPPORT_CIF,                ///< QCIF
++    VENC_DRV_RESOLUTION_SUPPORT_HVGA,               ///< HVGA: 480x320
++    VENC_DRV_RESOLUTION_SUPPORT_VGA,                ///< VGA: 640x480
++    VENC_DRV_RESOLUTION_SUPPORT_480I,               ///< 480I
++    VENC_DRV_RESOLUTION_SUPPORT_480P,               ///< 480P
++    VENC_DRV_RESOLUTION_SUPPORT_576I,               ///< 576I
++    VENC_DRV_RESOLUTION_SUPPORT_576P,               ///< 480P
++    VENC_DRV_RESOLUTION_SUPPORT_FWVGA,              ///< FWVGA: 864x480
++    VENC_DRV_RESOLUTION_SUPPORT_720I,               ///< 720I
++    VENC_DRV_RESOLUTION_SUPPORT_720P,               ///< 720P
++    VENC_DRV_RESOLUTION_SUPPORT_1080I,              ///< 1080I
++    VENC_DRV_RESOLUTION_SUPPORT_1080P,              ///< 1080P
++    VENC_DRV_RESOLUTION_SUPPORT_2160P,              ///< 2160P
++    VENC_DRV_RESOLUTION_SUPPORT_MAX = 0xFFFFFFFF    ///< Max VENC_DRV_RESOLUTION_T value
++} VENC_DRV_RESOLUTION_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_SET_TYPE_T
++ * @par Description
++ *   This is the input parameter for eVEncDrvSetParam()
++ */
++typedef enum __VENC_DRV_SET_TYPE_T
++{
++    VENC_DRV_SET_TYPE_UNKONW = 0,           ///< Default value (not used)
++    VENC_DRV_SET_TYPE_RST,                  ///< Set reset
++    VENC_DRV_SET_TYPE_CB,                   ///< Set callback function
++    VENC_DRV_SET_TYPE_PARAM_RC,             ///< Set rate control parameter
++    VENC_DRV_SET_TYPE_PARAM_ME,             ///< Set motion estimation parameter
++    VENC_DRV_SET_TYPE_PARAM_EIS,            ///< Set EIS parameter
++    VENC_DRV_SET_TYPE_PARAM_ENC,            ///< Set encoder parameters such as I-frame period, etc.
++    VENC_DRV_SET_TYPE_STATISTIC_ON,         ///< Enable statistic function
++    VENC_DRV_SET_TYPE_STATISTIC_OFF,        ///< Disable statistic function
++    VENC_DRV_SET_TYPE_SET_OMX_TIDS,         ///< Set OMX thread IDs
++    VENC_DRV_SET_TYPE_MPEG4_SHORT,          ///< Set MPEG4 short header mode
++    VENC_DRV_SET_TYPE_FORCE_INTRA_ON,       ///< Set Force Intra Frame on
++    VENC_DRV_SET_TYPE_FORCE_INTRA_OFF,      ///< Set Force Intra Frame off
++    VENC_DRV_SET_TYPE_TIME_LAPSE,           ///< Set time lapse
++    VENC_DRV_SET_TYPE_ALLOC_WORK_BUF,       ///< Set to alloc working buffer
++    VENC_DRV_SET_TYPE_DUMP_WORK_BUF,        ///< Set to dump working buffer
++    VENC_DRV_SET_TYPE_FREE_WORK_BUF,        ///< Set to free working buffer
++    VENC_DRV_SET_TYPE_ADJUST_BITRATE,       ///< Set to adjust bitrate
++    VENC_DRV_SET_TYPE_I_FRAME_INTERVAL,     ///< Set I Frame interval
++    VENC_DRV_SET_TYPE_WFD_MODE,             ///< Set Wifi-Display Mode
++    VENC_DRV_SET_TYPE_RECORD_SIZE,          ///< Ser record size
++    VENC_DRV_SET_TYPE_USE_MCI_BUF,          ///< Set to use MCI buffer
++    VENC_DRV_SET_TYPE_ADJUST_FRAMERATE,     ///< Set frame rate
++    VENC_DRV_SET_TYPE_INIT_QP,              ///< Set init QP
++    VENC_DRV_SET_TYPE_SKIP_FRAME,           ///< Set skip one frame
++    VENC_DRV_SET_TYPE_SCENARIO,             ///< Set VENC Scenario
++    VENC_DRV_SET_TYPE_PREPEND_HEADER,       ///< Set prepend SPS/PPS before IDR
++    VENC_DRV_SET_TYPE_SLOW_MOTION_ENCODE,       ///< Set to Slow Motion Video Recording for header or frame
++    VENC_DRV_SET_TYPE_SLOW_MOTION_POST_PROC,    ///< Set to Slow Motion Video Recording for encoded bs with post processing
++    VENC_DRV_SET_TYPE_SLOW_MOTION_LOCK_HW,      ///< Set to Slow Motion Video Recording for Lock HW
++    VENC_DRV_SET_TYPE_SLOW_MOTION_UNLOCK_HW,    ///< Set to Slow Motion Video Recording for UnLock HW
++    VENC_DRV_SET_TYPE_NONREFP,              ///< Set Enable/Disable Non reference P frame
++    VENC_DRV_SET_TYPE_MAX = 0xFFFFFFFF      ///< Max VENC_DRV_SET_TYPE_T value
++} VENC_DRV_SET_TYPE_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_GET_TYPE_T
++ * @par Description
++ *   This is the input parameter for eVEncDrvGetParam()
++ */
++typedef enum __VENC_DRV_GET_TYPE_T
++{
++    VENC_DRV_GET_TYPE_UNKONW = 0,               ///< Default value (not used)
++    VENC_DRV_GET_TYPE_PARAM_RC,                 ///< Get rate control parameter
++    VENC_DRV_GET_TYPE_PARAM_ME,                 ///< Get motion estimation parameter
++    VENC_DRV_GET_TYPE_PARAM_EIS,                ///< Get EIS parameter
++    VENC_DRV_GET_TYPE_PARAM_ENC,                ///< Get encoder parameters such as I-frame period, etc.
++    VENC_DRV_GET_TYPE_STATISTIC,                ///< Get statistic.
++    VENC_DRV_GET_TYPE_GET_CPU_LOADING_INFO,     ///< query the cpu loading info from kernel driver
++    VENC_DRV_GET_TYPE_GET_YUV_FORMAT,           ///< Get YUV format
++    VENC_DRV_GET_TYPE_GET_CODEC_TIDS,
++    /* for DirectLink Meta Mode + */
++    VENC_DRV_GET_TYPE_ALLOC_META_HANDLE_LIST,           ///< Alloc a handle to store meta handle list
++    VENC_DRV_GET_TYPE_GET_BUF_INFO_FROM_META_HANDLE,    ///< Get buffer virtual address from meta buffer handle
++    VENC_DRV_GET_TYPE_FREE_META_HANDLE_LIST,            ///< free a handle allocated from VENC_DRV_GET_TYPE_ALLOC_META_HANDLE_LIST
++    /* for DirectLink Meta Mode - */
++    VENC_DRV_GET_TYPE_MAX = 0xFFFFFFFF          ///< Max VENC_DRV_GET_TYPE_MAX value
++} VENC_DRV_GET_TYPE_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_MRESULT_T
++ * @par Description
++ *   This is the return value for eVEncDrvXXX()
++ */
++typedef enum __VENC_DRV_MRESULT_T
++{
++    VENC_DRV_MRESULT_OK = 0,                    ///< Return Success
++    VENC_DRV_MRESULT_FAIL,                      ///< Return Fail
++    VENC_DRV_MRESULT_MAX = 0x0FFFFFFF           ///< Max VENC_DRV_MRESULT_T value
++} VENC_DRV_MRESULT_T;
++
++
++/**
++ * @par Enumeration
++ *   VENC_DRV_SCENARIO_T
++ * @par Description
++ *   This is the scenario for VENC scenario
++ */
++typedef enum __VENC_DRV_SCENARIO_T
++{
++    VENC_DRV_SCENARIO_CAMERA_REC            = 1,        ///< Camera recording
++    VENC_DRV_SCENARIO_LIVEPHOTO_CAPTURE     = (1 << 1), ///< LivePhoto recording
++    VENC_DRV_SCENARIO_LIVEPHOTO_EFFECT      = (1 << 2), ///< LivePhoto effect transcoding
++    VENC_DRV_SCENARIO_CAMERA_REC_SLOW_MOTION = (1 << 3), ///< Camera recording with slow motion
++    VENC_DRV_SCENARIO_SCREEN_REC            = (1 << 4), ///< Screen recording
++} VENC_DRV_SCENARIO_T;
++
++
++/**
++ * @par Structure
++ *   VENC_DRV_QUERY_VIDEO_FORMAT_T
++ * @par Description
++ *   This is a input parameter for eVEncDrvQueryCapability()
++ */
++typedef struct __VENC_DRV_QUERY_VIDEO_FORMAT_T
++{
++    VENC_DRV_VIDEO_FORMAT_T eVideoFormat;       ///< [OUT] video format capability
++    VAL_UINT32_T            u4Profile;          ///< [OUT] video profile capability (VENC_DRV_H264_VIDEO_PROFILE_T, VENC_DRV_MPEG_VIDEO_PROFILE_T, VENC_DRV_MS_VIDEO_PROFILE_T)
++    VENC_DRV_VIDEO_LEVEL_T  eLevel;             ///< [OUT] video level capability
++    VENC_DRV_RESOLUTION_T   eResolution;        ///< [OUT] video resolution capability
++    VAL_UINT32_T            u4Width;            ///< [OUT] video width capability
++    VAL_UINT32_T            u4Height;           ///< [OUT] video height capability
++    VAL_UINT32_T            u4Bitrate;          ///< [OUT] video bitrate capability
++    VAL_UINT32_T            u4FrameRate;        ///< [OUT] video FrameRate capability, 15, 30,...
++} VENC_DRV_QUERY_VIDEO_FORMAT_T;
++
++/**
++ * @par Structure
++ *   P_VENC_DRV_QUERY_VIDEO_FORMAT_T
++ * @par Description
++ *   This is the pointer of VENC_DRV_QUERY_VIDEO_FORMAT_T
++ */
++typedef VENC_DRV_QUERY_VIDEO_FORMAT_T   *P_VENC_DRV_QUERY_VIDEO_FORMAT_T;
++
++
++/**
++ * @par Structure
++ *   VENC_DRV_QUERY_INPUT_BUF_LIMIT
++ * @par Description
++ *   This is a input parameter for eVEncDrvQueryCapability()
++ */
++typedef struct __VENC_DRV_QUERY_INPUT_BUF_LIMIT
++{
++    VENC_DRV_VIDEO_FORMAT_T eVideoFormat;       ///< [IN]  video format
++    VAL_UINT32_T            u4Width;            ///< [IN]  video width
++    VAL_UINT32_T            u4Height;           ///< [IN]  video height
++    VAL_UINT32_T            u4Stride;           ///< [OUT] video stride
++    VAL_UINT32_T            u4SliceHeight;      ///< [OUT] video sliceheight
++    VENC_DRV_SCENARIO_T     eScenario;          ///< [IN]  venc scenario
++} VENC_DRV_QUERY_INPUT_BUF_LIMIT;
++
++
++/**
++ * @par Structure
++ *   VENC_DRV_PARAM_ENC_T
++ * @par Description
++ *   This is the encoder settings and used as input or output parameter for eVEncDrvSetParam() or eVEncDrvGetParam()
++ */
++typedef struct __VENC_DRV_PARAM_ENC_T
++{
++    VENC_DRV_YUV_FORMAT_T   eVEncFormat;        ///< [IN/OUT] YUV format
++    VAL_UINT32_T            u4Profile;          ///< [IN/OUT] Profile
++    VAL_UINT32_T            u4Level;            ///< [IN/OUT] Level
++    VAL_UINT32_T            u4Width;            ///< [IN/OUT] Image Width
++    VAL_UINT32_T            u4Height;           ///< [IN/OUT] Image Height
++    VAL_UINT32_T            u4BufWidth;         ///< [IN/OUT] Buffer Width
++    VAL_UINT32_T            u4BufHeight;        ///< [IN/OUT] Buffer Heigh
++    VAL_UINT32_T            u4NumPFrm;          ///< [IN/OUT] The number of P frame between two I frame.
++    VAL_UINT32_T            u4NumBFrm;          ///< [IN/OUT] The number of B frame between two reference frame.
++    VENC_DRV_FRAME_RATE_T   eFrameRate;         ///< [IN/OUT] Frame rate
++    VAL_BOOL_T              fgInterlace;        ///< [IN/OUT] Interlace coding.
++    VAL_VOID_T              *pvExtraEnc;        ///< [IN/OUT] For VENC_DRV_PARAM_ENC_H264_T or ...
++    VAL_MEMORY_T            rExtraEncMem;       ///< [IN/OUT] Extra Encoder Memory Info
++    VAL_BOOL_T              fgUseMCI;           ///< [IN/OUT] Use MCI
++    VAL_BOOL_T              fgMultiSlice;       ///< [IN/OUT] Is multi-slice bitstream ?
++} VENC_DRV_PARAM_ENC_T;
++
++/**
++ * @par Structure
++ *   P_VENC_DRV_PARAM_ENC_T
++ * @par Description
++ *   This is the pointer of VENC_DRV_PARAM_ENC_T
++ */
++typedef VENC_DRV_PARAM_ENC_T    *P_VENC_DRV_PARAM_ENC_T;
++
++
++/**
++ * @par Structure
++ *   VENC_DRV_PARAM_ENC_EXTRA_T
++ * @par Description
++ *   This is the encoder settings and used as input or output parameter for eVEncDrvSetParam() or eVEncDrvGetParam()
++ */
++typedef struct __VENC_DRV_PARAM_ENC_EXTRA_T
++{
++    VAL_UINT32_T            u4IntraFrameRate;   ///< [IN/OUT] Intra frame rate
++    VAL_UINT32_T            u4BitRate;          ///< [IN/OUT] BitRate kbps
++    VAL_UINT32_T            u4FrameRateQ16;     ///< [IN/OUT] Frame rate in Q16 format
++    VAL_UINT32_T            u4UseMBAFF;         ///< [IN/OUT] Use MBAFF
++} VENC_DRV_PARAM_ENC_EXTRA_T;
++
++/**
++ * @par Structure
++ *   P_VENC_DRV_PARAM_ENC_EXTRA_T
++ * @par Description
++ *   This is the pointer of VENC_DRV_PARAM_ENC_EXTRA_T
++ */
++typedef VENC_DRV_PARAM_ENC_EXTRA_T     *pVENC_DRV_PARAM_ENC_EXTRA_T;
++
++
++#define VENC_DRV_VDO_PROP_LIST_MAX      (64)
++
++/**
++ * @par Structure
++ *   VENC_DRV_VIDEO_PROPERTY_T
++ * @par Description
++ *   This is used to get the "target bitrate" according to "resolution and frame rate"
++ */
++typedef struct __VENC_DRV_VIDEO_PROPERTY_T
++{
++    VENC_DRV_VIDEO_FORMAT_T     eVideoFormat;
++    VAL_UINT32_T    u4Width;
++    VAL_UINT32_T    u4Height;
++    VAL_UINT32_T    u4FrameRate;
++    VAL_UINT32_T    u4BitRate;    // used for query table
++    VAL_BOOL_T      fgPropIsValid;
++} VENC_DRV_VIDEO_PROPERTY_T;
++
++/**
++ * @par Structure
++ *   P_VENC_DRV_VIDEO_PROPERTY_T
++ * @par Description
++ *   This is the pointer of VENC_DRV_VIDEO_PROPERTY_T
++ */
++typedef VENC_DRV_VIDEO_PROPERTY_T     *P_VENC_DRV_VIDEO_PROPERTY_T;
++
++
++/**
++ * @par Structure
++ *   VENC_DRV_TIMESTAMP_T
++ * @par Description
++ *   This is timestamp information and used as items for VENC_DRV_PARAM_FRM_BUF_T and VENC_DRV_PARAM_BS_BUF_T
++ */
++typedef struct __VENC_DRV_TIMESTAMP_T
++{
++    VAL_UINT32_T    u4TimeStamp[2];     ///< [IN] Timestamp information
++} VENC_DRV_TIMESTAMP_T;
++
++/**
++ * @par Structure
++ *   P_VENC_DRV_TIMESTAMP_T
++ * @par Description
++ *   This is the pointer of VENC_DRV_TIMESTAMP_T
++ */
++typedef VENC_DRV_TIMESTAMP_T     *P_VENC_DRV_TIMESTAMP_T;
++
++
++/**
++ * @par Structure
++ *   VENC_DRV_EIS_INPUT_T
++ * @par Description
++ *   This is EIS information and used as items for VENC_DRV_PARAM_FRM_BUF_T
++ */
++typedef struct __VENC_DRV_EIS_INPUT_T
++{
++    VAL_UINT32_T    u4X;    ///< [IN] Start coordination X
++    VAL_UINT32_T    u4Y;    ///< [IN] Start coordination Y
++} VENC_DRV_EIS_INPUT_T;
++
++/**
++ * @par Structure
++ *   P_VENC_DRV_EIS_INPUT_T
++ * @par Description
++ *   This is the pointer of VENC_DRV_EIS_INPUT_T
++ */
++typedef VENC_DRV_EIS_INPUT_T     *P_VENC_DRV_EIS_INPUT_T;
++
++
++/**
++ * @par Structure
++ *   VENC_DRV_PARAM_FRM_BUF_T
++ * @par Description
++ *   This is frame buffer information and used as input parameter for eVEncDrvEncode()
++ */
++typedef struct __VENC_DRV_PARAM_FRM_BUF_T
++{
++    VAL_MEM_ADDR_T          rFrmBufAddr;        ///< [IN] Frame buffer address
++    VAL_MEM_ADDR_T          rCoarseAddr;        ///< [IN] Coarse address
++    VENC_DRV_TIMESTAMP_T    rTimeStamp;         ///< [IN] Timestamp information
++    VENC_DRV_EIS_INPUT_T    rEISInput;          ///< [IN] EIS information
++    VAL_UINT32_T            rSecMemHandle;      ///< [IN/OUT] security memory handle for SVP
++} VENC_DRV_PARAM_FRM_BUF_T;
++
++/**
++ * @par Structure
++ *   P_VENC_DRV_PARAM_FRM_BUF_T
++ * @par Description
++ *   This is the pointer of VENC_DRV_PARAM_FRM_BUF_T
++ */
++typedef VENC_DRV_PARAM_FRM_BUF_T     *P_VENC_DRV_PARAM_FRM_BUF_T;
++
++
++/**
++ * @par Structure
++ *   VENC_DRV_PARAM_BS_BUF_T
++ * @par Description
++ *   This is bitstream buffer information and used as input parameter for\n
++ *   eVEncDrvEncode()\n
++ */
++typedef struct __VENC_DRV_PARAM_BS_BUF_T
++{
++    VAL_MEM_ADDR_T          rBSAddr;        ///< [IN] Bitstream buffer address
++    VAL_ULONG_T             u4BSStartVA;    ///< [IN] Bitstream fill start address
++    VAL_ULONG_T             u4BSSize;       ///< [IN] Bitstream size (filled bitstream in bytes)
++    VENC_DRV_TIMESTAMP_T    rTimeStamp;     ///< [IN] Time stamp information
++    VAL_UINT32_T            rSecMemHandle;  ///< [IN/OUT] security memory handle for SVP
++} VENC_DRV_PARAM_BS_BUF_T;
++
++/**
++ * @par Structure
++ *   P_VENC_DRV_PARAM_BS_BUF_T
++ * @par Description
++ *   This is the pointer of VENC_DRV_PARAM_BS_BUF_T
++ */
++typedef VENC_DRV_PARAM_BS_BUF_T     *P_VENC_DRV_PARAM_BS_BUF_T;
++
++
++/**
++ * @par Structure
++ *   VENC_DRV_DONE_RESULT_T
++ * @par Description
++ *   This is callback and return information and used as output parameter for eVEncDrvEncode()
++ */
++typedef struct __VENC_DRV_DONE_RESULT_T
++{
++    VENC_DRV_MESSAGE_T          eMessage;           ///< [OUT] Message, such as success or error code
++    P_VENC_DRV_PARAM_BS_BUF_T   prBSBuf;            ///< [OUT] Bitstream information
++    P_VENC_DRV_PARAM_FRM_BUF_T  prFrmBuf;           ///< [OUT] Input frame buffer information. if address is null, don't use this buffer, else reuse
++    VAL_BOOL_T                  fgIsKeyFrm;         ///< [OUT] output is key frame or not
++    VAL_UINT32_T                u4HWEncodeTime;     ///< [OUT] HW encode Time
++} VENC_DRV_DONE_RESULT_T;
++
++/**
++ * @par Structure
++ *   P_VENC_DRV_DONE_RESULT_T
++ * @par Description
++ *   This is the pointer of VENC_DRV_DONE_RESULT_T
++ */
++typedef VENC_DRV_DONE_RESULT_T     *P_VENC_DRV_DONE_RESULT_T;
++
++
++/**
++ * @par Structure
++ *   VENC_DRV_PROPERTY_T
++ * @par Description
++ *   This is property information and used as output parameter for eVEncDrvQueryCapability()
++ */
++typedef struct __VENC_DRV_PROPERTY_T
++{
++    VAL_UINT32_T    u4BufAlign;             ///< [OUT] Buffer alignment requirement
++    VAL_UINT32_T    u4BufUnitSize;          ///< [OUT] Buffer unit size is N bytes (e.g., 8, 16, or 64 bytes per unit.)
++    VAL_UINT32_T    u4ExtraBufSize;         ///< [OUT] Extra buffer size in initial stage
++    VAL_BOOL_T      fgOutputRingBuf;        ///< [OUT] Output is ring buffer
++    VAL_BOOL_T      fgCoarseMESupport;      ///< [OUT] Support ME coarse search
++    VAL_BOOL_T      fgEISSupport;           ///< [OUT] Support EIS
++} VENC_DRV_PROPERTY_T;
++
++/**
++ * @par Structure
++ *   P_VENC_DRV_PROPERTY_T
++ * @par Description
++ *   This is the pointer of VENC_DRV_PROPERTY_T
++ */
++typedef VENC_DRV_PROPERTY_T     *P_VENC_DRV_PROPERTY_T;
++
++/**
++ * @par Structure
++ *  SEC_VENC_INIT_CONFIG
++ * @par Description
++ *  This is the structure for initial Venc TLC
++ */
++typedef struct sec_venc_init_config {
++    int         width;
++    int         height;
++    void        *pVencHandle;
++    uint32_t    uVencHandleLen;
++    unsigned char *pRCCode;
++} SEC_VENC_INIT_CONFIG;
++
++/**
++ * @par Structure
++ *  SEC_VENC_INIT_CONFIG
++ * @par Description
++ *  This is the structure for setting Venc TLC
++ */
++typedef struct sec_venc_enc_parameter {
++    uint32_t bitstreamSecHandle;
++    uint32_t uBitstreamBufSize;
++    uint32_t uBitstreamDataLen;
++
++    uint32_t frameSecHandle;
++    uint32_t uFrameBufSize;
++    uint32_t uFrameDataLen;
++} SEC_VENC_ENC_PARAM;
++
++/**
++ * @par Function
++ *   eVEncDrvQueryCapability
++ * @par Description
++ *   Query the driver capability
++ * @param
++ *   a_eType                [IN/OUT] The VENC_DRV_QUERY_TYPE_T structure
++ * @param
++ *   a_pvInParam            [IN]     The input parameter
++ * @param
++ *   a_pvOutParam           [OUT]    The output parameter
++ * @par Returns
++ *   VENC_DRV_MRESULT_T     [OUT]    VENC_DRV_MRESULT_OK for success, VENC_DRV_MRESULT_FAIL for fail
++ */
++VENC_DRV_MRESULT_T  eVEncDrvQueryCapability(
++    VENC_DRV_QUERY_TYPE_T a_eType,
++    VAL_VOID_T *a_pvInParam,
++    VAL_VOID_T *a_pvOutParam
++);
++
++
++/**
++ * @par Function
++ *   eVEncDrvCreate
++ * @par Description
++ *   Create the driver handle
++ * @param
++ *   a_phHandle             [OUT] The driver handle
++ * @param
++ *   a_eVideoFormat         [IN]  The VENC_DRV_VIDEO_FORMAT_T structure
++ * @par Returns
++ *   VENC_DRV_MRESULT_T     [OUT] VENC_DRV_MRESULT_OK for success, VENC_DRV_MRESULT_FAIL for fail
++ */
++VENC_DRV_MRESULT_T  eVEncDrvCreate(
++    VAL_HANDLE_T *a_phHandle,
++    VENC_DRV_VIDEO_FORMAT_T a_eVideoFormat
++);
++
++
++/**
++ * @par Function
++ *   eVEncDrvRelease
++ * @par Description
++ *   Release the driver handle
++ * @param
++ *   a_hHandle              [IN]  The driver handle
++ * @param
++ *   a_eVideoFormat         [IN]  The VENC_DRV_VIDEO_FORMAT_T structure
++ * @par Returns
++ *   VENC_DRV_MRESULT_T     [OUT] VENC_DRV_MRESULT_OK for success, VENC_DRV_MRESULT_FAIL for fail
++ */
++VENC_DRV_MRESULT_T  eVEncDrvRelease(
++    VAL_HANDLE_T a_hHandle,
++    VENC_DRV_VIDEO_FORMAT_T a_eVideoFormat
++);
++
++
++/**
++ * @par Function
++ *   eVEncDrvInit
++ * @par Description
++ *   Init the driver setting, alloc working memory ... etc.
++ * @param
++ *   a_hHandle              [IN]  The driver handle
++ * @par Returns
++ *   VENC_DRV_MRESULT_T     [OUT] VENC_DRV_MRESULT_OK for success, VENC_DRV_MRESULT_FAIL for fail
++ */
++VENC_DRV_MRESULT_T  eVEncDrvInit(
++    VAL_HANDLE_T a_hHandle
++);
++
++/**
++ * @par Function
++ *   eVEncDrvDeInit
++ * @par Description
++ *   DeInit the driver setting, free working memory ... etc.
++ * @param
++ *   a_hHandle              [IN]  The driver handle
++ * @par Returns
++ *   VENC_DRV_MRESULT_T     [OUT] VENC_DRV_MRESULT_OK for success, VENC_DRV_MRESULT_FAIL for fail
++ */
++VENC_DRV_MRESULT_T  eVEncDrvDeInit(
++    VAL_HANDLE_T a_hHandle
++);
++
++
++/**
++ * @par Function
++ *   eVEncDrvSetParam
++ * @par Description
++ *   Set parameter to driver
++ * @param
++ *   a_hHandle              [IN]  The driver handle
++ * @param
++ *   a_eType                [IN]  The VENC_DRV_SET_TYPE_T structure
++ * @param
++ *   a_pvInParam            [IN]  The input parameter
++ * @param
++ *   a_pvOutParam           [OUT] The output parameter
++ * @par Returns
++ *   VENC_DRV_MRESULT_T     [OUT] VENC_DRV_MRESULT_OK for success, VENC_DRV_MRESULT_FAIL for fail
++ */
++VENC_DRV_MRESULT_T  eVEncDrvSetParam(
++    VAL_HANDLE_T a_hHandle,
++    VENC_DRV_SET_TYPE_T a_eType,
++    VAL_VOID_T *a_pvInParam,
++    VAL_VOID_T *a_pvOutParam
++);
++
++
++/**
++ * @par Function
++ *   eVEncDrvGetParam
++ * @par Description
++ *   Get parameter from driver
++ * @param
++ *   a_hHandle              [IN]  The driver handle
++ * @param
++ *   a_eType                [IN]  The VENC_DRV_SET_TYPE_T structure
++ * @param
++ *   a_pvInParam            [IN]  The input parameter
++ * @param
++ *   a_pvOutParam           [OUT] The output parameter
++ * @par Returns
++ *   VENC_DRV_MRESULT_T     [OUT] VENC_DRV_MRESULT_OK for success, VENC_DRV_MRESULT_FAIL for fail
++ */
++VENC_DRV_MRESULT_T  eVEncDrvGetParam(
++    VAL_HANDLE_T a_hHandle,
++    VENC_DRV_GET_TYPE_T a_eType,
++    VAL_VOID_T *a_pvInParam,
++    VAL_VOID_T *a_pvOutParam
++);
++
++
++/**
++ * @par Function
++ *   eVEncDrvEncode
++ * @par Description
++ *   Encode frame
++ * @param
++ *   a_hHandle              [IN]  The driver handle
++ * @param
++ *   a_eOpt                 [IN]  The VENC_DRV_START_OPT_T structure
++ * @param
++ *   a_prFrmBuf             [IN]  The input frame buffer with VENC_DRV_PARAM_FRM_BUF_T structure
++ * @param
++ *   a_prBSBuf              [IN]  The input bitstream buffer with VENC_DRV_PARAM_BS_BUF_T structure
++ * @param
++ *   a_prResult             [OUT] The output result with VENC_DRV_DONE_RESULT_T structure
++ * @par Returns
++ *   VENC_DRV_MRESULT_T     [OUT] VENC_DRV_MRESULT_OK for success, VENC_DRV_MRESULT_FAIL for fail
++ */
++VENC_DRV_MRESULT_T  eVEncDrvEncode(
++    VAL_HANDLE_T a_hHandle,
++    VENC_DRV_START_OPT_T a_eOpt,
++    VENC_DRV_PARAM_FRM_BUF_T *a_prFrmBuf,
++    VENC_DRV_PARAM_BS_BUF_T *a_prBSBuf,
++    VENC_DRV_DONE_RESULT_T *a_prResult
++);
++
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif // #ifndef _VENC_DRV_IF_PUBLIC_H_
+diff --git a/media/libmedia/Android.mk b/media/libmedia/Android.mk
+index df4e4b6..b02cafa 100644
+--- a/media/libmedia/Android.mk
++++ b/media/libmedia/Android.mk
+@@ -80,6 +80,10 @@ LOCAL_SHARED_LIBRARIES := \
+         libcamera_client libstagefright_foundation \
+         libgui libdl libaudioutils libnbaio
+ 
++ifeq ($(strip $(BOARD_USES_MTK_HARDWARE)),true)
++    LOCAL_SHARED_LIBRARIES += libvcodecdrv
++endif
++
+ LOCAL_WHOLE_STATIC_LIBRARIES := libmedia_helper libavmediaextentions
+ 
+ # for memory heap analysis
+diff --git a/media/libmedia/MediaProfiles.cpp b/media/libmedia/MediaProfiles.cpp
+index dd72c16..c92b7e9 100644
+--- a/media/libmedia/MediaProfiles.cpp
++++ b/media/libmedia/MediaProfiles.cpp
+@@ -28,6 +28,12 @@
+ #include <media/stagefright/foundation/ADebug.h>
+ #include <OMX_Video.h>
+ 
++#ifdef MTK_HARDWARE
++#include <sys/sysconf.h>
++#include <media/venc_drv_if_public.h>
++#include <media/val_types_public.h>
++#endif
++
+ namespace android {
+ 
+ Mutex MediaProfiles::sLock;
+@@ -111,6 +117,10 @@ const MediaProfiles::NameToTagMap MediaProfiles::sCamcorderQualityNameMap[] = {
+ #define UNUSED
+ #endif
+ 
++#ifdef MTK_HARDWARE
++static int getVideoCapability(int i4VideoFormat, unsigned int *pu4Width, unsigned int *pu4Height, unsigned int *pu4BitRatem, unsigned int *pu4FrameRate, int slowmotion);
++#endif
++
+ /*static*/ void
+ MediaProfiles::logVideoCodec(const MediaProfiles::VideoCodec& codec UNUSED)
+ {
+@@ -632,21 +642,61 @@ MediaProfiles::getInstance()
+ /*static*/ MediaProfiles::VideoEncoderCap*
+ MediaProfiles::createDefaultH263VideoEncoderCap()
+ {
++#ifdef MTK_HARDWARE
++    unsigned int u4Width, u4Height, u4FrameRate, u4BitRate;
++    int iRet;
++
++    iRet = getVideoCapability(VIDEO_ENCODER_H263, &u4Width, &u4Height, &u4BitRate, &u4FrameRate, 0);
++    ALOGI("[ %s ], support ret:%d maxwidth=%d,maxheight=%d, bitrate %d, framerate %d",
++            __FUNCTION__, iRet, u4Width, u4Height, u4BitRate, u4FrameRate);
++    if (iRet > 0) {
++        return new MediaProfiles::VideoEncoderCap(
++                VIDEO_ENCODER_H263, 75*1000, u4BitRate,
++                176, u4Width, 144, u4Height, 15, u4FrameRate);
++    }
++    else {
++        ALOGE("[ERROR] don't support H263!!");
++        return NULL;
++    }
++#else//not MTK_HARDWARE
+     return new MediaProfiles::VideoEncoderCap(
+         VIDEO_ENCODER_H263, 192000, 420000, 176, 352, 144, 288, 1, 20);
++#endif//MTK_HARDWARE
+ }
+ 
+ /*static*/ MediaProfiles::VideoEncoderCap*
+ MediaProfiles::createDefaultM4vVideoEncoderCap()
+ {
++#ifdef MTK_HARDWARE
++    unsigned int u4Width, u4Height, u4FrameRate, u4BitRate;
++    int iRet;
++
++    iRet = getVideoCapability(VIDEO_ENCODER_MPEG_4_SP, &u4Width, &u4Height, &u4BitRate, &u4FrameRate, 0);
++    ALOGI("[ %s ], support ret:%d maxwidth=%d,maxheight=%d, bitrate %d, framerate %d",
++            __FUNCTION__, iRet, u4Width, u4Height, u4BitRate, u4FrameRate);
++    if (iRet > 0) {
++        return new MediaProfiles::VideoEncoderCap(
++                VIDEO_ENCODER_MPEG_4_SP, 75*1000, u4BitRate,
++                176, u4Width, 144, u4Height, 15, u4FrameRate);
++    }
++    else {
++        ALOGE("[ERROR] don't support MPEG4!!");
++        return NULL;
++    }
++#else//not MTK_HARDWARE
+     return new MediaProfiles::VideoEncoderCap(
+         VIDEO_ENCODER_MPEG_4_SP, 192000, 420000, 176, 352, 144, 288, 1, 20);
++#endif//MTK_HARDWARE
+ }
+ 
+ 
+ /*static*/ void
+ MediaProfiles::createDefaultVideoEncoders(MediaProfiles *profiles)
+ {
++#ifdef MTK_HARDWARE
++    profiles->mVideoEncoders.add(createDefaultH264VideoEncoderCap());
++    profiles->mVideoEncoders.add(createDefaultHEVCVideoEncoderCap());
++#endif//MTK_HARDWARE
+     profiles->mVideoEncoders.add(createDefaultH263VideoEncoderCap());
+     profiles->mVideoEncoders.add(createDefaultM4vVideoEncoderCap());
+ }
+@@ -760,6 +810,9 @@ MediaProfiles::createDefaultCamcorderHighProfiles(
+ /*static*/ void
+ MediaProfiles::createDefaultCamcorderProfiles(MediaProfiles *profiles)
+ {
++#ifdef MTK_HARDWARE
++    createMTKCamcorderProfiles(profiles);
++#else//not MTK_HARDWARE
+     // low camcorder profiles.
+     MediaProfiles::CamcorderProfile *lowProfile, *lowSpecificProfile;
+     createDefaultCamcorderLowProfiles(&lowProfile, &lowSpecificProfile);
+@@ -789,6 +842,7 @@ MediaProfiles::createDefaultCamcorderProfiles(MediaProfiles *profiles)
+     // media_profiles.xml file, We assume that the default camera id
+     // is 0 and that is the only camera available.
+     profiles->mCameraIds.push(0);
++#endif//MTK_HARDWARE
+ }
+ 
+ /*static*/ void
+@@ -796,6 +850,22 @@ MediaProfiles::createDefaultAudioEncoders(MediaProfiles *profiles)
+ {
+     profiles->mAudioEncoders.add(createDefaultAmrNBEncoderCap());
+     profiles->mAudioEncoders.add(createDefaultLpcmEncoderCap());
++#ifdef MTK_HARDWARE
++    MediaProfiles::AudioEncoderCap* mAwbCap = new MediaProfiles::AudioEncoderCap(AUDIO_ENCODER_AMR_WB, 6600, 28500, 16000, 16000, 1, 1);
++    profiles->mAudioEncoders.add(mAwbCap);
++
++    MediaProfiles::AudioEncoderCap* mAacCap = new MediaProfiles::AudioEncoderCap(AUDIO_ENCODER_AAC, 8000, 160000, 12000, 48000, 1, 2);
++    profiles->mAudioEncoders.add(mAacCap);
++
++    MediaProfiles::AudioEncoderCap* mAacCapHE = new MediaProfiles::AudioEncoderCap(AUDIO_ENCODER_HE_AAC, 8000, 320000, 16000, 48000, 1, 2);
++    profiles->mAudioEncoders.add(mAacCapHE);
++
++    MediaProfiles::AudioEncoderCap* mAacCapELD = new MediaProfiles::AudioEncoderCap(AUDIO_ENCODER_AAC_ELD, 16000, 320000, 16000, 48000, 1, 2);
++    profiles->mAudioEncoders.add(mAacCapELD);
++    //
++    MediaProfiles::AudioEncoderCap* mVorbisCap = new MediaProfiles::AudioEncoderCap(AUDIO_ENCODER_VORBIS, 31980, 202960, 8000, 48000,  1, 2);
++    profiles->mAudioEncoders.add(mVorbisCap);
++#endif//MTK_HARDWARE
+ }
+ 
+ /*static*/ void
+@@ -843,10 +913,26 @@ MediaProfiles::createDefaultImageEncodingQualityLevels(MediaProfiles *profiles)
+ {
+     ImageEncodingQualityLevels *levels = new ImageEncodingQualityLevels();
+     levels->mCameraId = 0;
++#ifdef MTK_HARDWARE
++    levels->mLevels.add(75);
++    levels->mLevels.add(85);
++    levels->mLevels.add(95);
++#else//not MTK_HARDWARE
+     levels->mLevels.add(70);
+     levels->mLevels.add(80);
+     levels->mLevels.add(90);
++#endif//MTK_HARDWARE
+     profiles->mImageEncodingQualityLevels.add(levels);
++
++#ifdef MTK_HARDWARE
++    ALOGD("FrontCameraLevels Setting\n");
++    ImageEncodingQualityLevels *FrontCameraLevels = new ImageEncodingQualityLevels();
++    FrontCameraLevels->mCameraId = 1;
++    FrontCameraLevels->mLevels.add(75);
++    FrontCameraLevels->mLevels.add(85);
++    FrontCameraLevels->mLevels.add(95);
++    profiles->mImageEncodingQualityLevels.add(FrontCameraLevels);
++#endif//MTK_HARDWARE
+ }
+ 
+ /*static*/ MediaProfiles*
+@@ -1109,4 +1195,924 @@ MediaProfiles::~MediaProfiles()
+     mCamcorderProfiles.clear();
+ #endif
+ }
++
++#ifdef MTK_HARDWARE
++//MTK CameraProfile Handling Functions
++#define UNUSEDP(x) (void)(x)
++
++video_encoder MediaProfiles::eHighestCodec = VIDEO_ENCODER_H264;
++uint32_t MediaProfiles::sMaxWdith = 0;
++uint32_t MediaProfiles::sMaxHeight = 0;
++uint32_t MediaProfiles::sMaxBitrate = 0;
++uint32_t MediaProfiles::sMaxFramerate = 0;
++uint32_t MediaProfiles::sMemoryIsLarge = 1;
++uint32_t MediaProfiles::eChipVariant = 0xffffffff;
++
++//Utility Functions
++static int getVideoCapability(
++        int i4VideoFormat,
++        unsigned int *pu4Width,
++        unsigned int *pu4Height,
++        unsigned int *pu4BitRatem,
++        unsigned int *pu4FrameRate,
++        int slowmotion)
++{
++    int i4RetValue = 1;
++    VENC_DRV_QUERY_VIDEO_FORMAT_T qinfo;
++    VENC_DRV_QUERY_VIDEO_FORMAT_T outinfo;
++    VENC_DRV_MRESULT_T ret;
++
++    if((NULL == pu4Width) || (NULL == pu4Height) || (NULL == pu4BitRatem) || (NULL == pu4FrameRate)){
++        return -1;
++    }
++
++    memset(&qinfo,0,sizeof(VENC_DRV_QUERY_VIDEO_FORMAT_T));
++    memset(&outinfo,0,sizeof(VENC_DRV_QUERY_VIDEO_FORMAT_T));
++    switch (i4VideoFormat)
++    {
++        case VIDEO_ENCODER_HEVC :
++            qinfo.eVideoFormat = VENC_DRV_VIDEO_FORMAT_HEVC;
++            qinfo.u4Profile = slowmotion;
++            ret = eVEncDrvQueryCapability(VENC_DRV_QUERY_TYPE_VIDEO_CAMCORDER_CAP, &qinfo, &outinfo);
++            if(ret ==  VENC_DRV_MRESULT_OK){
++                (*pu4Width) = outinfo.u4Width;
++                (*pu4Height) = outinfo.u4Height;
++                (*pu4BitRatem) = outinfo.u4Bitrate;
++                (*pu4FrameRate) = outinfo.u4FrameRate;
++                ALOGI("[VIDEO_ENCODER_HEVC] checkVideoCapability, format=%d, support maxwidth=%d, maxheight=%d, bitrate %d, framerate %d",
++                        i4VideoFormat, outinfo.u4Width, outinfo.u4Height, outinfo.u4Bitrate, outinfo.u4FrameRate);
++            }
++            else{
++                i4RetValue = -1;
++            }
++        break;
++        case VIDEO_ENCODER_H264 :
++            qinfo.eVideoFormat = VENC_DRV_VIDEO_FORMAT_H264;
++            qinfo.u4Profile = slowmotion;
++            ret = eVEncDrvQueryCapability(VENC_DRV_QUERY_TYPE_VIDEO_CAMCORDER_CAP, &qinfo, &outinfo);
++            if(ret ==  VENC_DRV_MRESULT_OK){
++                (*pu4Width)= outinfo.u4Width;
++                (*pu4Height) = outinfo.u4Height;
++                (*pu4BitRatem) = outinfo.u4Bitrate;
++                (*pu4FrameRate) = outinfo.u4FrameRate;
++                ALOGI("checkVideoCapability, format=%d, support maxwidth=%d, maxheight=%d, bitrate %d, framerate %d",
++                        i4VideoFormat, outinfo.u4Width, outinfo.u4Height, outinfo.u4Bitrate, outinfo.u4FrameRate);
++            }
++            else{
++                i4RetValue = -1;
++            }
++        break;
++        case VIDEO_ENCODER_MPEG_4_SP :
++        case VIDEO_ENCODER_H263 :
++            qinfo.eVideoFormat = VENC_DRV_VIDEO_FORMAT_MPEG4;
++            qinfo.u4Profile = slowmotion;
++            ret = eVEncDrvQueryCapability(VENC_DRV_QUERY_TYPE_VIDEO_CAMCORDER_CAP, &qinfo, &outinfo);
++            if(ret ==  VENC_DRV_MRESULT_OK){
++                (*pu4Width)= outinfo.u4Width;
++                (*pu4Height) = outinfo.u4Height;
++                (*pu4BitRatem) = outinfo.u4Bitrate;
++                (*pu4FrameRate) = outinfo.u4FrameRate;
++                ALOGI("checkVideoCapability, format=%d, support maxwidth=%d, maxheight=%d, bitrate %d, framerate %d",
++                        i4VideoFormat, outinfo.u4Width, outinfo.u4Height, outinfo.u4Bitrate, outinfo.u4FrameRate);
++            }
++            else{
++                i4RetValue = -1;
++            }
++        break;
++        default:
++            i4RetValue = -1;
++            break;
++    }
++    //when query fail, give default value.
++    if (i4RetValue == -1) {
++        (*pu4Width) = 720;
++        (*pu4Height) = 480;
++        (*pu4BitRatem) = 4800000;
++        (*pu4FrameRate) = 30;
++    }
++    return i4RetValue;
++}
++
++static uint32_t getHighestCode(
++        video_encoder *pHighestCodec,
++        uint32_t *pMaxWdith,
++        uint32_t *pMaxHeight,
++        uint32_t *pMaxBitrate,
++        uint32_t *pMaxFramerate)
++{
++    uint32_t u4Width, u4Height, u4Bitrate, u4Framerate;
++    int iRet;
++
++    *pHighestCodec = VIDEO_ENCODER_H264;
++    iRet = getVideoCapability(VIDEO_ENCODER_H264, pMaxWdith, pMaxHeight, pMaxBitrate, pMaxFramerate, 0);
++    if (iRet < 0)//fail
++    {
++        iRet = getVideoCapability(VIDEO_ENCODER_MPEG_4_SP, pMaxWdith, pMaxHeight, pMaxBitrate, pMaxFramerate, 0);
++        if (iRet < 0)//fail
++        {
++            ALOGE("[ERROR] Don't find any video codec!!");
++            return -1;
++        }
++    }
++    else
++    {
++        iRet = getVideoCapability(VIDEO_ENCODER_MPEG_4_SP, &u4Width, &u4Height, &u4Bitrate, &u4Framerate, 0);
++        //if MPEG4 is the highest codec
++        if (iRet >= 0 && u4Width > *pMaxWdith) {
++            *pHighestCodec = VIDEO_ENCODER_MPEG_4_SP;
++            *pMaxWdith = u4Width;
++            *pMaxHeight = u4Height;
++            *pMaxBitrate = u4Bitrate;
++            *pMaxHeight = u4Height;
++        }
++    }
++    return 1;
++}
++
++//Public methods
++size_t  MediaProfiles::getCamcorderProfilesNum(int id)
++{
++    UNUSEDP(id);
++    return mCamcorderProfiles.size();
++}
++
++String8  MediaProfiles::getCamcorderProfilesCaps(int id)
++{
++    char buff[256];
++    memset(buff,0,256);
++
++    for (size_t i = 0; i < mCamcorderProfiles.size();  ++i)
++    {
++        if (id == mCamcorderProfiles[i]->mCameraId)
++        {
++            char temp[10];
++            memset(temp,0,10);
++            sprintf(temp,"%d,",mCamcorderProfiles[i]->mQuality);
++            strcat(buff,temp);
++        }
++    }
++
++    ALOGD("[getCamcorderProfilesCaps] mCameraId = %d, buff = %s", id, buff);
++
++    return String8(buff);
++}
++
++void MediaProfiles::dumpProfiles()
++{
++    //for debug dump
++    int i=0;
++    ALOGD("there are %d profiles", (int)mCamcorderProfiles.size());
++    for (i=0; i<(int)mCamcorderProfiles.size(); ++i)
++    {
++        CamcorderProfile *tmpC = mCamcorderProfiles[i];
++        if (tmpC != NULL) {
++            VideoCodec *tmp = tmpC->mVideoCodec;
++            if (tmp != NULL) {
++                ALOGD("camera_id:%d, quality:%d, vcodec:%d, w:%d, h:%d, brate:%d, frate:%d",
++                        tmpC->mCameraId,
++                        tmpC->mQuality,
++                        tmp->mCodec,
++                        tmp->mFrameWidth,
++                        tmp->mFrameHeight,
++                        tmp->mBitRate,
++                        tmp->mFrameRate);
++            }
++            else {
++                ALOGD("camera_id:%d, quality:%d, vcodec=NULL",
++                        tmpC->mCameraId,
++                        tmpC->mQuality);
++            }
++        }
++        else {
++            ALOGD("index %d is NULL", i);
++        }
++    }
++}
++
++//Private methods
++/*static*/ MediaProfiles::CamcorderProfile*
++MediaProfiles::createMTKCamcorderProfile(camcorder_quality quality, camcorder_mode CamMode, camera_id CamId)
++{
++    MediaProfiles::VideoCodec *videoCodec = NULL;
++    MediaProfiles::AudioCodec *audioCodec = NULL;
++
++    // Setting for VIDEO Profile
++    switch(quality)
++    {
++        //Standard Quality
++        case CAMCORDER_QUALITY_QVGA:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_MPEG_4_SP, 1000*1000, 320, 240, 30);
++            }
++            break;
++        case CAMCORDER_QUALITY_CIF:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_MPEG_4_SP, 1250*1000, 352, 288, 30);
++            }
++            break;
++        case CAMCORDER_QUALITY_480P:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        eHighestCodec, 4500*1000, 720, 480, 30);
++            }
++            break;
++        case CAMCORDER_QUALITY_720P:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        eHighestCodec,
++                        (eHighestCodec == VIDEO_ENCODER_H264) ? 9000*1000 : 12000*1000,
++                        1280, 720, 30);
++            }
++            break;
++        case CAMCORDER_QUALITY_1080P:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        eHighestCodec,
++                        (eHighestCodec == VIDEO_ENCODER_H264) ? 17000*1000 : 26000*1000,
++                        1920, 1088, 30);
++            }
++            break;
++        case CAMCORDER_QUALITY_2160P:
++            {
++                //add this for passing checkAndAddRequiredProfilesIfNecessary()
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_H264, 21000*1000, 1920, 1080, 30);
++                ALOGE("Not define this quality (%d) yet!", quality);
++            }
++            break;
++        case CAMCORDER_QUALITY_LOW:
++        case CAMCORDER_QUALITY_QCIF:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_H263, 192000, 176, 144, 20);
++                //the value set is from google default functions
++                //And CTS will check whether the supported standard lowest profile == low profile.
++                //So LOW & QCIF MUST be the same.
++            }
++            break;
++
++        //Standard Time Lapse Quality
++        case CAMCORDER_QUALITY_TIME_LAPSE_QVGA:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_MPEG_4_SP, 1000*1000, 320, 240, 30);
++            }
++            break;
++        case CAMCORDER_QUALITY_TIME_LAPSE_CIF:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_MPEG_4_SP, 1250*1000, 352, 288, 30);
++            }
++            break;
++        case CAMCORDER_QUALITY_TIME_LAPSE_480P:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        eHighestCodec, 4500*1000, 720, 480, 30);
++            }
++            break;
++        case CAMCORDER_QUALITY_TIME_LAPSE_720P:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        eHighestCodec,
++                        (eHighestCodec == VIDEO_ENCODER_H264) ? 9000*1000 : 12000*1000,
++                        1280, 720, 30);
++            }
++            break;
++        case CAMCORDER_QUALITY_TIME_LAPSE_1080P:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        eHighestCodec,
++                        (eHighestCodec == VIDEO_ENCODER_H264) ? 17000*1000 : 26000*1000,
++                        1920, 1088, 30);
++            }
++            break;
++        case CAMCORDER_QUALITY_TIME_LAPSE_2160P:
++            {
++                //add this for passing checkAndAddRequiredProfilesIfNecessary()
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_H264, 21000*1000, 1920, 1080, 30);
++                ALOGE("Not define this time lapse quality (%d) yet!", quality);
++            }
++            break;
++        case CAMCORDER_QUALITY_TIME_LAPSE_QCIF:
++        case CAMCORDER_QUALITY_TIME_LAPSE_LOW:
++            {
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_H263, 1000000, 176, 144, 20);
++                //the value set is from google default functions
++            }
++            break;
++
++        //Standard High Speed Quality
++        case CAMCORDER_QUALITY_HIGH_SPEED_LOW:
++        case CAMCORDER_QUALITY_HIGH_SPEED_HIGH:
++        case CAMCORDER_QUALITY_HIGH_SPEED_480P:
++        case CAMCORDER_QUALITY_HIGH_SPEED_720P:
++        case CAMCORDER_QUALITY_HIGH_SPEED_1080P:
++            {
++                //add this for passing checkAndAddRequiredProfilesIfNecessary()
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_H264, 21000*1000, 1920, 1080, 30);
++                ALOGE("Not define this high speed quality (%d) yet!", quality);
++            }
++            break;
++
++        //MTK Profiles
++        case CAMCORDER_QUALITY_MTK_LOW:
++        case CAMCORDER_QUALITY_MTK_NIGHT_LOW:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_LOW:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_LOW:
++            videoCodec = createMTKLowVideoProfile(CamMode, CamId);
++            break;
++        case CAMCORDER_QUALITY_MTK_MEDIUM:
++        case CAMCORDER_QUALITY_MTK_NIGHT_MEDIUM:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_MEDIUM:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_MEDIUM:
++            videoCodec = createMTKMediumVideoProfile(CamMode, CamId);
++            break;
++        case CAMCORDER_QUALITY_MTK_HIGH:
++        case CAMCORDER_QUALITY_MTK_NIGHT_HIGH:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_HIGH:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_HIGH:
++            videoCodec = createMTKHighVideoProfile(CamMode, CamId);
++            break;
++        case CAMCORDER_QUALITY_MTK_FINE:
++        case CAMCORDER_QUALITY_MTK_NIGHT_FINE:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_FINE:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE_4K2K:
++        case CAMCORDER_QUALITY_MTK_FINE_4K2K:
++            videoCodec = createMTKFineVideoProfile(CamMode, CamId);
++            break;
++        case CAMCORDER_QUALITY_MTK_LIVE_EFFECT:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_LIVE_EFFECT:
++            if (CamId == BACK_CAMERA){
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_MPEG_4_SP, 2500*1000/CamMode, 480, 320, 30/CamMode);
++            }
++            else{
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_MPEG_4_SP, 2500*1000/CamMode, 480, 320, 30/CamMode);
++            }
++            break;
++        case CAMCORDER_QUALITY_MTK_H264_HIGH:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_H264_HIGH:
++            if (CamId == BACK_CAMERA){
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_H264, 4000*1000/CamMode, 640, 480, 30/CamMode);
++            }
++            else{
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_H264, 4000*1000/CamMode, 640, 480, 30/CamMode);
++            }
++            break;
++        case CAMCORDER_QUALITY_MTK_MPEG4_1080P:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_MPEG4_1080P:
++            if (CamId == BACK_CAMERA){
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_MPEG_4_SP, 14000*1000/CamMode, 1920, 1088, 15/CamMode);
++            }
++            else{
++                videoCodec = new MediaProfiles::VideoCodec(
++                        VIDEO_ENCODER_MPEG_4_SP, 14000*1000/CamMode, 1920, 1088, 15/CamMode);
++            }
++            break;
++
++        //MTK Slowmotion Profiles
++        case CAMCORDER_QUALITY_MTK_VGA_120:
++            videoCodec = new MediaProfiles::VideoCodec(VIDEO_ENCODER_H264, 12000*1000, 640, 480, 120);
++            break;
++        case CAMCORDER_QUALITY_MTK_720P_60:
++            videoCodec = new MediaProfiles::VideoCodec(VIDEO_ENCODER_H264, 18000*1000, 1280, 720, 60);
++            break;
++        case CAMCORDER_QUALITY_MTK_720P_120:
++            videoCodec = new MediaProfiles::VideoCodec(VIDEO_ENCODER_H264, 36000*1000, 1280, 720, 120);
++            break;
++        case CAMCORDER_QUALITY_MTK_720P_180:
++            videoCodec = new MediaProfiles::VideoCodec(VIDEO_ENCODER_HEVC, 40000*1000, 1280, 736, 180);
++            break;
++        case CAMCORDER_QUALITY_MTK_1080P_60:
++            videoCodec = new MediaProfiles::VideoCodec(VIDEO_ENCODER_HEVC, 21500*1000, 1920, 1088, 60);
++            break;
++        case CAMCORDER_QUALITY_MTK_1080P_120:
++            videoCodec = new MediaProfiles::VideoCodec(VIDEO_ENCODER_HEVC, 43000*1000, 1920, 1088, 120);
++            break;
++        default:
++            videoCodec = new MediaProfiles::VideoCodec(VIDEO_ENCODER_MPEG_4_SP, 75*1000/CamMode, 96, 96, 30/CamMode);
++            ALOGE("The given quality %d is not found", quality);
++            break;
++    }
++
++    // Setting for AUDIO Profile
++    switch(quality)
++    {
++        case CAMCORDER_QUALITY_MTK_LOW:
++        case CAMCORDER_QUALITY_MTK_NIGHT_LOW:
++        case CAMCORDER_QUALITY_TIME_LAPSE_LOW:
++        case CAMCORDER_QUALITY_TIME_LAPSE_QCIF:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_LOW:
++        case CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_LOW:
++            audioCodec = new AudioCodec(AUDIO_ENCODER_AAC, 64000, 48000, 2);
++            break;
++
++            //Fine quality AAC HE
++        case CAMCORDER_QUALITY_MTK_FINE:
++            audioCodec = new AudioCodec(AUDIO_ENCODER_AAC, 128000, 48000, 2);
++            break;
++
++        default:
++            audioCodec = new AudioCodec(AUDIO_ENCODER_AAC, 128000, 48000, 2);
++            break;
++    }
++
++    CamcorderProfile *profile = new MediaProfiles::CamcorderProfile;
++    profile->mCameraId = CamId;
++    profile->mFileFormat = OUTPUT_FORMAT_THREE_GPP;
++    profile->mQuality = quality;
++    profile->mDuration = 30;
++    profile->mVideoCodec = videoCodec;
++    profile->mAudioCodec = audioCodec;
++    return profile;
++}
++
++/*static*/ MediaProfiles::VideoEncoderCap*
++MediaProfiles::createDefaultH264VideoEncoderCap()
++{
++    unsigned int u4Width, u4Height, u4FrameRate, u4BitRate;
++    int slowmotion, iRet;
++
++    slowmotion = 1;
++    iRet = getVideoCapability(VIDEO_ENCODER_H264, &u4Width, &u4Height, &u4BitRate, &u4FrameRate, slowmotion);
++    ALOGI("[ %s ], support ret=%d maxwidth=%d,maxheight=%d, bitrate %d, framerate %d",
++            __FUNCTION__, iRet, u4Width, u4Height, u4BitRate, u4FrameRate);
++    if (iRet > 0) {
++        return new MediaProfiles::VideoEncoderCap(
++                VIDEO_ENCODER_H264, 75*1000, u4BitRate,
++                128, u4Width, 96, u4Height, 15, u4FrameRate);
++    }
++    else {
++        ALOGE("[ERROR] don't support H264!!");
++        return NULL;
++    }
++}
++
++/*static*/ MediaProfiles::VideoEncoderCap*
++MediaProfiles::createDefaultHEVCVideoEncoderCap()
++{
++    unsigned int u4Width, u4Height, u4FrameRate, u4BitRate;
++    int slowmotion, iRet;
++
++    slowmotion = 1;
++    iRet = getVideoCapability(VIDEO_ENCODER_HEVC, &u4Width, &u4Height, &u4BitRate, &u4FrameRate, slowmotion);
++    ALOGI("[ %s ], support ret=%d maxwidth=%d,maxheight=%d, bitrate %d, framerate %d",
++            __FUNCTION__, iRet, u4Width, u4Height, u4BitRate, u4FrameRate);
++    if (iRet > 0) {
++        return new MediaProfiles::VideoEncoderCap(
++                VIDEO_ENCODER_HEVC, 75*1000, u4BitRate,
++                128, u4Width, 128, u4Height, 15, u4FrameRate);
++    }
++    else {
++        ALOGE("[ERROR] don't support HEVC!!");
++        return NULL;
++    }
++}
++
++/*static*/ void
++MediaProfiles::createMTKCamcorderProfiles(MediaProfiles *profiles)
++{
++    //1st time get the highest codec
++    getHighestCode(&eHighestCodec, &sMaxWdith, &sMaxHeight, &sMaxBitrate, &sMaxFramerate);
++    //1st time get the memoryIsLarge
++    int64_t memory_size_byte = (int64_t)sysconf(_SC_PHYS_PAGES) * PAGE_SIZE;
++    sMemoryIsLarge = (memory_size_byte > 256*1024*1024) ? 1 : 0;
++    //1st time get chipvariant
++
++    createStandardCamcorderProfiles(profiles);
++    createMTKLegacyCamcorderProfiles(profiles);
++    createMTKSlowMotionCamcorderProfiles(profiles);
++
++    profiles->mCameraIds.push(0);
++    profiles->mCameraIds.push(1);
++
++    profiles->dumpProfiles();
++    return;
++}
++
++/*static*/ void
++MediaProfiles::createStandardCamcorderProfiles(MediaProfiles *profiles)
++{
++    //back Camera
++    //CAMCORDER_QUALITY_LOW
++    MediaProfiles::CamcorderProfile *BackLowProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_LOW, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(BackLowProfile);
++    //CAMCORDER_QUALITY_TIME_LAPSE_LOW
++    MediaProfiles::CamcorderProfile *BackTimeLowProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_LOW, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(BackTimeLowProfile);
++    //CAMCORDER_QUALITY_QCIF
++    MediaProfiles::CamcorderProfile *BackQcifProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_QCIF, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(BackQcifProfile);
++    //CAMCORDER_QUALITY_QVGA
++    MediaProfiles::CamcorderProfile *BackQvgaProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_QVGA, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(BackQvgaProfile);
++    //CAMCORDER_QUALITY_CIF
++    MediaProfiles::CamcorderProfile *BackCifProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_CIF, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(BackCifProfile);
++    //CAMCORDER_QUALITY_480P
++    if (sMaxWdith >= 720) {
++        MediaProfiles::CamcorderProfile *Back480pProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_480P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++        profiles->mCamcorderProfiles.add(Back480pProfile);
++        if (sMaxWdith < 1280) {
++            //CAMCORDER_QUALITY_HIGH
++            //add below due to CTS will check wether HIGH == highest supported standard profile
++            MediaProfiles::CamcorderProfile *BackHighProfile =
++                createMTKCamcorderProfile(CAMCORDER_QUALITY_480P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++            BackHighProfile->mQuality = CAMCORDER_QUALITY_HIGH;
++            profiles->mCamcorderProfiles.add(BackHighProfile);
++        }
++    }
++    //CAMCORDER_QUALITY_720P
++    if (sMaxWdith >= 1280) {
++        MediaProfiles::CamcorderProfile *Back720PProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_720P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++        profiles->mCamcorderProfiles.add(Back720PProfile);
++        if (sMaxWdith < 1920) {
++            //CAMCORDER_QUALITY_HIGH
++            //add below due to CTS will check wether HIGH == highest supported standard profile
++            MediaProfiles::CamcorderProfile *BackHighProfile =
++                createMTKCamcorderProfile(CAMCORDER_QUALITY_720P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++            BackHighProfile->mQuality = CAMCORDER_QUALITY_HIGH;
++            profiles->mCamcorderProfiles.add(BackHighProfile);
++        }
++    }
++    //CAMCORDER_QUALITY_1080P
++    if (sMaxWdith >= 1920) {
++        MediaProfiles::CamcorderProfile *Back1080PProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_1080P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++        profiles->mCamcorderProfiles.add(Back1080PProfile);
++        //CAMCORDER_QUALITY_HIGH
++        //add below due to CTS will check wether HIGH == highest supported standard profile
++        MediaProfiles::CamcorderProfile *BackHighProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_1080P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++        BackHighProfile->mQuality = CAMCORDER_QUALITY_HIGH;
++        profiles->mCamcorderProfiles.add(BackHighProfile);
++    }
++    //CAMCORDER_QUALITY_2160P
++
++    //CAMCORDER_QUALITY_TIME_LAPSE_QCIF
++    MediaProfiles::CamcorderProfile *BackTimeQcifProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_QCIF, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(BackTimeQcifProfile);
++    //CAMCORDER_QUALITY_TIME_LAPSE_QVGA
++    MediaProfiles::CamcorderProfile *BackTimeQvgaProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_QVGA, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(BackTimeQvgaProfile);
++    //CAMCORDER_QUALITY_TIME_LAPSE_CIF
++    MediaProfiles::CamcorderProfile *BackTimeCifProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_CIF, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(BackTimeCifProfile);
++    //CAMCORDER_QUALITY_TIME_LAPSE_480P
++    if (sMaxWdith >= 720) {
++        MediaProfiles::CamcorderProfile *BackTime480pProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_480P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++        profiles->mCamcorderProfiles.add(BackTime480pProfile);
++        if (sMaxWdith < 1280) {
++            //CAMCORDER_QUALITY_TIME_LAPSE_HIGH
++            //add below due to CTS will check wether HIGH == highest supported standard profile
++            MediaProfiles::CamcorderProfile *BackTimeHighProfile =
++                createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_480P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++            BackTimeHighProfile->mQuality = CAMCORDER_QUALITY_TIME_LAPSE_HIGH;
++            profiles->mCamcorderProfiles.add(BackTimeHighProfile);
++        }
++    }
++    //CAMCORDER_QUALITY_TIME_LAPSE_720P
++    if (sMaxWdith >= 1280) {
++        MediaProfiles::CamcorderProfile *BackTime720pProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_720P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++        profiles->mCamcorderProfiles.add(BackTime720pProfile);
++        if (sMaxWdith < 1920) {
++            //CAMCORDER_QUALITY_TIME_LAPSE_HIGH
++            //add below due to CTS will check wether HIGH == highest supported standard profile
++            MediaProfiles::CamcorderProfile *BackTimeHighProfile =
++                createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_720P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++            BackTimeHighProfile->mQuality = CAMCORDER_QUALITY_TIME_LAPSE_HIGH;
++            profiles->mCamcorderProfiles.add(BackTimeHighProfile);
++        }
++    }
++    //CAMCORDER_QUALITY_TIME_LAPSE_1080P
++    if (sMaxWdith >= 1920) {
++        MediaProfiles::CamcorderProfile *BackTime1080pProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_1080P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++        profiles->mCamcorderProfiles.add(BackTime1080pProfile);
++        //CAMCORDER_QUALITY_TIME_LAPSE_HIGH
++        //add below due to CTS will check wether HIGH == highest supported standard profile
++        MediaProfiles::CamcorderProfile *BackTimeHighProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_1080P, CAMCORDER_DAY_MODE, BACK_CAMERA);
++        BackTimeHighProfile->mQuality = CAMCORDER_QUALITY_TIME_LAPSE_HIGH;
++        profiles->mCamcorderProfiles.add(BackTimeHighProfile);
++    }
++
++    //front Camera
++    //CAMCORDER_QUALITY_LOW
++    MediaProfiles::CamcorderProfile *FrontLowProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_LOW, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontLowProfile);
++    //CAMCORDER_QUALITY_TIME_LAPSE_LOW
++    MediaProfiles::CamcorderProfile *FrontTimeLowProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_LOW, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontTimeLowProfile);
++
++    //CAMCORDER_QUALITY_QCIF
++    MediaProfiles::CamcorderProfile *FrontQcifProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_QCIF, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontQcifProfile);
++    //CAMCORDER_QUALITY_QVGA
++    MediaProfiles::CamcorderProfile *FrontQvgaProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_QVGA, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontQvgaProfile);
++    //CAMCORDER_QUALITY_CIF
++    MediaProfiles::CamcorderProfile *FrontCifProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_CIF, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontCifProfile);
++    //CAMCORDER_QUALITY_480P
++    if (sMaxWdith >= 720) {
++        MediaProfiles::CamcorderProfile *Front480pProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_480P, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++        profiles->mCamcorderProfiles.add(Front480pProfile);
++        //CAMCORDER_QUALITY_HIGH
++        MediaProfiles::CamcorderProfile *FrontHighProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_480P, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++        FrontHighProfile->mQuality = CAMCORDER_QUALITY_HIGH;
++        profiles->mCamcorderProfiles.add(FrontHighProfile);
++    }
++    else
++    {
++        //CAMCORDER_QUALITY_HIGH
++        MediaProfiles::CamcorderProfile *FrontHighProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_CIF, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++        FrontHighProfile->mQuality = CAMCORDER_QUALITY_HIGH;
++        profiles->mCamcorderProfiles.add(FrontHighProfile);
++    }
++
++    //CAMCORDER_QUALITY_TIME_LAPSE_QCIF
++    MediaProfiles::CamcorderProfile *FrontTimeQcifProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_QCIF, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontTimeQcifProfile);
++    //CAMCORDER_QUALITY_TIME_LAPSE_QVGA
++    MediaProfiles::CamcorderProfile *FrontTimeQvgaProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_QVGA, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontTimeQvgaProfile);
++    //CAMCORDER_QUALITY_TIME_LAPSE_CIF
++    MediaProfiles::CamcorderProfile *FrontTimeCifProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_CIF, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontTimeCifProfile);
++    //CAMCORDER_QUALITY_TIME_LAPSE_480P
++    if (sMaxWdith >= 720) {
++        MediaProfiles::CamcorderProfile *FrontTime480pProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_480P, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++        profiles->mCamcorderProfiles.add(FrontTime480pProfile);
++        //CAMCORDER_QUALITY_TIME_LAPSE_HIGH
++        MediaProfiles::CamcorderProfile *FrontTimeHighProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_480P, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++        FrontTimeHighProfile->mQuality = CAMCORDER_QUALITY_TIME_LAPSE_HIGH;
++        profiles->mCamcorderProfiles.add(FrontTimeHighProfile);
++    }
++    else
++    {
++        //CAMCORDER_QUALITY_TIME_LAPSE_HIGH
++        MediaProfiles::CamcorderProfile *FrontTimeHighProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_TIME_LAPSE_CIF, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++        FrontTimeHighProfile->mQuality = CAMCORDER_QUALITY_TIME_LAPSE_HIGH;
++        profiles->mCamcorderProfiles.add(FrontTimeHighProfile);
++    }
++    return;
++}
++
++/*static*/ void
++MediaProfiles::createMTKLegacyCamcorderProfiles(MediaProfiles *profiles)
++{
++    //back Camera
++    //CAMCORDER_QUALITY_MTK_LOW
++    MediaProfiles::CamcorderProfile *LowProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_LOW, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(LowProfile);
++    //CAMCORDER_QUALITY_MTK_MEDIUM
++    MediaProfiles::CamcorderProfile *MediumProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_MEDIUM, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(MediumProfile);
++    //CAMCORDER_QUALITY_MTK_HIGH
++    MediaProfiles::CamcorderProfile *HighProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_HIGH, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(HighProfile);
++    //CAMCORDER_QUALITY_MTK_FINE
++    camcorder_quality fineID = CAMCORDER_QUALITY_MTK_FINE;
++    fineID = CAMCORDER_QUALITY_MTK_FINE_4K2K;
++    MediaProfiles::CamcorderProfile *FineProfile =
++        createMTKCamcorderProfile(fineID, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(FineProfile);
++
++    //CAMCORDER_QUALITY_MTK_NIGHT_LOW
++    MediaProfiles::CamcorderProfile *NightLowProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_NIGHT_LOW, CAMCORDER_NIGHT_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(NightLowProfile);
++    //CAMCORDER_QUALITY_MTK_NIGHT_MEDIUM
++    MediaProfiles::CamcorderProfile *NightMediumProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_NIGHT_MEDIUM, CAMCORDER_NIGHT_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(NightMediumProfile);
++    //CAMCORDER_QUALITY_MTK_NIGHT_HIGH
++    MediaProfiles::CamcorderProfile *NightHighProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_NIGHT_HIGH, CAMCORDER_NIGHT_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(NightHighProfile);
++    //CAMCORDER_QUALITY_MTK_NIGHT_FINE
++    MediaProfiles::CamcorderProfile *NightFineProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_NIGHT_FINE, CAMCORDER_NIGHT_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(NightFineProfile);
++    //CAMCORDER_QUALITY_MTK_LIVE_EFFECT
++    MediaProfiles::CamcorderProfile *LiveEffectProfile =
++        createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_LIVE_EFFECT, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(LiveEffectProfile);
++
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_LOW
++    MediaProfiles::CamcorderProfile *LowTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_LOW, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(LowTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_MEDIUM
++    MediaProfiles::CamcorderProfile *MediumTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_MEDIUM, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(MediumTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_HIGH
++    MediaProfiles::CamcorderProfile *HighTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_HIGH, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(HighTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE
++    camcorder_quality fineTimelapseID = CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE;
++    fineTimelapseID = CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE_4K2K;
++    MediaProfiles::CamcorderProfile *FineTimeLapseProfile =
++    createMTKCamcorderProfile(fineTimelapseID, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(FineTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_LOW
++    MediaProfiles::CamcorderProfile *NightLowTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_LOW, CAMCORDER_NIGHT_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(NightLowTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_MEDIUM
++    MediaProfiles::CamcorderProfile *NightMediumTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_MEDIUM,
++                    CAMCORDER_NIGHT_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(NightMediumTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_HIGH
++    MediaProfiles::CamcorderProfile *NightHighTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_HIGH, CAMCORDER_NIGHT_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(NightHighTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_FINE
++    MediaProfiles::CamcorderProfile *NightFineTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_FINE, CAMCORDER_NIGHT_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(NightFineTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_LIVE_EFFECT
++    MediaProfiles::CamcorderProfile *LiveEffectTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_LIVE_EFFECT, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(LiveEffectTimeLapseProfile);
++
++
++    //front Camera
++    //CAMCORDER_QUALITY_MTK_LOW
++    MediaProfiles::CamcorderProfile *FrontLowProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_LOW, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontLowProfile);
++    //CAMCORDER_QUALITY_MTK_HIGH
++    MediaProfiles::CamcorderProfile *FrontHighProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_HIGH, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontHighProfile);
++    //CAMCORDER_QUALITY_MTK_NIGHT_LOW
++    MediaProfiles::CamcorderProfile *FrontNightLowProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_NIGHT_LOW, CAMCORDER_NIGHT_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontNightLowProfile);
++    //CAMCORDER_QUALITY_MTK_NIGHT_HIGH
++    MediaProfiles::CamcorderProfile *FrontNightHighProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_NIGHT_HIGH, CAMCORDER_NIGHT_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontNightHighProfile);
++    //CAMCORDER_QUALITY_MTK_LIVE_EFFECT
++    MediaProfiles::CamcorderProfile *LiveEffectFrontProfile =
++        createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_LIVE_EFFECT, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(LiveEffectFrontProfile);
++
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_LOW
++    MediaProfiles::CamcorderProfile *FrontLowTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_LOW, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontLowTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_HIGH
++    MediaProfiles::CamcorderProfile *FrontHighTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_HIGH, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontHighTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_LOW
++    MediaProfiles::CamcorderProfile *FrontNightLowTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_LOW, CAMCORDER_NIGHT_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontNightLowTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_HIGH
++    MediaProfiles::CamcorderProfile *FrontNightHighTimeLapseProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_HIGH,
++                    CAMCORDER_NIGHT_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(FrontNightHighTimeLapseProfile);
++    //CAMCORDER_QUALITY_MTK_TIME_LAPSE_LIVE_EFFECT
++    MediaProfiles::CamcorderProfile *LiveEffectTimeLapseFrontProfile =
++            createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_TIME_LAPSE_LIVE_EFFECT, CAMCORDER_DAY_MODE, FRONT_CAMERA);
++    profiles->mCamcorderProfiles.add(LiveEffectTimeLapseFrontProfile);
++
++    return;
++}
++
++/*static*/ void
++MediaProfiles::createMTKSlowMotionCamcorderProfiles(MediaProfiles *profiles)
++{
++    MediaProfiles::CamcorderProfile *SM720P120Profile =
++        createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_720P_120, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(SM720P120Profile);
++    //CAMCORDER_QUALITY_MTK_720P_180
++    MediaProfiles::CamcorderProfile *SM720P180Profile =
++        createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_720P_180, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(SM720P180Profile);
++    //CAMCORDER_QUALITY_MTK_1080P_120
++    MediaProfiles::CamcorderProfile *SM1080P120Profile =
++        createMTKCamcorderProfile(CAMCORDER_QUALITY_MTK_1080P_120, CAMCORDER_DAY_MODE, BACK_CAMERA);
++    profiles->mCamcorderProfiles.add(SM1080P120Profile);
++
++    return;
++}
++
++/*static*/ MediaProfiles::VideoCodec *
++MediaProfiles::createMTKLowVideoProfile (camcorder_mode CamMode, camera_id CamId)
++{
++    VideoCodec *videoCodec = NULL;
++
++    if (CamId == BACK_CAMERA) {
++        videoCodec = new MediaProfiles::VideoCodec(
++                VIDEO_ENCODER_H264, 750*1000/CamMode, 176, 144, 30/CamMode);
++    }
++    else {
++        videoCodec = new MediaProfiles::VideoCodec(
++                VIDEO_ENCODER_MPEG_4_SP, 150*1000/CamMode, 176, 144, 30/CamMode);
++    }
++
++    return videoCodec;
++}
++/*static*/ MediaProfiles::VideoCodec *
++MediaProfiles::createMTKMediumVideoProfile(camcorder_mode CamMode, camera_id CamId)
++{
++    VideoCodec *videoCodec = NULL;
++    UNUSEDP(CamId);
++
++    if (CamId == BACK_CAMERA) {
++        videoCodec = new MediaProfiles::VideoCodec(
++                VIDEO_ENCODER_H264, 9000*1000/CamMode, 1280, 720, 30/CamMode);
++    }
++    else {
++        videoCodec = new MediaProfiles::VideoCodec(
++                VIDEO_ENCODER_H264,
++                (CamMode == CAMCORDER_DAY_MODE) ? 3000*1000 : 1250*1000,
++                640, 480, 30/CamMode);
++    }
++
++    return videoCodec;
++}
++/*static*/ MediaProfiles::VideoCodec *
++MediaProfiles::createMTKHighVideoProfile(camcorder_mode CamMode, camera_id CamId)
++{
++    VideoCodec *videoCodec = NULL;
++
++    if (CamId == BACK_CAMERA) {
++        videoCodec = new MediaProfiles::VideoCodec(
++                VIDEO_ENCODER_H264, 17000*1000/CamMode, 1920, 1088, 30/CamMode);
++    }
++    else {
++        videoCodec = new MediaProfiles::VideoCodec(
++                VIDEO_ENCODER_MPEG_4_SP, 4200*1000/CamMode, 640, 480, 30/CamMode);
++    }
++
++    return videoCodec;
++}
++/*static*/ MediaProfiles::VideoCodec *
++MediaProfiles::createMTKFineVideoProfile(camcorder_mode CamMode, camera_id CamId)
++{
++    VideoCodec *videoCodec = NULL;
++
++    UNUSEDP(CamId);
++
++    if (CamId == BACK_CAMERA) {
++        videoCodec = new MediaProfiles::VideoCodec(
++                VIDEO_ENCODER_HEVC, 43000*1000/CamMode, 3840, 2176, 30/CamMode);
++    }
++    else {
++        videoCodec = new MediaProfiles::VideoCodec(
++                VIDEO_ENCODER_H264, 17000*1000/CamMode, 1920, 1088, 30/CamMode);
++    }
++
++    return videoCodec;
++}
++#endif//MTK_HARDWARE
+ } // namespace android
+-- 
+1.9.1
+
