@@ -33,7 +33,10 @@ PRODUCT_PACKAGES += \
     libshim_wvm \
     libshim_xlog \
     libshim_netutils \
-    libshim_wvm32
+    libshim_wvm32 \
+    libgralloc_extra \
+    libgui_ext \
+    libui_ext
 
 # Power HAL
 PRODUCT_PACKAGES += power.mt6795
