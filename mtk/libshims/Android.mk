@@ -44,14 +44,3 @@ LOCAL_MODULE := libshim_netutils
 LOCAL_CFLAGS := -Wno-unused-variable -Wno-unused-parameter
 LOCAL_PROPRIETARY_MODULE := true
 include $(BUILD_SHARED_LIBRARY)
-
-# libshim_wvm32 (Shim library for missing symbols in libwvm only for 32bit libraries)
-include $(CLEAR_VARS)
-LOCAL_MULTILIB := 32
-LOCAL_SRC_FILES_32 := libwvm32.cpp
-LOCAL_SHARED_LIBRARIES := liblog libstagefright libcutils libmedia
-LOCAL_MODULE := libshim_wvm32
-LOCAL_CFLAGS := -Wno-unused-variable -Wno-unused-parameter
-LOCAL_PROPRIETARY_MODULE := true
-LOCAL_MODULE_TAGS := optional
-include $(BUILD_SHARED_LIBRARY)
