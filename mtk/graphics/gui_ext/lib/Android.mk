@@ -52,9 +52,9 @@ MTK_HWC_CHIP = $(shell echo $(MTK_PLATFORM) | tr A-Z a-z )
 
 LOCAL_C_INCLUDES:= \
     $(TOP)/frameworks/base/include/ \
-    $(TOP)/hardware/lenovo/graphics/gui_ext/inc \
-    $(TOP)/hardware/lenovo/graphics/ui_ext/inc \
-    $(TOP)/hardware/lenovo/graphics/gralloc_extra/include
+    $(TOP)/device/xiaomi/hermes/mtk/graphics/gui_ext/inc \
+    $(TOP)/device/xiaomi/hermes/mtk/graphics/ui_ext/inc \
+    $(TOP)/device/xiaomi/hermes/mtk/graphics/gralloc_extra/include
 
 LOCAL_SHARED_LIBRARIES := \
     libutils \
@@ -66,7 +66,6 @@ LOCAL_SHARED_LIBRARIES := \
     libui \
     libdl \
     libion \
-    libion_mtk \
     libgralloc_extra \
     libui_ext
 

@@ -48,8 +48,8 @@ LOCAL_SRC_FILES:= \
 	RefBaseDump.cpp
 
 LOCAL_C_INCLUDES:= \
-	hardware/lenovo/graphics/ui_ext/inc \
-	hardware/lenovo/graphics/gralloc_extra/include \
+	$(TOP)/device/xiaomi/hermes/mtk/graphics/ui_ext/inc \
+	$(TOP)/device/xiaomi/hermes/mtk/graphics/gralloc_extra/include \
 	external/libpng \
 	external/zlib \
 	external/skia/src/images \
