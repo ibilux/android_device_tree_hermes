@@ -1,6 +1,7 @@
 #!/bin/sh
+
 rootdirectory="$PWD"
-dirs="frameworks/av frameworks/base frameworks/native system/core system/media system/netd system/sepolicy packages/apps/FMRadio prebuilts/sdk"
+dirs="frameworks/av frameworks/base frameworks/native system/core system/netd"
 
 RED='\033[0;31m'
 NC='\033[0m'
