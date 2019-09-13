@@ -27,10 +27,7 @@ PRODUCT_PACKAGES += Snap
 # Shim symbols
 PRODUCT_PACKAGES += \
     libshim_c \
-    libshim_media \
-    libshim_stagefright \
     libshim_ui \
-    libshim_wvm \
     libshim_xlog \
     libshim_netutils \
     libgralloc_extra \
