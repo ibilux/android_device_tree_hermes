@@ -120,7 +120,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += $(LOCAL_PATH)/configs/spn-conf.xml:system/etc/spn-conf.xml
 
 # Camera
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/configs/mediaserver.rc:system/etc/init/mediaserver.rc
+PRODUCT_COPY_FILES += $(LOCAL_PATH)/configs/init/mediaserver.rc:system/etc/init/mediaserver.rc
+
+# Audio Wakelock (So Music will not stop while turn off screen)
+PRODUCT_COPY_FILES += $(LOCAL_PATH)/configs/init/audioserver.rc:system/etc/init/audioserver.rc
 
 # Wi-Fi
 PRODUCT_COPY_FILES += \
