@@ -41,14 +41,14 @@
             <Feature name="adaptive-playback"/>
             <Limit name="concurrent-instances" max="16" />
         </MediaCodec>
-        <!-- <MediaCodec name="OMX.MTK.VIDEO.DECODER.AVC.secure" type="video/avc" >
+        <MediaCodec name="OMX.MTK.VIDEO.DECODER.AVC.secure" type="video/avc" >
             <Limit name="size" min="64x64" max="1920x1080" />
             <Quirk name="requires-allocate-on-input-ports" />
             <Quirk name="requires-allocate-on-output-ports" />
             <Feature name="secure-playback" required="true" />
             <Feature name="adaptive-playback"/>
-            <Limit name="concurrent-instances" max="1" />
-        </MediaCodec> -->
+            <Limit name="concurrent-instances" max="16" />
+        </MediaCodec>
         <MediaCodec name="OMX.MTK.VIDEO.DECODER.RV" type="video/vnd.rn-realvideo" >
             <Limit name="size" min="64x64" max="1920x1080" />
             <Quirk name="requires-allocate-on-input-ports" />
@@ -111,7 +111,6 @@
             <Limit name="concurrent-instances" max="16" />
         </MediaCodec>
     </Decoders>
-
     <Encoders>
         <MediaCodec name="OMX.MTK.VIDEO.ENCODER.MPEG4" type="video/mp4v-es" >
             <Limit name="size" min="176x144" max="176x144" />
