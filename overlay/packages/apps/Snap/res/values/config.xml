@@ -22,4 +22,7 @@
     <!-- Restart preview for front camera onPictureTaken -->
     <bool name="front_camera_restart_preview_onPictureTaken">true</bool>
 
+    <!-- ISO values use numbers -->
+    <bool name="iso_values_use_numbers">true</bool>
+
 </resources>
