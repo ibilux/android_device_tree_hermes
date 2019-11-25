@@ -61,10 +61,12 @@
             <Limit name="channel-count" max="8" />
             <Limit name="sample-rate" ranges="8000-192000" />
         </MediaCodec>
+        <!--
         <MediaCodec name="OMX.ffmpeg.alac.decoder"   type="audio/alac" >
             <Limit name="channel-count" max="8" />
             <Limit name="sample-rate" ranges="8000-192000" />
         </MediaCodec>
+        -->
         <!--  ffmpeg video codecs -->
         <MediaCodec name="OMX.ffmpeg.divx.decoder"   type="video/divx">
             <Limit name="size" min="16x16" max="1920x1080" />
