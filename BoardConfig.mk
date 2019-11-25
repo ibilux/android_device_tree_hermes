@@ -1,3 +1,4 @@
+# Path
 LOCAL_PATH := device/xiaomi/hermes
 
 # Platform
@@ -6,7 +7,7 @@ TARGET_BOARD_PLATFORM := mt6795
 TARGET_NO_BOOTLOADER := true
 TARGET_IS_64_BIT := true
 
-# CPU
+# Architecture
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
 TARGET_CPU_ABI := arm64-v8a
@@ -24,10 +25,14 @@ BLOCK_BASED_OTA := false
 
 # Kernel
 TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/kernel
-BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 log_buf_len=8M androidboot.selinux=permissive
+ifneq ($(TARGET_BUILD_VARIANT),user)
+BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 androidboot.selinux=permissive
+else
+BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2
+endif
 BOARD_MKBOOTIMG_ARGS := \
     --base 0x40078000 \
-    --board mt6795 \
+    --board $(TARGET_BOARD_PLATFORM) \
     --kernel_offset 0x00008000 \
     --pagesize 2048 \
     --ramdisk_offset 0x03f88000 \
@@ -48,9 +53,8 @@ BOARD_FLASH_BLOCK_SIZE := 131072
 BOARD_USES_MTK_HARDWARE := true
 
 # Display
-BOARD_EGL_CFG := $(LOCAL_PATH)/configs/egl.cfg
 TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS := true
-MAX_VIRTUAL_DISPLAY_DIMENSION := 1
+TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
 
 # Audio
 USE_XML_AUDIO_POLICY_CONF := 1
@@ -75,13 +79,7 @@ BOARD_USES_CYANOGEN_HARDWARE := true
 BOARD_HARDWARE_CLASS := $(LOCAL_PATH)/cmhw
 
 # Camera
-TARGET_SPECIFIC_CAMERA_PARAMETER_LIBRARY := libcamera_parameters_mtk
-TARGET_CAMERASERVICE_CLOSES_NATIVE_HANDLES := true
-TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
 TARGET_HAS_LEGACY_CAMERA_HAL1 := true
-TARGET_OMX_LEGACY_RESCALING := true
-USE_CAMERA_STUB := true
-BOARD_GLOBAL_CFLAGS += -DCAMERA_VENDOR_L_COMPAT
 
 # Low-ram
 MALLOC_SVELTE := true
@@ -104,22 +102,18 @@ WIFI_DRIVER_FW_PATH_P2P := P2P
 WIFI_DRIVER_FW_PATH_AP := AP
 
 # Recovery
-TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/recovery.fstab
+TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/fstab.mt6795
 BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_15x24.h\"
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBA_8888"
 BOARD_HAS_NO_SELECT_BUTTON := true
 BOARD_SUPPRESS_EMMC_WIPE := true
 BOARD_RECOVERY_SWIPE := true
 
-# Seccomp
-#TARGET_DOES_NOT_SUPPORT_SECCOMP := true
-
 # Sepolicy
 BOARD_SEPOLICY_DIRS += $(LOCAL_PATH)/sepolicy
-#POLICYVERS := 28
 
-# Seccomp policy
-BOARD_SECCOMP_POLICY += $(LOCAL_PATH)/seccomp
+# Seccomp filter
+BOARD_SECCOMP_POLICY := $(LOCAL_PATH)/seccomp
 
 # Build kernel without kernel sources
 $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
