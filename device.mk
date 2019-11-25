@@ -1,3 +1,4 @@
+# Path
 LOCAL_PATH := device/xiaomi/hermes
 
 # Vendor
@@ -6,6 +7,9 @@ $(call inherit-product, vendor/xiaomi/hermes/hermes-vendor.mk)
 # Dalvik/HWUI
 $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-dalvik-heap.mk)
 $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-hwui-memory.mk)
+
+# Properties
+include $(LOCAL_PATH)/props.mk
 
 # Overlays
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
@@ -29,10 +33,7 @@ PRODUCT_PACKAGES += \
     libshim_c \
     libshim_ui \
     libshim_xlog \
-    libshim_netutils \
-    libgralloc_extra \
-    libgui_ext \
-    libui_ext
+    libshim_netutils
 
 # Power HAL
 PRODUCT_PACKAGES += power.mt6795
@@ -47,7 +48,10 @@ PRODUCT_PACKAGES += \
 # Graphic
 PRODUCT_PACKAGES += \
     libGLES_android \
-    libion
+    libion \
+    libgralloc_extra \
+    libgui_ext \
+    libui_ext
 
 # Doze
 #PRODUCT_PACKAGES += XiaomiDoze
@@ -62,7 +66,7 @@ PRODUCT_PACKAGES += libmockdrmcryptoplugin
 PRODUCT_PACKAGES += \
 	FMRadio \
 	libfmcust
-	
+
 # Audio
 PRODUCT_PACKAGES += \
     audio.a2dp.default \
@@ -80,11 +84,10 @@ PRODUCT_COPY_FILES += \
 
 # Rootdir
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/fstab.mt6795:root/fstab.mt6795 \
-    $(LOCAL_PATH)/rootdir/init.mt6795.rc:root/init.mt6795.rc \
-    $(LOCAL_PATH)/rootdir/init.mt6795.usb.rc:root/init.mt6795.usb.rc \
-    $(LOCAL_PATH)/rootdir/ueventd.mt6795.rc:root/ueventd.mt6795.rc \
-    $(LOCAL_PATH)/rootdir/variant_check.sh:root/variant_check.sh
+    $(LOCAL_PATH)/rootdir/fstab.mt6795:$(TARGET_COPY_OUT_ROOT)/fstab.mt6795 \
+    $(LOCAL_PATH)/rootdir/init.mt6795.rc:$(TARGET_COPY_OUT_ROOT)/init.mt6795.rc \
+    $(LOCAL_PATH)/rootdir/init.mt6795.usb.rc:$(TARGET_COPY_OUT_ROOT)/init.mt6795.usb.rc \
+    $(LOCAL_PATH)/rootdir/ueventd.mt6795.rc:$(TARGET_COPY_OUT_ROOT)/ueventd.mt6795.rc
 
 # Permissions
 PRODUCT_COPY_FILES += \
@@ -99,6 +102,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
     frameworks/native/data/etc/android.hardware.sensor.accelerometer.xml:system/etc/permissions/android.hardware.sensor.accelerometer.xml \
     frameworks/native/data/etc/android.hardware.sensor.compass.xml:system/etc/permissions/android.hardware.compass.xml \
+    frameworks/native/data/etc/android.hardware.sensor.compass.xml:system/etc/permissions/android.hardware.sensor.compass.xml \
     frameworks/native/data/etc/android.hardware.sensor.gyroscope.xml:system/etc/permissions/android.hardware.sensor.gyroscope.xml \
     frameworks/native/data/etc/android.hardware.sensor.light.xml:system/etc/permissions/android.hardware.sensor.light.xml \
     frameworks/native/data/etc/android.hardware.sensor.proximity.xml:system/etc/permissions/android.hardware.sensor.proximity.xml \
@@ -148,14 +152,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/codecs/media_codecs_performance.xml:system/etc/media_codecs_performance.xml \
     $(LOCAL_PATH)/configs/codecs/media_codecs.xml:system/etc/media_codecs.xml \
     $(LOCAL_PATH)/configs/codecs/media_profiles.xml:system/etc/media_profiles.xml \
-    $(LOCAL_PATH)/configs/codecs/mtk_clear_motion.cfg:system/etc/mtk_clear_motion.cfg \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/etc/media_codecs_google_telephony.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_video_le.xml:system/etc/media_codecs_google_video_le.xml
-
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES := \
-     persist.sys.timezone=Europe/Moscow
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.call_recording.enabled=true \
-    persist.call_recording.src=4
