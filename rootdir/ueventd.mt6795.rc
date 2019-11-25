@@ -61,6 +61,3 @@
 /sys/devices/platform/leds-mt65xx/leds/cyan    delay_off  0664  system  system
 /sys/devices/platform/leds-mt65xx/leds/violet  delay_on   0664  system  system
 /sys/devices/platform/leds-mt65xx/leds/violet  delay_off  0664  system  system
-
-
-

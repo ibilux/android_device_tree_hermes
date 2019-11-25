@@ -11,10 +11,8 @@ on init
     export LD_SHIM_LIBS \
         "/system/lib/libc.so|libshim_c.so: \
         /system/lib64/libc.so|libshim_c.so: \
-        /system/lib/libmedia.so|libshim_media.so: \
-        /system/lib64/libmedia.so|libshim_media.so: \
-        /system/lib/libstagefright.so|libshim_stagefright.so: \
-        /system/lib64/libstagefright.so|libshim_stagefright.so: \
+        /system/lib/libui.so|libshim_ui.so: \
+        /system/lib64/libui.so|libshim_ui.so: \
         /system/lib/liblog.so|libshim_xlog.so: \
         /system/lib64/liblog.so|libshim_xlog.so: \
         /system/lib/libnetutils.so|libshim_netutils.so: \
@@ -37,7 +35,7 @@ on init
     chmod 0660 /proc/lk_env
 
 on fs
-    mount_all /fstab.mt6795
+    mount_all fstab.mt6795
 
 on late-fs
 # boot time fs tune
@@ -75,7 +73,7 @@ on post-fs-data
 
 # GPS
     mkdir /data/gps_mnl 0771 gps system
-    mkdir /data/misc/gps 0770 gps gps
+    mkdir /data/misc/gps 0770 gps system
     chown gps gps /sys/class/gpsdrv/gps/pwrctl
     chown gps gps /sys/class/gpsdrv/gps/suspend
     chown gps gps /sys/class/gpsdrv/gps/state
@@ -185,9 +183,11 @@ on post-fs-data
 
 # Graphic
     chmod 0660 /dev/mtk_disp_mgr
-    chmod 0660 /dev/sw_sync
+    chmod 0666 /dev/sw_sync
+    chmod 0660 /sys/devices/platform/mtk_disp_mgr.0/rgb
     chown system graphics /dev/mtk_disp_mgr
     chown system graphics /dev/sw_sync
+    chown system system /sys/devices/platform/mtk_disp_mgr.0/rgb
 
 # Autok
     chown root system /sys/autok/debug
@@ -202,14 +202,8 @@ on post-fs-data
     chown root system /sys/autok/stage2/3
 
 # Device info /proc interface
-    chmod 0440 /dev/devmap
+    chmod 0666 /dev/devmap
     chown root system /dev/devmap
-
-# SecMem
-    chown system system /proc/secmem0
-    mknod /dev/sec c 182 0
-    chmod 0660 /dev/sec
-    chown root system /dev/sec
 
 # Camera
     chmod 0660 /dev/camera-fdvt
@@ -242,7 +236,7 @@ on post-fs-data
 
 # AGPS
     mkdir /data/agps_supl 0771 gps system
-    restorecon_recursive /data/misc/gps
+    #restorecon_recursive /data/misc/gps
 
 # BT/FM/GPS
     chmod 0660 /dev/ttyMT2
@@ -254,7 +248,7 @@ on post-fs-data
     chown wifi wifi /data/misc/wifi
 
 # Thermal
-    mkdir /data/.tp/ 0775 system system
+    mkdir /data/.tp 0775 system system
 
 # Consumerir
     chmod 0660 /dev/consumerir
@@ -364,17 +358,15 @@ on boot
     write /sys/module/musb_hdrc/parameters/debug_level 0
     write /sys/module/lowmemorykiller/parameters/debug_level 0
 
-    exec /variant_check.sh
-
 # WMT loader
     chown shell system /proc/driver/wmt_aee
     chown shell system /proc/driver/wmt_dbg
 
 # Graphic
-service guiext-server /vendor/bin/guiext-server
-    class main
-    user system
-    group system graphics
+#service guiext-server /vendor/bin/guiext-server
+#    class main
+#    user system
+#    group system graphics
 
 service pq /vendor/bin/pq
     class main
@@ -410,7 +402,7 @@ service wpa_supplicant /system/bin/wpa_supplicant \
     oneshot
 
 # Modem
-service 6620_launcher /vendor/bin/6620_launcher -m 4 -p /system/etc/firmware/
+service conn_launcher /vendor/bin/6620_launcher -m 4 -p /vendor/etc/firmware/
     class core
     user system
     group system
@@ -421,15 +413,16 @@ service autokd /vendor/bin/autokd
     group system
 
 service ccci_fsd /vendor/bin/ccci_fsd 0
+    class core
     user radio
     group radio system
-    class core
+
     oneshot
 
 service ccci_mdinit /vendor/bin/ccci_mdinit 0
+    class core
     user system
     group radio system
-    class core
     oneshot
 
 service gsm0710muxd /vendor/bin/gsm0710muxd -s /dev/ttyC0 -f 512 -n 8 -m basic
@@ -439,7 +432,7 @@ service gsm0710muxd /vendor/bin/gsm0710muxd -s /dev/ttyC0 -f 512 -n 8 -m basic
     disabled
     oneshot
 
-service muxreport-daemon /vendor/bin/muxreport
+service muxreport /vendor/bin/muxreport
     class core
     user radio
     group radio cache inet misc
@@ -551,12 +544,10 @@ on property:vold.decrypt=trigger_reset_main
 
 on property:vold.decrypt=trigger_restart_min_framework
     start start_modem
-    start msensord
 
 on property:vold.decrypt=trigger_restart_framework
     start nvram_daemon
     start start_modem
-    start msensord
 
 on property:vold.decrypt=trigger_shutdown_framework
     start stop_modem
@@ -582,10 +573,6 @@ on property:sys.boot_completed=1
 # Boot info
     chown system system /proc/bootprof
 
-# Atmel calibration
-    chown root root /system/etc/init.atmel_ts.sh
-    chmod 777 /system/etc/init.atmel_ts.sh
-
 # BATTERY proc
     chown radio system /proc/mtk_battery_cmd/current_cmd
     chown radio system /proc/mtk_battery_cmd/discharging_cmd
@@ -595,40 +582,40 @@ on property:sys.boot_completed=1
     chmod 0664 /proc/mtk_battery_cmd/battery_cmd
 
 # BT
-    chmod 0666 /dev/stpbt
-    chown radio bluetooth /dev/stpbt
+    chmod 0660 /dev/stpbt
+    chown bluetooth radio /dev/stpbt
 
 # BT relayer
-    chmod 0666 /dev/ttyGS2
+    chmod 0660 /dev/ttyGS2
     chown bluetooth radio /dev/ttyGS2
 
 # ION device
     chmod 0666 /dev/ion
 
 # Selinux
-    restorecon /dev/wmtWifi
-    restorecon /dev/stpwmt
-    restorecon /dev/stpbt
-    restorecon /dev/stpgps
+    #restorecon /dev/wmtWifi
+    #restorecon /dev/stpwmt
+    #restorecon /dev/stpbt
+    #restorecon /dev/stpgps
 
 # Wi-Fi
-    chmod 0666 /dev/wmtWifi
+    chmod 0660 /dev/wmtWifi
     chown system system /dev/wmtWifi
 
-    chmod 0666 /dev/stpwmt
+    chmod 0660 /dev/stpwmt
     chown system system /dev/stpwmt
 
-    chmod 0666 /dev/wmtdetect
+    chmod 0660 /dev/wmtdetect
     chown system system /dev/wmtdetect
 
 
-    #Charging Battery
+#Charging Battery
     chown radio radio /sys/devices/platform/battery/Charging_CallState
 
-    #EM eint
-    chown root diag /sys/bus/platform/drivers/eint/current_eint
+#EM eint
+    #chown root diag /sys/bus/platform/drivers/eint/current_eint
 
-    #pmu
+#pmu
     chown root radio /sys/devices/platform/mt-pmic/pmic_access
     chmod 0664 /sys/devices/platform/mt-pmic/pmic_access
 
@@ -647,23 +634,19 @@ on property:sys.boot_completed=1
     chmod 4750 /system/bin/baseband_regdump
 
 # FM Radio
-    chmod 0666 /dev/fm
+    chmod 0660 /dev/fm
     chown system media /dev/fm
 
 # GPS
-    chmod 0666 /dev/gps
+    chmod 0660 /dev/gps
     chown system gps /dev/gps
 
-    chmod 0666 /dev/stpgps
+    chmod 0660 /dev/stpgps
     chown gps gps /dev/stpgps
 
 # Graphic
-    chmod 0660 /dev/graphics/fb0
-    chown system graphics /dev/graphics/fb0
-    chmod 0660 /dev/mtkfb_vsync
-    chown system graphics /dev/mtkfb_vsync
-    chmod 0660 /sys/devices/platform/mtk_disp_mgr.0/rgb
-    chown system system /sys/devices/platform/mtk_disp_mgr.0/rgb
+    #chmod 0660 /dev/graphics/fb0
+    #chown system graphics /dev/graphics/fb0
 
 # Perfservice
     chown system system /sys/devices/system/cpu/cpufreq/hotplug/cpu_num_base
@@ -686,19 +669,13 @@ on property:sys.boot_completed=1
     chmod 0666 /d/ged/hal/custom_upbound_gpu_freq
 
 # Modem related nodes
-    chown media audio /dev/ccci_aud
-    chown radio radio /dev/ccci_fs
-    chown radio radio /dev/ccci_ioctl0
-    chown radio radio /dev/ccci_ioctl1
-    chown radio radio /dev/ccci_ipc_1220_0
-    chown radio radio /dev/ccci_monitor
+    #chown media audio /dev/ccci_aud
+    #chown radio radio /dev/ccci_fs
+    #chown radio radio /dev/ccci_ioctl0
+    #chown radio radio /dev/ccci_ioctl1
+    #chown radio radio /dev/ccci_ipc_1220_0
+    #chown radio radio /dev/ccci_monitor
 
-# Camera
-    #chmod 0660 /dev/OV13853_CAM_CAL_DRV
-    #chmod 0660 /dev/BU6429AF
-    #chown system camera /dev/OV13853_CAM_CAL_DRV
-    #chown system camera /dev/BU6429AF
-
-# Boot mode (i think it's wrong !)
-    chmod 666 /sys/devices/virtual/BOOT/BOOT/boot/boot_mode
-    chown system system /sys/devices/virtual/BOOT/BOOT/boot/boot_mode
+# Boot mode
+    #chmod 666 /sys/devices/virtual/BOOT/BOOT/boot/boot_mode
+    #chown system system /sys/devices/virtual/BOOT/BOOT/boot/boot_mode
