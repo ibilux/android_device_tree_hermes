@@ -34,7 +34,7 @@
 
     <!-- Boolean indicating if restoring network selection should be skipped -->
     <!-- The restoring is handled by modem if it is true -->
-    <bool translatable="false" name="skip_restoring_network_selection">true</bool>
+    <!-- <bool translatable="false" name="skip_restoring_network_selection">true</bool> -->
 
     <!-- This string array should be overridden by the device to present a list of network
          attributes.  This is used by the connectivity manager to decide which networks can coexist
@@ -81,7 +81,7 @@
                   Wifi interfaces.  If the device doesn't want to support tethering over Wifi this
          should be empty.  An example would be "softap.*" -->
     <string-array name="config_tether_wifi_regexs">
-        <item>"ap\\d"</item>
+        <item>"wlan0"</item>
     </string-array>
 
     <!-- List of regexpressions describing the interface (if any) that represent tetherable
@@ -146,21 +146,21 @@
          Zone N + 1:    array[N] <= LUX < infinity
          Must be overridden in platform specific overlays -->
     <integer-array name="config_autoBrightnessLevels">
-        <item>16</item>
-        <item>32</item>
-        <item>50</item>
-        <item>100</item>
-        <item>140</item>
-        <item>180</item>
-        <item>240</item>
-        <item>300</item>
-        <item>600</item>
-        <item>1000</item>
-        <item>2000</item>
-        <item>3000</item>
-        <item>4000</item>
-        <item>8000</item>
-        <item>10000</item>
+        <item>1</item>
+        <item>11</item>
+        <item>31</item>
+        <item>81</item>
+        <item>121</item>
+        <item>226</item>
+        <item>321</item>
+        <item>551</item>
+        <item>801</item>
+        <item>1251</item>
+        <item>2001</item>
+        <item>3001</item>
+        <item>5001</item>
+        <item>7501</item>
+        <item>13000</item>
     </integer-array>
 
     <!-- Array of output values for LCD backlight corresponding to the LUX values
@@ -168,21 +168,21 @@
          than the size of the config_autoBrightnessLevels array.
          This must be overridden in platform specific overlays -->
     <integer-array name="config_autoBrightnessLcdBacklightValues">
-        <item>30</item>
-        <item>40</item>
-        <item>50</item>
+        <item>16</item>
+        <item>19</item>
+        <item>25</item>
+        <item>31</item>
+        <item>33</item>
+        <item>34</item>
+        <item>35</item>
+        <item>37</item>
+        <item>39</item>
+        <item>42</item>
+        <item>46</item>
+        <item>51</item>
         <item>60</item>
-        <item>70</item>
-        <item>80</item>
-        <item>102</item>
-        <item>102</item>
-        <item>102</item>
-        <item>102</item>
-        <item>102</item>
-        <item>180</item>
-        <item>200</item>
-        <item>210</item>
-        <item>230</item>
+        <item>79</item>
+        <item>128</item>
         <item>255</item>
     </integer-array>
 
