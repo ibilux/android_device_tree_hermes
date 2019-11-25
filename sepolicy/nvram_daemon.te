@@ -1,0 +1,4 @@
+type nvram_daemon_exec, exec_type, file_type;
+type nvram_daemon, domain;
+
+init_daemon_domain(nvram_daemon)

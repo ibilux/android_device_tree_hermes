@@ -1,0 +1,2 @@
+allow init socket_device:sock_file { create unlink setattr };
+allow init tmpfs:lnk_file create;

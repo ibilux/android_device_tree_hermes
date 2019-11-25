@@ -1,0 +1,7 @@
+type wmt_loader_exec, exec_type, file_type;
+type wmt_loader, domain;
+
+init_daemon_domain(wmt_loader)
+
+allow wmt_loader self:capability { chown dac_override };
+allow wmt_loader wmtdetect_device:chr_file create_file_perms;

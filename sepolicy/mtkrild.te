@@ -1,0 +1,5 @@
+type mtkrild_exec, exec_type, file_type;
+type mtkrild, domain;
+
+init_daemon_domain(mtkrild)
+net_domain(mtkrild)

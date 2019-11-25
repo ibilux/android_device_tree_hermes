@@ -1,0 +1,6 @@
+type pvrsrvctl_exec, exec_type, file_type;
+type pvrsrvctl, domain;
+
+init_daemon_domain(pvrsrvctl)
+
+allow pvrsrvctl gpu_device:chr_file rw_file_perms;

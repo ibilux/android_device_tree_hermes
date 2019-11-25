@@ -1,0 +1,4 @@
+type gsm0710muxd_exec, exec_type, file_type;
+type gsm0710muxd, domain;
+
+init_daemon_domain(gsm0710muxd)

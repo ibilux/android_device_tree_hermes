@@ -1,0 +1,2 @@
+allow system_server debugfs:dir r_file_perms;
+allow system_server hwmsensor_device:chr_file r_file_perms;

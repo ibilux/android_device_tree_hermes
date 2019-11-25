@@ -1,0 +1,4 @@
+type md_ctrl_exec, exec_type, file_type;
+type md_ctrl, domain;
+
+init_daemon_domain(md_ctrl)

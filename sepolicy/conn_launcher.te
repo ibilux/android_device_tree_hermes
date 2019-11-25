@@ -1,0 +1,4 @@
+type conn_launcher_exec, exec_type, file_type;
+type conn_launcher, domain;
+
+init_daemon_domain(conn_launcher)

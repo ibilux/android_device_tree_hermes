@@ -1,0 +1,5 @@
+type mnld_exec, exec_type, file_type;
+type mnld, domain;
+
+init_daemon_domain(mnld)
+net_domain(mnld)
