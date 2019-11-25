@@ -10,7 +10,7 @@
 #include <utils/SortedVector.h>
 #include <binder/PermissionCache.h>
 
-#include <android/native_window.h>
+//#include <android/native_window.h>
 #include <gui/ISurfaceComposer.h>
 #include <gui/SurfaceComposerClient.h>
 

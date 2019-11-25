@@ -53,7 +53,8 @@ LOCAL_C_INCLUDES:= \
 	external/libpng \
 	external/zlib \
 	external/skia/src/images \
-	external/skia/include/core
+	external/skia/include/core \
+    external/skia/include/config
 
 LOCAL_SHARED_LIBRARIES := \
 	libpng \
@@ -63,7 +64,8 @@ LOCAL_SHARED_LIBRARIES := \
 	libhardware \
 	libgralloc_extra \
 	libbinder \
-	libdl
+	libdl \
+	liblog
 
 LOCAL_MODULE := libui_ext
 

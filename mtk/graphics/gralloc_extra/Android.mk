@@ -1,4 +1,5 @@
 LOCAL_PATH := $(call my-dir)
+
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
@@ -11,7 +12,8 @@ LOCAL_C_INCLUDES := \
 LOCAL_SHARED_LIBRARIES := \
 	libhardware \
 	libcutils \
-	libutils
+	libutils \
+	liblog
 
 LOCAL_MODULE := libgralloc_extra
 

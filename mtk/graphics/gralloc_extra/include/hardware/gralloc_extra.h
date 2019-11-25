@@ -1,7 +1,7 @@
 #ifndef MTK_GRALLOC_EXTRA_DEVICE_H
 #define MTK_GRALLOC_EXTRA_DEVICE_H
 
-#include <system/window.h>
+//#include <system/window.h>
 #include <hardware/hardware.h>
 #include <hardware/gralloc.h>
 

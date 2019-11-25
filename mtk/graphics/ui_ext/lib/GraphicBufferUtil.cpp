@@ -11,7 +11,7 @@
 #include <ui/GraphicBufferMapper.h>
 
 #include <png.h>
-#include <transform_scanline.h>
+#include "SkColorPriv.h" //#include <transform_scanline.h>
 
 #include <GraphicBufferUtil.h>
 #include <graphics_mtk_defs.h>

@@ -9,8 +9,5 @@ struct xlog_record {
 void __attribute__((weak)) __xlog_buf_printf(__unused int bufid, const struct xlog_record *xlog_record, ...) {
     va_list args;
     va_start(args, xlog_record);
-
-        __android_log_vprint(xlog_record->prio, xlog_record->tag_str, xlog_record->fmt_str, args);
-
-    return;
+    __android_log_vprint(xlog_record->prio, xlog_record->tag_str, xlog_record->fmt_str, args);
 }

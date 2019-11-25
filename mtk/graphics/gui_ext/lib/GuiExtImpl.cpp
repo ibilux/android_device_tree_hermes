@@ -596,8 +596,7 @@ status_t GuiExtPoolItem::prepareBuffer(sp<IGraphicBufferProducer> producer, uint
         int buf = -1;
         sp<Fence> fence;
 
-        producer->dequeueBuffer(&buf, &fence, /*false,*/ 0, 0, fmt, usg);
-
+        producer->dequeueBuffer(&buf, &fence, 0, 0, fmt, usg);
         uint32_t combine_id = POOL_COMBINED_ID(usage, type, i);
         sp<ConsumerSlot> consumerSlot = mConsumerList.valueFor(combine_id);
         if (consumerSlot == 0) {
@@ -667,7 +666,7 @@ status_t GuiExtPoolItem::acquire(const sp<IBinder>& token, uint32_t usage, uint3
     }
     sp<Fence> fence;
     uint32_t fmt = gAcquiredFormat[usage];
-    status_t ret = producer->dequeueBuffer(buf, &fence, /*false,*/ 0, 0, fmt, LOCK_FOR_USAGE);
+    status_t ret = producer->dequeueBuffer(buf, &fence, 0, 0, fmt, LOCK_FOR_USAGE);
     if (ret == WOULD_BLOCK || *buf < 0) {
         GUIEXT_LOGW("    acquire a pool=%d has no free slot", mId);
         return WOULD_BLOCK;
@@ -835,8 +834,11 @@ void GuiExtPoolItem::dump(String8& result) const
 
     if(mGPUUsedConsumer != NULL){
         result.appendFormat("    << GPU BQ >>\n");
-        mGPUUsedConsumer->dumpState(result, "        ");//dump(result, "        ");
-
+#ifdef AOSP_BUILD
+        mGPUUsedConsumer->dump(result, "        ");
+#else
+        mGPUUsedConsumer->dumpState(result, "        ");
+#endif
         result.appendFormat("    << GPU Consumer >> connected=%s\n",
                         mIsDisconnected[GUI_EXT_USAGE_GPU] ? "false" : "true");
         dumpConsumerSlots(result, GUI_EXT_USAGE_GPU, 0);
@@ -848,8 +850,11 @@ void GuiExtPoolItem::dump(String8& result) const
 #if SUPPORT_MULTIBQ_FOR_HWC
         for (uint32_t i = 0; i < mHwcUsedBqList.size(); i++) {
             result.appendFormat("    << HWC BQ >> type=%d\n", mHwcUsedBqList[i]->type);
-            mHwcUsedBqList[i]->mConsumer->dumpState(result, "        ");//dump(result, "        ");
-
+#ifdef AOSP_BUILD
+            mHwcUsedBqList[i]->mConsumer->dump(result, "        ");
+#else
+            mHwcUsedBqList[i]->mConsumer->dumpState(result, "        ");
+#endif
             result.appendFormat("    << HWC Consumer >> type=%d connected=%s\n",
                                 mHwcUsedBqList[i]->type,
                                 mIsDisconnected[GUI_EXT_USAGE_HWC] ? "false" : "true");
@@ -857,8 +862,11 @@ void GuiExtPoolItem::dump(String8& result) const
         }
 #else
         result.appendFormat("    << HWC BQ >>\n");
-        mHwcUsedBq->dumpState(result, "        ");//dump(result, "        ");
-
+#ifdef AOSP_BUILD
+        mHwcUsedBq->dump(result, "        ");
+#else
+        mHwcUsedBq->dumpState(result, "        ");
+#endif
         result.appendFormat("    << HWC Consumer >> connected=%s\n",
                             mIsDisconnected[GUI_EXT_USAGE_HWC] ? "false" : "true");
         dumpConsumerSlots(result, GUI_EXT_USAGE_HWC, 0);
