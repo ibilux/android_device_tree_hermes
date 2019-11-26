@@ -134,5 +134,8 @@ BOARD_USE_SOFT_GATEKEEPER := true
 # Camera flags
 TARGET_USES_NON_TREBLE_CAMERA := true
 
+# Suppress MTK audio blob error message flag
+SUPPRESS_MTK_AUDIO_BLOB_ERR_MSG := true
+
 # HIDL Manifest
 DEVICE_MANIFEST_FILE := $(LOCAL_PATH)/configs/manifest.xml
