@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-/*
+**
 ** Copyright 2016, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,11 @@
 ** limitations under the License.
 */
 -->
+
 <resources>
-
-    <!-- Set the automatic brightness mode on by default -->
-    <bool name="def_screen_brightness_automatic_mode">true</bool>
-
-    <bool name="def_accelerometer_rotation">true</bool>
-     <!-- Default screen brightness, from 0 to 255. 87 is 34%. -->
-    <integer name="def_screen_brightness">50</integer>
-    <!-- 30 seconds for default screen timeout -->
-    <integer name="def_screen_off_timeout">30000</integer>
-
-    <bool name="def_install_non_market_apps">true</bool>
+    <!-- When true enable gesture setting. -->
+    <bool name="config_gesture_settings_enabled">true</bool>
+ <!-- Using this on MSIM devices leads to weird states that break telephony's
+ internal state machine. All MSIM devices should probably set this to "true"-->
+ <bool name="config_disablePreferredNetworkSwitch" translatable="false">true</bool>
 </resources>
