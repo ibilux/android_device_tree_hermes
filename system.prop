@@ -26,6 +26,7 @@ persist.sys.display.clearMotion=1
 ro.mtk_deinterlace_support=1
 ro.mtk_pq_support=2
 ro.opengles.version=196609
+vendor.ro.opengles.version=196609
 sys.display-size=1920x1080
 ro.sf.lcd_density=480
 wfd.dummy.enable=1
