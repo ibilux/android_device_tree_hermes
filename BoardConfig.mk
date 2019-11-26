@@ -125,5 +125,8 @@ $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
 # Disable dex pre-opt
 WITH_DEXPREOPT := false
 
+# GC tweak
+PRODUCT_TAGS += dalvik.gc.type-precise
+
 # HIDL Manifest
 DEVICE_MANIFEST_FILE := $(LOCAL_PATH)/configs/manifest.xml
