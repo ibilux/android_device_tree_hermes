@@ -47,6 +47,10 @@ PRODUCT_PACKAGES += \
 # Power HAL
 PRODUCT_PACKAGES += power.mt6795
 
+# Modem controller
+PRODUCT_PACKAGES += \
+    md_ctrl
+
 # Wifi mtk wpa_supp lib
 PRODUCT_PACKAGES += lib_driver_cmd_mt66xx
 
