@@ -131,5 +131,8 @@ PRODUCT_TAGS += dalvik.gc.type-precise
 # SW Gatekeeper
 BOARD_USE_SOFT_GATEKEEPER := true
 
+# Camera flags
+TARGET_USES_NON_TREBLE_CAMERA := true
+
 # HIDL Manifest
 DEVICE_MANIFEST_FILE := $(LOCAL_PATH)/configs/manifest.xml
