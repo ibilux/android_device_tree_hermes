@@ -432,7 +432,7 @@ service gsm0710muxd /vendor/bin/gsm0710muxd -s /dev/ttyC0 -f 512 -n 8 -m basic
     disabled
     oneshot
 
-service muxreport /vendor/bin/muxreport
+service muxreport-daemon /vendor/bin/muxreport
     class core
     user radio
     group radio cache inet misc
