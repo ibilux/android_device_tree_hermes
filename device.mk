@@ -112,7 +112,8 @@ PRODUCT_PACKAGES += \
     libaudio-resampler \
     libtinyalsa \
     libtinycompress \
-    libtinyxml
+    libtinyxml \
+    tinymix
 
 # Stlport
 PRODUCT_COPY_FILES += \
