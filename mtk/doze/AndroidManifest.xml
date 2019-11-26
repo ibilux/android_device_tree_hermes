@@ -16,7 +16,7 @@
      limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cyanogenmod.settings.doze"
+    package="org.lineageos.settings.doze"
     android:sharedUserId="android.uid.system">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -36,7 +36,7 @@
         </receiver>
 
         <service android:name=".DozeService"
-                 android:permission="XiaomiDozeService">
+                 android:permission="MeizuDozeService">
         </service>
 
         <activity
@@ -44,7 +44,7 @@
             android:label="@string/ambient_display_title"
             android:theme="@style/Theme.Main">
             <intent-filter>
-                <action android:name="org.cyanogenmod.settings.device.DOZE_SETTINGS" />
+                <action android:name="org.lineageos.settings.device.DOZE_SETTINGS" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
