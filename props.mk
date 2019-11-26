@@ -7,6 +7,9 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     persist.sys.usb.config=mtp \
     persist.debug.xlog.enable=0
 
+# Display
+PRODUCT_PROPERTY_OVERRIDES += debug.hwui.use_buffer_age=false
+
 ### product property overrides ###
 
 # Enable call recording
