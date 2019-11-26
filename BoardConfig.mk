@@ -129,9 +129,6 @@ BOARD_RECOVERY_SWIPE := true
 # Sepolicy
 BOARD_SEPOLICY_DIRS += $(LOCAL_PATH)/sepolicy
 
-# Seccomp filter
-BOARD_SECCOMP_POLICY := $(LOCAL_PATH)/seccomp
-
 # Build kernel without kernel sources
 $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
 
