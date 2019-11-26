@@ -10,6 +10,9 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 # Display
 PRODUCT_PROPERTY_OVERRIDES += debug.hwui.use_buffer_age=false
 
+# AudioFlinger
+PRODUCT_PROPERTY_OVERRIDES += ro.af.client_heap_size_kbyte=7168
+
 ### product property overrides ###
 
 # Enable call recording
