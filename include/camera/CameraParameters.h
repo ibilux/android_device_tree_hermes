@@ -37,6 +37,8 @@ struct Size {
     }
 };
 
+typedef DefaultKeyedVector<String8,String8> CAM_PARAMS_T;
+
 class CameraParameters
 {
 public:
@@ -46,6 +48,8 @@ public:
 
     String8 flatten() const;
     void unflatten(const String8 &params);
+
+    void exportParams(CAM_PARAMS_T &dst) const { dst = mMap; }
 
     void set(const char *key, const char *value);
     void set(const char *key, int value);
@@ -695,8 +699,8 @@ public:
      */
     static int previewFormatToEnum(const char* format);
 
-private:
-    DefaultKeyedVector<String8,String8>    mMap;
+protected:
+    CAM_PARAMS_T mMap;
 };
 
 }; // namespace android
