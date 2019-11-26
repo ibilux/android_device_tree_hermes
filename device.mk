@@ -99,6 +99,9 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/prebuilts/libstlport/lib/libstlport.so:system/lib/libstlport.so \
     $(LOCAL_PATH)/prebuilts/libstlport/lib64/libstlport.so:system/lib64/libstlport.so
 
+# USB
+PRODUCT_PACKAGES += com.android.future.usb.accessory
+
 # Rootdir
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/fstab.mt6795:$(TARGET_COPY_OUT_ROOT)/fstab.mt6795 \
