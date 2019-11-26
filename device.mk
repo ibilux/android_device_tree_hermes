@@ -77,6 +77,7 @@ PRODUCT_PACKAGES += libion
 
 # GPS
 PRODUCT_PACKAGES += \
+    gps.mt6795 \
     libcurl \
     libnl_2
 
