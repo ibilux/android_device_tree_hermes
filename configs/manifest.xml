@@ -1,4 +1,4 @@
-<!-- DEVICE_MANIFEST_FILE for LeEco Le1s by vishalk17 : github.com/vishalk17 -->
+<!-- DEVICE_MANIFEST_FILE for Xiaomi Redmi Note 2 -->
 <manifest version="1.0" type="device">
     <hal format="hidl">
         <name>android.hardware.audio</name>
@@ -28,11 +28,11 @@
         </interface>
     </hal>
     <hal format="hidl">
-        <name>android.hardware.biometrics.fingerprint</name>
+        <name>android.hardware.broadcastradio</name>
         <transport>hwbinder</transport>
-        <version>2.0</version>
+        <version>1.1</version>
         <interface>
-            <name>IBiometricsFingerprint</name>
+            <name>IBroadcastRadioFactory</name>
             <instance>default</instance>
         </interface>
     </hal>
@@ -45,16 +45,17 @@
             <instance>default</instance>
         </interface>
     </hal>
-	<hal format="hidl">
+    <hal format="hidl">
         <name>android.hardware.camera.provider</name>
         <transport arch="32+64">passthrough</transport>
         <version>2.4</version>
         <interface>
             <name>ICameraProvider</name>
             <instance>legacy/0</instance>
+            <instance>legacy/1</instance>
         </interface>
     </hal>
-	<hal format="hidl">
+    <hal format="hidl">
         <name>android.hardware.configstore</name>
         <transport>hwbinder</transport>
         <version>1.0</version>
@@ -63,7 +64,22 @@
             <instance>default</instance>
         </interface>
     </hal>
-	<hal format="hidl">
+    <hal format="hidl">
+        <name>android.hardware.drm</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>ICryptoFactory</name>
+            <instance>default</instance>
+            <instance>widevine</instance>
+        </interface>
+        <interface>
+            <name>IDrmFactory</name>
+            <instance>default</instance>
+            <instance>widevine</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
         <name>android.hardware.contexthub</name>
         <transport arch="32+64">passthrough</transport>
         <version>1.0</version>
@@ -83,7 +99,7 @@
     </hal>
 	<hal format="hidl">
         <name>android.hardware.graphics.allocator</name>
-        <transport arch="32+64">passthrough</transport>
+        <transport>hwbinder</transport>
         <version>2.0</version>
         <interface>
             <name>IAllocator</name>
@@ -108,7 +124,7 @@
             <instance>default</instance>
         </interface>
     </hal>
-	<hal format="hidl">
+    <hal format="hidl">
         <name>android.hardware.health</name>
         <transport>hwbinder</transport>
         <version>1.0</version>
@@ -117,7 +133,7 @@
             <instance>default</instance>
         </interface>
     </hal>
-	<hal format="hidl">
+    <hal format="hidl">
         <name>android.hardware.ir</name>
         <transport arch="32+64">passthrough</transport>
         <version>1.0</version>
@@ -126,7 +142,7 @@
             <instance>default</instance>
         </interface>
     </hal>
-	<hal format="hidl">
+    <hal format="hidl">
         <name>android.hardware.keymaster</name>
         <transport arch="32+64">passthrough</transport>
         <version>3.0</version>
@@ -137,14 +153,23 @@
     </hal>
     <hal format="hidl">
         <name>android.hardware.light</name>
-        <transport arch="32+64">passthrough</transport>
+        <transport>hwbinder</transport>
         <version>2.0</version>
         <interface>
             <name>ILight</name>
             <instance>default</instance>
         </interface>
     </hal>
-	<hal format="hidl">
+    <hal format="hidl">
+        <name>android.hardware.media.omx</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IOmx</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
         <name>android.hardware.memtrack</name>
         <transport>hwbinder</transport>
         <version>1.0</version>
@@ -165,18 +190,23 @@
     <hal format="hidl">
         <name>android.hardware.power</name>
         <transport arch="32+64">passthrough</transport>
-        <version>1.0</version>
+        <version>1.1</version>
         <interface>
             <name>IPower</name>
             <instance>default</instance>
         </interface>
     </hal>
-	 <hal format="hidl">
+    <hal format="hidl">
         <name>android.hardware.radio</name>
         <transport>hwbinder</transport>
         <version>1.1</version>
         <interface>
             <name>IRadio</name>
+            <instance>slot1</instance>
+            <instance>slot2</instance>
+        </interface>
+        <interface>
+            <name>ISap</name>
             <instance>slot1</instance>
             <instance>slot2</instance>
         </interface>
@@ -191,7 +221,12 @@
             <instance>slot2</instance>
         </interface>
     </hal>
-	<hal format="hidl">
+    <hal format="hidl">
+        <name>android.hardware.renderscript</name>
+        <transport arch="32">passthrough</transport>
+        <version>1.0</version>
+    </hal>
+    <hal format="hidl">
         <name>android.hardware.sensors</name>
         <transport arch="32+64">passthrough</transport>
         <version>1.0</version>
@@ -200,34 +235,7 @@
             <instance>default</instance>
         </interface>
     </hal>
-        <hal format="hidl">
-        <name>android.hardware.tetheroffload.config</name>
-        <transport>hwbinder</transport>
-        <version>1.0</version>
-        <interface>
-            <name>IOffloadConfig</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-        <hal format="hidl">
-        <name>android.hardware.tetheroffload.control</name>
-        <transport>hwbinder</transport>
-        <version>1.0</version>
-        <interface>
-            <name>IOffloadControl</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-	<hal format="hidl">
-        <name>android.hardware.thermal</name>
-        <transport arch="32+64">passthrough</transport>
-        <version>1.0</version>
-        <interface>
-            <name>IThermal</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-	<hal format="hidl">
+    <hal format="hidl">
         <name>android.hardware.usb</name>
         <transport>hwbinder</transport>
         <version>1.0</version>
@@ -245,24 +253,6 @@
             <instance>default</instance>
         </interface>
     </hal>
-	<hal format="hidl">
-        <name>android.hardware.vr</name>
-        <transport arch="32+64">passthrough</transport>
-        <version>1.0</version>
-        <interface>
-            <name>IVr</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-	<hal format="hidl">
-        <name>android.hardware.weaver</name>
-        <transport>hwbinder</transport>
-        <version>1.0</version>
-        <interface>
-            <name>IWeaver</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
     <hal format="hidl">
         <name>android.hardware.wifi</name>
         <transport>hwbinder</transport>
@@ -272,7 +262,7 @@
             <instance>default</instance>
         </interface>
     </hal>
-	<hal format="hidl">
+    <hal format="hidl">
         <name>android.hardware.wifi.offload</name>
         <transport>hwbinder</transport>
         <version>1.0</version>
@@ -290,4 +280,7 @@
             <instance>default</instance>
         </interface>
     </hal>
+    <sepolicy>
+        <version>28.0</version>
+    </sepolicy>
 </manifest>
