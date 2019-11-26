@@ -12,7 +12,6 @@ ro.mtk_rild_read_imsi=1
 ro.mtk_world_phone=1
 ro.telephony.default_network=9
 ro.telephony.ril.config=fakeiccid
-ro.telephony.ril_class=MediaTekRIL
 ro.telephony.sim.count=2
 persist.mtk.wcn.combo.chipid=-1
 persist.radio.fd.counter=15

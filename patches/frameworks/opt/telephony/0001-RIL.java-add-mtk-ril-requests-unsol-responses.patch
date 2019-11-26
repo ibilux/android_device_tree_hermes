@@ -1,0 +1,91 @@
+From f1093e0e5671807294e66a218b65dd7b12626cbe Mon Sep 17 00:00:00 2001
+From: vishalk17 <vishalkapadi95@gmail.com>
+Date: Fri, 3 Aug 2018 18:57:24 +0000
+Subject: [PATCH 1/1] RIL.java: add mtk ril requests & unsol responses
+
+Change-Id: I9a2003a72869e835be6175739bd76c14d8e659e9
+---
+ src/java/com/android/internal/telephony/RIL.java | 53 ++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
+
+diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
+index 3f365df..c3cd0d5 100644
+--- a/src/java/com/android/internal/telephony/RIL.java
++++ b/src/java/com/android/internal/telephony/RIL.java
+@@ -279,6 +279,33 @@ public class RIL extends BaseCommands implements CommandsInterface {
+     static final boolean RILJ_LOGV = false; // STOPSHIP if true
+     static final int RIL_HISTOGRAM_BUCKET_COUNT = 5;
+ 
++    static final int REFRESH_SESSION_RESET = 6; /* Session reset */
++
++    static final int RIL_REQUEST_VENDOR_BASE = 2000;
++    static final int RIL_REQUEST_MODEM_POWEROFF = (RIL_REQUEST_VENDOR_BASE + 10);
++//    static final int RIL_REQUEST_DUAL_SIM_MODE_SWITCH  = (RIL_REQUEST_VENDOR_BASE + 11);
++//    static final int RIL_REQUEST_USIM_AUTHENTICATION  = (RIL_REQUEST_VENDOR_BASE + 27);
++    static final int RIL_REQUEST_MODEM_POWERON = (RIL_REQUEST_VENDOR_BASE + 28);
++    static final int RIL_REQUEST_RESUME_REGISTRATION  = (RIL_REQUEST_VENDOR_BASE + 65);
++//    static final int RIL_REQUEST_SIM_INTERFACE_SWITCH  = (RIL_REQUEST_VENDOR_BASE + 68);
++    static final int RIL_REQUEST_SET_CALL_INDICATION = (RIL_REQUEST_VENDOR_BASE + 86);
++    static final int RIL_REQUEST_EMERGENCY_DIAL = (RIL_REQUEST_VENDOR_BASE + 87);
++    static final int RIL_REQUEST_SET_ECC_SERVICE_CATEGORY = (RIL_REQUEST_VENDOR_BASE + 88);
++    static final int RIL_REQUEST_SET_ECC_LIST = (RIL_REQUEST_VENDOR_BASE + 89);
++    static final int RIL_REQUEST_GENERAL_SIM_AUTH = (RIL_REQUEST_VENDOR_BASE + 90);
++    static final int RIL_REQUEST_QUERY_AVAILABLE_NETWORK_WITH_ACT = (RIL_REQUEST_VENDOR_BASE + 95);
++    static final int RIL_REQUEST_SWITCH_CARD_TYPE = (RIL_REQUEST_VENDOR_BASE + 131);
++
++    static final int RIL_UNSOL_VENDOR_BASE = 3000;
++    static final int RIL_UNSOL_RESPONSE_PS_NETWORK_STATE_CHANGED = (RIL_UNSOL_VENDOR_BASE + 15);
++    static final int RIL_UNSOL_RESPONSE_REGISTRATION_SUSPENDED = (RIL_UNSOL_VENDOR_BASE + 24);
++    static final int RIL_UNSOL_INCOMING_CALL_INDICATION = (RIL_UNSOL_VENDOR_BASE + 42);
++    static final int RIL_UNSOL_CALL_INFO_INDICATION = (RIL_UNSOL_VENDOR_BASE + 49);
++    static final int RIL_UNSOL_MD_STATE_CHANGE = (RIL_UNSOL_VENDOR_BASE + 53);
++    static final int RIL_UNSOL_SET_ATTACH_APN = (RIL_UNSOL_VENDOR_BASE + 73);
++//    static final int RIL_UNSOL_MAL_AT_INFO = (RIL_UNSOL_VENDOR_BASE + 74);
++//    static final int RIL_UNSOL_MAIN_SIM_INFO = (RIL_UNSOL_VENDOR_BASE + 75);
++
+     /**
+      * Wake lock timeout should be longer than the longest timeout in
+      * the vendor ril.
+@@ -4761,6 +4788,20 @@ public class RIL extends BaseCommands implements CommandsInterface {
+                 return "RIL_REQUEST_STOP_NETWORK_SCAN";
+             case RIL_REQUEST_SIM_QUERY_ATR:
+                 return "RIL_REQUEST_SIM_QUERY_ATR";
++            case RIL_REQUEST_RESUME_REGISTRATION:
++                return "RIL_REQUEST_RESUME_REGISTRATION";
++	    case RIL_REQUEST_SET_CALL_INDICATION:
++                 return "RIL_REQUEST_SET_CALL_INDICATION";
++	    case RIL_REQUEST_EMERGENCY_DIAL:
++	         return "RIL_REQUEST_EMERGENCY_DIAL";
++	    case RIL_REQUEST_SET_ECC_SERVICE_CATEGORY:
++	         return "RIL_REQUEST_SET_ECC_SERVICE_CATEGORY";
++	    case RIL_REQUEST_SET_ECC_LIST:
++                 return "RIL_REQUEST_SET_ECC_LIST";
++            case RIL_REQUEST_MODEM_POWEROFF:
++           	 return "RIL_REQUEST_MODEM_POWEROFF";
++	    case RIL_REQUEST_MODEM_POWERON:
++                 return "RIL_REQUEST_MODEM_POWERON";
+             default: return "<unknown request>";
+         }
+     }
+@@ -4865,6 +4906,18 @@ public class RIL extends BaseCommands implements CommandsInterface {
+                 return "RIL_UNSOL_CARRIER_INFO_IMSI_ENCRYPTION";
+             case RIL_UNSOL_NETWORK_SCAN_RESULT:
+                 return "RIL_UNSOL_NETWORK_SCAN_RESULT";
++	    case RIL_UNSOL_RESPONSE_REGISTRATION_SUSPENDED:
++	        return "RIL_UNSOL_RESPONSE_REGISTRATION_SUSPENDED";
++	    case RIL_UNSOL_INCOMING_CALL_INDICATION:
++                return "RIL_UNSOL_INCOMING_CALL_INDICATION";
++	    case RIL_UNSOL_CALL_INFO_INDICATION:
++	         return "RIL_UNSOL_CALL_PROGRESS";
++	    case RIL_UNSOL_MD_STATE_CHANGE:
++		 return "RIL_UNSOL_MD_STATE_CHANGE";
++	    case RIL_UNSOL_SET_ATTACH_APN:
++                 return "RIL_UNSOL_SET_ATTACH_APN";
++	    case RIL_UNSOL_RESPONSE_PS_NETWORK_STATE_CHANGED:
++                 return "RIL_UNSOL_RESPONSE_PS_NETWORK_STATE_CHANGED";
+             default:
+                 return "<unknown response>";
+         }
+-- 
+2.7.4
+
