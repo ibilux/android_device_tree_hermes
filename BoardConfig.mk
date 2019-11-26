@@ -122,5 +122,8 @@ $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
 # Oreo board
 #
 
+# Disable dex pre-opt
+WITH_DEXPREOPT := false
+
 # HIDL Manifest
 DEVICE_MANIFEST_FILE := $(LOCAL_PATH)/configs/manifest.xml
