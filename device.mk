@@ -81,6 +81,11 @@ PRODUCT_PACKAGES += \
     libcurl \
     libnl_2
 
+# Bluetooth
+PRODUCT_PACKAGES += \
+    libbt-vendor \
+    libbluetooth_mtk
+
 # DRM
 PRODUCT_PACKAGES += libmockdrmcryptoplugin
 
