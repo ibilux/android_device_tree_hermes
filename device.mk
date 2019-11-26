@@ -115,6 +115,9 @@ PRODUCT_PACKAGES += \
     libtinyxml \
     tinymix
 
+# XML Parser
+PRODUCT_PACKAGES += libxml2
+
 # Stlport
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/prebuilts/libstlport/lib/libstlport.so:system/lib/libstlport.so \
