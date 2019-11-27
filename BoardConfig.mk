@@ -142,15 +142,3 @@ LEGACY_MTK_AV_BLOB := true
 
 # HIDL Manifest
 DEVICE_MANIFEST_FILE := $(LOCAL_PATH)/configs/manifest.xml
-
-# Libshim flags (we will just export shims to init.mt6795.rc for now)
-    #LIBSHIM_XLOG_SYMBOLS :=true
-    #LIBSHIM_SND_SYMBOLS := true
-    #LIBSHIM_UI_SYMBOLS := true
-    #LIBSHIM_GUI_SYMBOLS := true
-    #LIBSHIM_OMX_SYMBOLS := true
-    #LIBSHIM_BIONIC_SYMBOLS := true
-    #LIBSHIM_AGPS_SYMBOLS := true
-    #LIBSHIM_ATOMIC_SYMBOLS := true
-    #LIBSHIM_NETUTILS_SYMBOLS := true
-
