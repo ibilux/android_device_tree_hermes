@@ -30,6 +30,9 @@ sys.display-size=1920x1080
 ro.sf.lcd_density=480
 wfd.dummy.enable=1
 
+# Default Renderer
+debug.hwui.renderer=opengl
+
 # Disable dirty region for Mali
 debug.hwui.render_dirty_regions=false
 
