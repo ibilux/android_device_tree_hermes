@@ -1,3 +1,5 @@
 subdirs = [
     "hidl",
+    "/mtk/camera",
+    "/mtk/bluetooth",
 ]
