@@ -1,0 +1,49 @@
+From 36f14b32f5fafd3f8c131d5c23c8302d8748987d Mon Sep 17 00:00:00 2001
+From: danielhk <daniel.p6800@gmail.com>
+Date: Sun, 3 Dec 2017 21:39:24 +0800
+Subject: [PATCH 1/4] Add error message suppress option
+
+Suppress the error message "E AudioALSAStreamOut:
+-getPresentationPosition(), no playback handler, *frames = 0, return"
+This is not really an error but repeated endlessly all the time.
+
+Change-Id: I38157cc2b506dbc533f5ec0c8c75bf4aec177dcb
+---
+ audio/2.0/default/Android.mk    | 8 ++++++++
+ audio/2.0/default/StreamOut.cpp | 3 +++
+ 2 files changed, 11 insertions(+)
+
+diff --git a/audio/2.0/default/Android.mk b/audio/2.0/default/Android.mk
+index 8dec482..84ca6e3 100644
+--- a/audio/2.0/default/Android.mk
++++ b/audio/2.0/default/Android.mk
+@@ -84,4 +84,12 @@ else
+ LOCAL_MULTILIB := $(AUDIOSERVER_MULTILIB)
+ endif
+ 
++ifeq ($(TARGET_USES_BCRADIO_FUTURE_FEATURES),true)
++LOCAL_CFLAGS += -DTARGET_USES_BCRADIO_FUTURE_FEATURES
++endif
++
++ifeq ($(SUPPRESS_MTK_AUDIO_BLOB_ERR_MSG),true)
++LOCAL_CFLAGS += -DSUPPRESS_MTK_AUDIO_BLOB_ERR_MSG
++endif
++
+ include $(BUILD_EXECUTABLE)
+diff --git a/audio/2.0/default/StreamOut.cpp b/audio/2.0/default/StreamOut.cpp
+index 22dcd0c..81f1d58 100644
+--- a/audio/2.0/default/StreamOut.cpp
++++ b/audio/2.0/default/StreamOut.cpp
+@@ -488,6 +488,9 @@ Result StreamOut::getPresentationPositionImpl(audio_stream_out_t* stream,
+     // continuously querying it, but the stream has been stopped.
+     static const std::vector<int> ignoredErrors{EINVAL, EAGAIN, ENODATA};
+     Result retval(Result::NOT_SUPPORTED);
++#ifdef SUPPRESS_MTK_AUDIO_BLOB_ERR_MSG
++    if (true) return retval;
++#endif
+     if (stream->get_presentation_position == NULL) return retval;
+     struct timespec halTimeStamp;
+     retval = Stream::analyzeStatus("get_presentation_position",
+-- 
+2.7.4
+
