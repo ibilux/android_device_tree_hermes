@@ -1,6 +1,8 @@
-# Power
-PRODUCT_PACKAGES += \
-    android.hardware.power@1.0-impl
+# Power (non-lineage imp)
+PRODUCT_PACKAGES += android.hardware.power@1.0-impl
+
+# Power (lineage imp)
+#PRODUCT_PACKAGES += vendor.lineage.power@1.0-impl
 
 # Wifi
 PRODUCT_PACKAGES += \
