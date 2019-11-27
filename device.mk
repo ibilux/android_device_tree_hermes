@@ -1,5 +1,5 @@
 # Path
-LOCAL_PATH := device/xiaomi/hermes
+DEVICE_PATH := device/xiaomi/hermes
 
 # Vendor
 $(call inherit-product, vendor/xiaomi/hermes/hermes-vendor.mk)
@@ -9,10 +9,10 @@ $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-dalv
 $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-hwui-memory.mk)
 
 # Properties
-include $(LOCAL_PATH)/props.mk
+include $(DEVICE_PATH)/props.mk
 
 # Overlays
-DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
+DEVICE_PACKAGE_OVERLAYS += $(DEVICE_PATH)/overlay
 
 # Display
 TARGET_SCREEN_HEIGHT := 1920
@@ -84,10 +84,10 @@ PRODUCT_COPY_FILES += \
 
 # Rootdir
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/fstab.mt6795:$(TARGET_COPY_OUT_ROOT)/fstab.mt6795 \
-    $(LOCAL_PATH)/rootdir/init.mt6795.rc:$(TARGET_COPY_OUT_ROOT)/init.mt6795.rc \
-    $(LOCAL_PATH)/rootdir/init.mt6795.usb.rc:$(TARGET_COPY_OUT_ROOT)/init.mt6795.usb.rc \
-    $(LOCAL_PATH)/rootdir/ueventd.mt6795.rc:$(TARGET_COPY_OUT_ROOT)/ueventd.mt6795.rc
+    $(DEVICE_PATH)/rootdir/fstab.mt6795:$(TARGET_COPY_OUT_ROOT)/fstab.mt6795 \
+    $(DEVICE_PATH)/rootdir/init.mt6795.rc:$(TARGET_COPY_OUT_ROOT)/init.mt6795.rc \
+    $(DEVICE_PATH)/rootdir/init.mt6795.usb.rc:$(TARGET_COPY_OUT_ROOT)/init.mt6795.usb.rc \
+    $(DEVICE_PATH)/rootdir/ueventd.mt6795.rc:$(TARGET_COPY_OUT_ROOT)/ueventd.mt6795.rc
 
 # Permissions
 PRODUCT_COPY_FILES += \
@@ -121,24 +121,24 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml
 
 # RIL
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/configs/spn-conf.xml:system/etc/spn-conf.xml
+PRODUCT_COPY_FILES += $(DEVICE_PATH)/configs/spn-conf.xml:system/etc/spn-conf.xml
 
 # Camera
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/configs/init/mediaserver.rc:system/etc/init/mediaserver.rc
+PRODUCT_COPY_FILES += $(DEVICE_PATH)/configs/init/mediaserver.rc:system/etc/init/mediaserver.rc
 
 # Audio Wakelock (So Music will not stop while turn off screen)
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/configs/init/audioserver.rc:system/etc/init/audioserver.rc
+PRODUCT_COPY_FILES += $(DEVICE_PATH)/configs/init/audioserver.rc:system/etc/init/audioserver.rc
 
 # Wi-Fi
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/wifi/p2p_supplicant_overlay.conf:system/etc/wifi/p2p_supplicant_overlay.conf \
-    $(LOCAL_PATH)/configs/wifi/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
-    $(LOCAL_PATH)/configs/wifi/wpa_supplicant_overlay.conf:system/etc/wifi/wpa_supplicant_overlay.conf
+    $(DEVICE_PATH)/configs/wifi/p2p_supplicant_overlay.conf:system/etc/wifi/p2p_supplicant_overlay.conf \
+    $(DEVICE_PATH)/configs/wifi/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
+    $(DEVICE_PATH)/configs/wifi/wpa_supplicant_overlay.conf:system/etc/wifi/wpa_supplicant_overlay.conf
 
 # Audio
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/audio/audio_policy_configuration.xml:system/etc/audio_policy_configuration.xml \
-    $(LOCAL_PATH)/configs/audio/a2dp_audio_policy_configuration.xml:system/etc/a2dp_audio_policy_configuration.xml \
+    $(DEVICE_PATH)/configs/audio/audio_policy_configuration.xml:system/etc/audio_policy_configuration.xml \
+    $(DEVICE_PATH)/configs/audio/a2dp_audio_policy_configuration.xml:system/etc/a2dp_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:system/etc/audio_policy_volumes.xml \
     frameworks/av/services/audiopolicy/config/default_volume_tables.xml:system/etc/default_volume_tables.xml \
     frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:system/etc/r_submix_audio_policy_configuration.xml \
@@ -146,12 +146,12 @@ PRODUCT_COPY_FILES += \
 
 # Codecs
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/codecs/media_codecs_ffmpeg.xml:system/etc/media_codecs_ffmpeg.xml \
-    $(LOCAL_PATH)/configs/codecs/media_codecs_mediatek_audio.xml:system/etc/media_codecs_mediatek_audio.xml \
-    $(LOCAL_PATH)/configs/codecs/media_codecs_mediatek_video.xml:system/etc/media_codecs_mediatek_video.xml \
-    $(LOCAL_PATH)/configs/codecs/media_codecs_performance.xml:system/etc/media_codecs_performance.xml \
-    $(LOCAL_PATH)/configs/codecs/media_codecs.xml:system/etc/media_codecs.xml \
-    $(LOCAL_PATH)/configs/codecs/media_profiles.xml:system/etc/media_profiles.xml \
+    $(DEVICE_PATH)/configs/codecs/media_codecs_ffmpeg.xml:system/etc/media_codecs_ffmpeg.xml \
+    $(DEVICE_PATH)/configs/codecs/media_codecs_mediatek_audio.xml:system/etc/media_codecs_mediatek_audio.xml \
+    $(DEVICE_PATH)/configs/codecs/media_codecs_mediatek_video.xml:system/etc/media_codecs_mediatek_video.xml \
+    $(DEVICE_PATH)/configs/codecs/media_codecs_performance.xml:system/etc/media_codecs_performance.xml \
+    $(DEVICE_PATH)/configs/codecs/media_codecs.xml:system/etc/media_codecs.xml \
+    $(DEVICE_PATH)/configs/codecs/media_profiles.xml:system/etc/media_profiles.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/etc/media_codecs_google_telephony.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_video_le.xml:system/etc/media_codecs_google_video_le.xml

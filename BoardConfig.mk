@@ -1,5 +1,5 @@
 # Path
-LOCAL_PATH := device/xiaomi/hermes
+DEVICE_PATH := device/xiaomi/hermes
 
 # Platform
 TARGET_BOOTLOADER_BOARD_NAME := mt6795
@@ -24,7 +24,7 @@ TARGET_2ND_CPU_VARIANT := cortex-a53
 BLOCK_BASED_OTA := false
 
 # Kernel
-TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/kernel
+TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
 ifneq ($(TARGET_BUILD_VARIANT),user)
 BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 androidboot.selinux=permissive
 else
@@ -68,18 +68,18 @@ YELLOW_LED_PATH := /sys/class/leds/yellow/brightness
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(LOCAL_PATH)/bluetooth
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(DEVICE_PATH)/bluetooth
 
 # RIL
 BOARD_PROVIDES_RILD := true
-BOARD_RIL_CLASS := ../../../$(LOCAL_PATH)/mtk/ril
+BOARD_RIL_CLASS := ../../../$(DEVICE_PATH)/mtk/ril
 
 # LightHAL
 TARGET_PROVIDES_LIBLIGHT := true
 
 # CMHW
 BOARD_USES_CYANOGEN_HARDWARE := true
-BOARD_HARDWARE_CLASS := $(LOCAL_PATH)/cmhw
+BOARD_HARDWARE_CLASS := $(DEVICE_PATH)/cmhw
 
 # Camera
 TARGET_HAS_LEGACY_CAMERA_HAL1 := true
@@ -88,10 +88,10 @@ TARGET_HAS_LEGACY_CAMERA_HAL1 := true
 MALLOC_SVELTE := true
 
 # Include
-TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
+TARGET_SPECIFIC_HEADER_PATH := $(DEVICE_PATH)/include
 
 # Device specific props
-TARGET_SYSTEM_PROP := $(LOCAL_PATH)/system.prop
+TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 
 # Wi-Fi
 BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_mt66xx
@@ -105,7 +105,7 @@ WIFI_DRIVER_FW_PATH_P2P := P2P
 WIFI_DRIVER_FW_PATH_AP := AP
 
 # Recovery
-TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/fstab.mt6795
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/fstab.mt6795
 BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_15x24.h\"
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBA_8888"
 BOARD_HAS_NO_SELECT_BUTTON := true
@@ -113,10 +113,10 @@ BOARD_SUPPRESS_EMMC_WIPE := true
 BOARD_RECOVERY_SWIPE := true
 
 # Sepolicy
-BOARD_SEPOLICY_DIRS += $(LOCAL_PATH)/sepolicy
+BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy
 
 # Seccomp filter
-BOARD_SECCOMP_POLICY := $(LOCAL_PATH)/seccomp
+BOARD_SECCOMP_POLICY := $(DEVICE_PATH)/seccomp
 
 # Build kernel without kernel sources
 $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
