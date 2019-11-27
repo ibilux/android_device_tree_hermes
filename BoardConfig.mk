@@ -1,5 +1,5 @@
 # Path
-LOCAL_PATH := device/xiaomi/hermes
+DEVICE_PATH := device/xiaomi/hermes
 
 # Platform
 TARGET_BOOTLOADER_BOARD_NAME := mt6795
@@ -24,7 +24,7 @@ TARGET_2ND_CPU_VARIANT := cortex-a53
 BLOCK_BASED_OTA := false
 
 # Kernel
-TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/kernel
+TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
 ifneq ($(TARGET_BUILD_VARIANT),user)
 BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 androidboot.selinux=permissive
 else
@@ -79,7 +79,7 @@ YELLOW_LED_PATH := /sys/class/leds/yellow/brightness
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(LOCAL_PATH)/bluetooth
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(DEVICE_PATH)/bluetooth
 
 # RIL
 SIM_COUNT := 2
@@ -87,14 +87,14 @@ BOARD_PROVIDES_RILD := true
 BOARD_PROVIDES_LIBRIL := true
 BOARD_CONNECTIVITY_VENDOR := MediaTek
 BOARD_CONNECTIVITY_MODULE := conn_soc
-#BOARD_RIL_CLASS := ../../../$(LOCAL_PATH)/mtk/ril_class
+#BOARD_RIL_CLASS := ../../../$(DEVICE_PATH)/mtk/ril_class
 
 # LightHAL
 TARGET_PROVIDES_LIBLIGHT := true
 
 # LineageHW
 BOARD_USES_LINEAGE_HARDWARE := true
-BOARD_HARDWARE_CLASS := $(LOCAL_PATH)/lineagehw
+BOARD_HARDWARE_CLASS := $(DEVICE_PATH)/lineagehw
 
 # Camera
 TARGET_SPECIFIC_CAMERA_PARAMETER_LIBRARY := libcamera_parameters_mtk
@@ -104,10 +104,10 @@ TARGET_SPECIFIC_CAMERA_PARAMETER_LIBRARY := libcamera_parameters_mtk
 MALLOC_SVELTE := true
 
 # Include
-TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
+TARGET_SPECIFIC_HEADER_PATH := $(DEVICE_PATH)/include
 
 # Device specific props
-TARGET_SYSTEM_PROP := $(LOCAL_PATH)/system.prop
+TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 
 # Wi-Fi
 BOARD_WLAN_DEVICE := MediaTek
@@ -125,7 +125,7 @@ WIFI_DRIVER_STATE_ON := 1
 WIFI_DRIVER_STATE_OFF := 0
 
 # Recovery
-TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/fstab.mt6795
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/fstab.mt6795
 BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_15x24.h\"
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBA_8888"
 BOARD_HAS_NO_SELECT_BUTTON := true
@@ -133,7 +133,7 @@ BOARD_SUPPRESS_EMMC_WIPE := true
 BOARD_RECOVERY_SWIPE := true
 
 # Sepolicy
-BOARD_SEPOLICY_DIRS += $(LOCAL_PATH)/sepolicy
+BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy
 
 # Build kernel without kernel sources
 $(shell mkdir -p $(OUT)/obj/KERNEL_OBJ/usr)
@@ -161,4 +161,4 @@ SUPPRESS_MTK_AUDIO_BLOB_ERR_MSG := true
 LEGACY_MTK_AV_BLOB := true
 
 # HIDL Manifest
-DEVICE_MANIFEST_FILE := $(LOCAL_PATH)/configs/manifest.xml
+DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/configs/manifest.xml

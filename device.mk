@@ -1,5 +1,5 @@
 # Path
-LOCAL_PATH := device/xiaomi/hermes
+DEVICE_PATH := device/xiaomi/hermes
 
 # Vendor
 $(call inherit-product, vendor/xiaomi/hermes/hermes-vendor.mk)
@@ -9,15 +9,15 @@ $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-dalv
 $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-hwui-memory.mk)
 
 # Properties
-include $(LOCAL_PATH)/props.mk
+include $(DEVICE_PATH)/props.mk
 
 # HIDL (HAL Interface Definition Language)
--include $(LOCAL_PATH)/hidl.mk
+-include $(DEVICE_PATH)/hidl.mk
 
 # Overlays
 DEVICE_PACKAGE_OVERLAYS += \
-         $(LOCAL_PATH)/overlay \
-         $(LOCAL_PATH)/overlay-lineage
+         $(DEVICE_PATH)/overlay \
+         $(DEVICE_PATH)/overlay-lineage
 
 # Display
 TARGET_SCREEN_HEIGHT := 1920
@@ -120,18 +120,18 @@ PRODUCT_PACKAGES += libxml2
 
 # Stlport
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/prebuilts/libstlport/lib/libstlport.so:system/lib/libstlport.so \
-    $(LOCAL_PATH)/prebuilts/libstlport/lib64/libstlport.so:system/lib64/libstlport.so
+    $(DEVICE_PATH)/prebuilts/libstlport/lib/libstlport.so:system/lib/libstlport.so \
+    $(DEVICE_PATH)/prebuilts/libstlport/lib64/libstlport.so:system/lib64/libstlport.so
 
 # USB
 PRODUCT_PACKAGES += com.android.future.usb.accessory
 
 # Rootdir
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/fstab.mt6795:$(TARGET_COPY_OUT_ROOT)/fstab.mt6795 \
-    $(LOCAL_PATH)/rootdir/init.mt6795.rc:$(TARGET_COPY_OUT_ROOT)/init.mt6795.rc \
-    $(LOCAL_PATH)/rootdir/init.mt6795.usb.rc:$(TARGET_COPY_OUT_ROOT)/init.mt6795.usb.rc \
-    $(LOCAL_PATH)/rootdir/ueventd.mt6795.rc:$(TARGET_COPY_OUT_ROOT)/ueventd.mt6795.rc
+    $(DEVICE_PATH)/rootdir/fstab.mt6795:$(TARGET_COPY_OUT_ROOT)/fstab.mt6795 \
+    $(DEVICE_PATH)/rootdir/init.mt6795.rc:$(TARGET_COPY_OUT_ROOT)/init.mt6795.rc \
+    $(DEVICE_PATH)/rootdir/init.mt6795.usb.rc:$(TARGET_COPY_OUT_ROOT)/init.mt6795.usb.rc \
+    $(DEVICE_PATH)/rootdir/ueventd.mt6795.rc:$(TARGET_COPY_OUT_ROOT)/ueventd.mt6795.rc
 
 # Permissions
 PRODUCT_COPY_FILES += \
@@ -165,42 +165,42 @@ PRODUCT_COPY_FILES += \
 
 # Telephony (RIL)
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/telephony/ecc_list.xml:system/etc/ecc_list.xml \
-    $(LOCAL_PATH)/configs/telephony/spn-conf.xml:system/etc/spn-conf.xml
+    $(DEVICE_PATH)/configs/telephony/ecc_list.xml:system/etc/ecc_list.xml \
+    $(DEVICE_PATH)/configs/telephony/spn-conf.xml:system/etc/spn-conf.xml
 
 
 # Camera
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/configs/init/mediaserver.rc:system/etc/init/mediaserver.rc
+PRODUCT_COPY_FILES += $(DEVICE_PATH)/configs/init/mediaserver.rc:system/etc/init/mediaserver.rc
 
 # Audio Wakelock (So Music will not stop while turn off screen)
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/configs/init/audioserver.rc:system/etc/init/audioserver.rc
+PRODUCT_COPY_FILES += $(DEVICE_PATH)/configs/init/audioserver.rc:system/etc/init/audioserver.rc
 
 # Wi-Fi
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/wifi/p2p_supplicant_overlay.conf:system/vendor/etc/wifi/p2p_supplicant_overlay.conf \
-    $(LOCAL_PATH)/configs/wifi/wpa_supplicant.conf:system/vendor/etc/wifi/wpa_supplicant.conf \
-    $(LOCAL_PATH)/configs/wifi/wpa_supplicant_overlay.conf:system/vendor/etc/wifi/wpa_supplicant_overlay.conf
+    $(DEVICE_PATH)/configs/wifi/p2p_supplicant_overlay.conf:system/vendor/etc/wifi/p2p_supplicant_overlay.conf \
+    $(DEVICE_PATH)/configs/wifi/wpa_supplicant.conf:system/vendor/etc/wifi/wpa_supplicant.conf \
+    $(DEVICE_PATH)/configs/wifi/wpa_supplicant_overlay.conf:system/vendor/etc/wifi/wpa_supplicant_overlay.conf
 
 # Audio
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/audio/audio_policy_configuration.xml:system/vendor/etc/audio/audio_policy_configuration.xml \
-    $(LOCAL_PATH)/configs/audio/a2dp_audio_policy_configuration.xml:system/vendor/etc/audio/a2dp_audio_policy_configuration.xml \
+    $(DEVICE_PATH)/configs/audio/audio_policy_configuration.xml:system/vendor/etc/audio/audio_policy_configuration.xml \
+    $(DEVICE_PATH)/configs/audio/a2dp_audio_policy_configuration.xml:system/vendor/etc/audio/a2dp_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:system/vendor/etc/audio/audio_policy_volumes.xml \
     frameworks/av/services/audiopolicy/config/default_volume_tables.xml:system/vendor/etc/audio/default_volume_tables.xml \
     frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:system/vendor/etc/audio/r_submix_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:system/vendor/etc/audio/usb_audio_policy_configuration.xml
 
 # Audio effects
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/configs/audio/audio_effects.xml:system/vendor/etc/audio_effects.xml
+PRODUCT_COPY_FILES += $(DEVICE_PATH)/configs/audio/audio_effects.xml:system/vendor/etc/audio_effects.xml
 
 # Codecs
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/codecs/media_codecs_ffmpeg.xml:system/vendor/etc/media_codecs_ffmpeg.xml \
-    $(LOCAL_PATH)/configs/codecs/media_codecs_mediatek_audio.xml:system/vendor/etc/media_codecs_mediatek_audio.xml \
-    $(LOCAL_PATH)/configs/codecs/media_codecs_mediatek_video.xml:system/vendor/etc/media_codecs_mediatek_video.xml \
-    $(LOCAL_PATH)/configs/codecs/media_codecs_performance.xml:system/vendor/etc/media_codecs_performance.xml \
-    $(LOCAL_PATH)/configs/codecs/media_codecs.xml:system/vendor/etc/media_codecs.xml \
-    $(LOCAL_PATH)/configs/codecs/media_profiles.xml:system/vendor/etc/media_profiles.xml
+    $(DEVICE_PATH)/configs/codecs/media_codecs_ffmpeg.xml:system/vendor/etc/media_codecs_ffmpeg.xml \
+    $(DEVICE_PATH)/configs/codecs/media_codecs_mediatek_audio.xml:system/vendor/etc/media_codecs_mediatek_audio.xml \
+    $(DEVICE_PATH)/configs/codecs/media_codecs_mediatek_video.xml:system/vendor/etc/media_codecs_mediatek_video.xml \
+    $(DEVICE_PATH)/configs/codecs/media_codecs_performance.xml:system/vendor/etc/media_codecs_performance.xml \
+    $(DEVICE_PATH)/configs/codecs/media_codecs.xml:system/vendor/etc/media_codecs.xml \
+    $(DEVICE_PATH)/configs/codecs/media_profiles.xml:system/vendor/etc/media_profiles.xml
 
 # Google codecs
 PRODUCT_COPY_FILES += \
@@ -210,17 +210,17 @@ PRODUCT_COPY_FILES += \
 
 # GPS
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/gps/slp_conf:system/vendor/etc/slp_conf \
-    $(LOCAL_PATH)/configs/gps/gps.conf:system/vendor/etc/gps.conf \
-    $(LOCAL_PATH)/configs/gps/agps_profiles_conf2.xml:system/vendor/etc/agps_profiles_conf2.xml
+    $(DEVICE_PATH)/configs/gps/slp_conf:system/vendor/etc/slp_conf \
+    $(DEVICE_PATH)/configs/gps/gps.conf:system/vendor/etc/gps.conf \
+    $(DEVICE_PATH)/configs/gps/agps_profiles_conf2.xml:system/vendor/etc/agps_profiles_conf2.xml
 
 # Bluetooth
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/bluetooth/auto_pair_devlist.conf:system/vendor/etc/bluetooth/auto_pair_devlist.conf \
-    $(LOCAL_PATH)/configs/bluetooth/bt_stack.conf.debug:system/vendor/etc/bluetooth/bt_stack.conf.debug \
-    $(LOCAL_PATH)/configs/bluetooth/bt_did.conf:system/vendor/etc/bluetooth/bt_did.conf \
-    $(LOCAL_PATH)/configs/bluetooth/bt_stack.conf:system/vendor/etc/bluetooth/bt_stack.conf \
-    $(LOCAL_PATH)/configs/bluetooth/bt_stack.conf.sqc:system/vendor/etc/bluetooth/bt_stack.conf.sqc
+    $(DEVICE_PATH)/configs/bluetooth/auto_pair_devlist.conf:system/vendor/etc/bluetooth/auto_pair_devlist.conf \
+    $(DEVICE_PATH)/configs/bluetooth/bt_stack.conf.debug:system/vendor/etc/bluetooth/bt_stack.conf.debug \
+    $(DEVICE_PATH)/configs/bluetooth/bt_did.conf:system/vendor/etc/bluetooth/bt_did.conf \
+    $(DEVICE_PATH)/configs/bluetooth/bt_stack.conf:system/vendor/etc/bluetooth/bt_stack.conf \
+    $(DEVICE_PATH)/configs/bluetooth/bt_stack.conf.sqc:system/vendor/etc/bluetooth/bt_stack.conf.sqc
 
 # Vulkan
 PRODUCT_COPY_FILES += \
@@ -229,12 +229,12 @@ PRODUCT_COPY_FILES += \
 
 # Seccomp policy
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/seccomp/mediacodec.policy:system/vendor/etc/seccomp_policy/mediacodec.policy \
-    $(LOCAL_PATH)/seccomp/mediaextractor.policy:system/vendor/etc/seccomp_policy/mediaextractor.policy
+    $(DEVICE_PATH)/seccomp/mediacodec.policy:system/vendor/etc/seccomp_policy/mediacodec.policy \
+    $(DEVICE_PATH)/seccomp/mediaextractor.policy:system/vendor/etc/seccomp_policy/mediaextractor.policy
 
 # HIDL Manifest
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/manifest.xml:system/vendor/manifest.xml
+    $(DEVICE_PATH)/configs/manifest.xml:system/vendor/manifest.xml
 
 # Filesystem management tools
 PRODUCT_PACKAGES += \
