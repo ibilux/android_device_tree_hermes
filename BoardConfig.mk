@@ -24,7 +24,6 @@ TARGET_2ND_CPU_VARIANT := cortex-a53
 BLOCK_BASED_OTA := false
 
 # Kernel
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
 ifneq ($(TARGET_BUILD_VARIANT),user)
 BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 androidboot.selinux=permissive
 else
@@ -38,6 +37,14 @@ BOARD_MKBOOTIMG_ARGS := \
     --ramdisk_offset 0x03f88000 \
     --second_offset 0x00e88000 \
     --tags_offset 0x0df88000
+# Prebuilt
+TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
+# Source
+TARGET_KERNEL_SOURCE := kernel/xiaomi/hermes
+TARGET_KERNEL_CONFIG := hermes_defconfig
+BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
+TARGET_KERNEL_HEADER_ARCH := arm64
+TARGET_KERNEL_ARCH := arm64
 
 # Partitons make_ext4fs requires numbers
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 12737576960
