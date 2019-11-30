@@ -1,38 +1,10 @@
-# Services
-/(system|system\/vendor|vendor)/bin/6620_launcher    u:object_r:conn_launcher_exec:s0
-/(system|system\/vendor|vendor)/bin/autokd           u:object_r:autokd_exec:s0
-/(system|system\/vendor|vendor)/bin/bmi160d          u:object_r:bmi160d_exec:s0
-/(system|system\/vendor|vendor)/bin/ccci_fsd         u:object_r:ccci_fsd_exec:s0
-/(system|system\/vendor|vendor)/bin/ccci_mdinit      u:object_r:ccci_mdinit_exec:s0
-/(system|system\/vendor|vendor)/bin/fuelgauged       u:object_r:fuelgauged_exec:s0
-/(system|system\/vendor|vendor)/bin/gsm0710muxd      u:object_r:gsm0710muxd_exec:s0
-/(system|system\/vendor|vendor)/bin/md_ctrl          u:object_r:md_ctrl_exec:s0
-/(system|system\/vendor|vendor)/bin/mnld             u:object_r:mnld_exec:s0
-/(system|system\/vendor|vendor)/bin/mtk_agpsd        u:object_r:mtk_agpsd_exec:s0
-/(system|system\/vendor|vendor)/bin/mtkrild          u:object_r:mtkrild_exec:s0
-/(system|system\/vendor|vendor)/bin/muxreport        u:object_r:muxreport_exec:s0
-/(system|system\/vendor|vendor)/bin/nvram_daemon     u:object_r:nvram_daemon_exec:s0
-/(system|system\/vendor|vendor)/bin/pq               u:object_r:pq_exec:s0
-/(system|system\/vendor|vendor)/bin/pvrsrvctl        u:object_r:pvrsrvctl_exec:s0
-/(system|system\/vendor|vendor)/bin/thermal_manager  u:object_r:thermal_manager_exec:s0
-/(system|system\/vendor|vendor)/bin/wifi2agps        u:object_r:wifi2agps_exec:s0
-/(system|system\/vendor|vendor)/bin/wmt_loader       u:object_r:wmt_loader_exec:s0
+/dev/nvram(/.*)? 						u:object_r:nvram_device:s0
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/nvram     u:object_r:nvram_device:s0
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/nvdata    u:object_r:nvdata_device:s0
+/dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/proinfo   u:object_r:pro_info_device:s0
+/dev/block/mmcblk0 						u:object_r:bootdevice_block_device:s0
 
-# Hardware
-/dev/hwmsensor  u:object_r:hwmsensor_device:s0
-/dev/wmtdetect  u:object_r:wmtdetect_device:s0
-
-# Files
-/data/lastsoc          u:object_r:cw2015_data_file:s0
-/data/misc/sensor.log  u:object_r:bmi160d_data_file:s0
-
-
-# Partitions
-/dev/block/platform/mtk-msdc\.0/[0-9]+\.MSDC0/by-name/boot      u:object_r:boot_block_device:s0
-/dev/block/platform/mtk-msdc\.0/[0-9]+\.MSDC0/by-name/cache     u:object_r:cache_block_device:s0
-/dev/block/platform/mtk-msdc\.0/[0-9]+\.MSDC0/by-name/nvram     u:object_r:nvram_block_device:s0
-/dev/block/platform/mtk-msdc\.0/[0-9]+\.MSDC0/by-name/protect1  u:object_r:protect1_block_device:s0
-/dev/block/platform/mtk-msdc\.0/[0-9]+\.MSDC0/by-name/protect2  u:object_r:protect2_block_device:s0
-/dev/block/platform/mtk-msdc\.0/[0-9]+\.MSDC0/by-name/recovery  u:object_r:recovery_block_device:s0
-/dev/block/platform/mtk-msdc\.0/[0-9]+\.MSDC0/by-name/system    u:object_r:system_block_device:s0
-/dev/block/platform/mtk-msdc\.0/[0-9]+\.MSDC0/by-name/userdata  u:object_r:userdata_block_device:s0
+/dev/als_ps(/.*)? 						u:object_r:als_ps_device:s0
+/dev/gsensor(/.*)? 						u:object_r:gsensor_device:s0
+/dev/gyroscope(/.*)? 						u:object_r:gyroscope_device:s0
+/dev/mtk-adc-cali(/.*)? 					u:object_r:mtk-adc-cali_device:s0

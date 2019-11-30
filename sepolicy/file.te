@@ -1,2 +1,0 @@
-type bmi160d_data_file, file_type, data_file_type;
-type cw2015_data_file, file_type, data_file_type;

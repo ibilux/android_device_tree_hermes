@@ -1,6 +1,0 @@
-type autokd_exec, exec_type, file_type;
-type autokd, domain;
-
-init_daemon_domain(autokd)
-
-allow autokd sysfs:file r_file_perms;

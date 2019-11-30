@@ -1,1 +1,0 @@
-allow kernel cw2015_data_file:file rw_file_perms;

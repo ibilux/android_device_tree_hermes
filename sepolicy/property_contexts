@@ -1,0 +1,2 @@
+service.nvram_init     u:object_r:service_nvram_init_prop:s0
+ro.wlan.mtk.wifi.5g     u:object_r:wifi_5g_prop:s0

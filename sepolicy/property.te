@@ -1,0 +1,2 @@
+type service_nvram_init_prop, property_type, mtk_core_property_type;
+type wifi_5g_prop, property_type, mtk_core_property_type;

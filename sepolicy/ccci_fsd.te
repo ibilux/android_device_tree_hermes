@@ -1,4 +1,0 @@
-type ccci_fsd_exec, exec_type, file_type;
-type ccci_fsd, domain;
-
-init_daemon_domain(ccci_fsd)
