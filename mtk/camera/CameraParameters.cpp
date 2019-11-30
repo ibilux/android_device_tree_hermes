@@ -174,9 +174,6 @@ const char CameraParameters::FOCUS_MODE_CONTINUOUS_PICTURE[] = "continuous-pictu
 const char CameraParameters::LIGHTFX_LOWLIGHT[] = "low-light";
 const char CameraParameters::LIGHTFX_HDR[] = "high-dynamic-range";
 
-// Value for picture flip
-const char CameraParameters::SNAPSHOT_PICTURE_FLIP[] = "snapshot-picture-flip";
-
 CameraParameters::CameraParameters()
                 : mMap()
 {
@@ -241,9 +238,6 @@ void CameraParameters::unflatten(const String8 &params)
 
 void CameraParameters::set(const char *key, const char *value)
 {
-    if (key == NULL || value == NULL)
-        return;
-
     // XXX i think i can do this with strspn()
     if (strchr(key, '=') || strchr(key, ';')) {
         //XXX ALOGE("Key \"%s\"contains invalid character (= or ;)", key);
@@ -460,16 +454,6 @@ void CameraParameters::setPictureFormat(const char *format)
 const char *CameraParameters::getPictureFormat() const
 {
     return get(KEY_PICTURE_FORMAT);
-}
-
-void CameraParameters::setCameraPictureFlip(const int format)
-{
-    set(SNAPSHOT_PICTURE_FLIP, format);
-}
-
-const int CameraParameters::getCameraPictureFlip() const
-{
-    return getInt(SNAPSHOT_PICTURE_FLIP);
 }
 
 void CameraParameters::dump() const

@@ -102,8 +102,6 @@ public:
     void getSupportedPictureSizes(Vector<Size> &sizes) const;
     void setPictureFormat(const char *format);
     const char *getPictureFormat() const;
-    void setCameraPictureFlip(const int format);
-    const int getCameraPictureFlip() const;
 
     void dump() const;
     status_t dump(int fd, const Vector<String16>& args) const;
@@ -688,9 +686,6 @@ public:
     static const char LIGHTFX_LOWLIGHT[];
     // High-dynamic range mode
     static const char LIGHTFX_HDR[];
-
-    // Picture flip
-    static const char SNAPSHOT_PICTURE_FLIP[];
 
     /**
      * Returns the the supported preview formats as an enum given in graphics.h
