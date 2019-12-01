@@ -38,7 +38,7 @@ BOARD_MKBOOTIMG_ARGS := \
     --second_offset 0x00e88000 \
     --tags_offset 0x0df88000
 # Prebuilt
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
+#TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
 # Source
 TARGET_KERNEL_SOURCE := kernel/xiaomi/hermes
 TARGET_KERNEL_CONFIG := hermes_defconfig
