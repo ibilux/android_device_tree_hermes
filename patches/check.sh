@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rootdirectory="$PWD"
-dirs="bionic build/make/core build/soong frameworks/av frameworks/base frameworks/native frameworks/opt/telephony hardware/interfaces hardware/ril system/core"
+dirs="bionic build/make/core build/soong frameworks/av frameworks/base frameworks/opt/telephony hardware/interfaces hardware/ril system/core"
 
 RED='\033[0;31m'
 NC='\033[0m'
