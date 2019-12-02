@@ -1,0 +1,10 @@
+allow sudaemon default_prop:file { write };
+allow sudaemon shell_prop:file { write };
+allow sudaemon account_service:service_manager { find };
+allow sudaemon user_service:service_manager { find };
+allow sudaemon package_service:service_manager { find };
+allow toolbox su_exec:file { read };
+allow toolbox platformblk_device:dir { search };
+allow toolbox kernel:process { setsched };
+allow toolbox system_file:file { setattr relabelfrom };
+allow toolbox init:fifo_file { write };

@@ -1,0 +1,12 @@
+# ==============================================
+# MTK Policy Rule
+# ==============================================
+
+# Date : WK15.49
+# Operation : Migration
+# Purpose: Trustonic HW-backed Gatekeeper
+allow gatekeeperd mobicore:unix_stream_socket connectto;
+allow gatekeeperd mobicore_user_device:chr_file { read write ioctl open };
+allow gatekeeperd mobicore_lib_file:file { read open getattr execute };
+
+allow hal_gatekeeper_default mobicore_lib_file:file { read open getattr };

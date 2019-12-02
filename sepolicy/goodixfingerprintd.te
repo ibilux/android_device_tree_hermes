@@ -1,0 +1,105 @@
+# Type Declaration
+type goodixfingerprintd, domain;
+type goodixfingerprintd_exec, exec_type, file_type;
+
+# ==============================================
+# MTK Policy Rule
+# ==============================================
+
+# Goodixfingerprintd
+init_daemon_domain(goodixfingerprintd)
+binder_use(goodixfingerprintd)
+binder_call(goodixfingerprintd, binderservicedomain)
+binder_call(goodixfingerprintd, appdomain)
+binder_service(goodixfingerprintd)
+binder_call(goodixfingerprintd, fingerprintd);
+allow goodixfingerprintd fingerprintd:binder { call transfer };
+allow goodixfingerprintd untrusted_app:binder {call transfer};
+allow goodixfingerprintd platform_app:binder { call transfer };
+allow goodixfingerprintd mobicore_device:chr_file rw_file_perms;
+allow goodixfingerprintd sysfs:file rw_file_perms;
+allow goodixfingerprintd storage_file:dir create_dir_perms;
+allow goodixfingerprintd storage_file:lnk_file create_file_perms;
+allow goodixfingerprintd mnt_user_file:dir create_dir_perms;
+allow goodixfingerprintd mnt_user_file:lnk_file create_file_perms;
+allow goodixfingerprintd fuse:dir create_dir_perms;
+allow goodixfingerprintd fuse:file create_file_perms;
+
+
+# GoodixFingerprint device
+allow fingerprintd goodixfingerprintd_device:chr_file rw_file_perms;
+type_transition goodixfingerprintd system_data_file:{ dir file } goodixfingerprintd_data_file;
+allow goodixfingerprintd goodixfingerprintd_data_file:dir relabelfrom;
+allow goodixfingerprintd goodixfingerprintd_data_file:file create_file_perms;
+allow goodixfingerprintd goodixfingerprintd_data_file:file relabelfrom;
+file_type_auto_trans(goodixfingerprintd, system_data_file, goodixfingerprintd_data_file)
+allow goodixfingerprintd fingerprintd_service:service_manager find;
+
+# allow to call PowerManagerService
+binder_call(goodixfingerprintd, system_server);
+allow goodixfingerprintd power_service:service_manager find;
+
+# allow to set properties
+set_prop(goodixfingerprintd, system_prop)
+set_prop(goodixfingerprintd, config_prop)
+
+# add self
+allow goodixfingerprintd self:process execmem;
+allow goodixfingerprintd kernel:system module_request;
+
+# allow goodixfingerprintd_device
+allow goodixfingerprintd goodixfingerprintd_device:file { create_file_perms };
+allow goodixfingerprintd goodixfingerprintd_device:chr_file { rw_file_perms setattr };
+allow goodixfingerprintd goodixfingerprintd_device:chr_file { getattr open read ioctl lock append write };
+
+# allow fingerprintd_data_file
+allow goodixfingerprintd fingerprintd_data_file:file { create_file_perms rw_file_perms create open };
+allow goodixfingerprintd fingerprintd_data_file:chr_file { rw_file_perms setattr };
+r_dir_file(goodixfingerprintd, fingerprintd_data_file)
+allow goodixfingerprintd fingerprintd_data_file:dir { ra_dir_perms r_dir_perms };
+allow goodixfingerprintd fingerprintd_data_file:dir { create setattr };
+
+# allow goodixfingerprintd_data_file
+allow goodixfingerprintd goodixfingerprintd_data_file:file { create_file_perms create open write};
+allow goodixfingerprintd goodixfingerprintd_data_file:chr_file { rw_file_perms setattr };
+r_dir_file(goodixfingerprintd, goodixfingerprintd_data_file)
+allow goodixfingerprintd goodixfingerprintd_data_file:dir { create setattr open read ra_dir_perms rw_dir_perms };
+allow goodixfingerprintd_data_file labeledfs:filesystem associate;
+
+# allow goodixfingerprintd_lib_file
+allow goodixfingerprintd goodixfingerprintd_lib_file:file { create_file_perms getattr read };
+allow goodixfingerprintd goodixfingerprintd_lib_file:chr_file { rw_file_perms setattr };
+allow goodixfingerprintd goodixfingerprintd_lib_file:dir ra_dir_perms;
+
+# allow system_file
+allow goodixfingerprintd system_file:file { rx_file_perms };
+
+# allow SD-Card
+allow goodixfingerprintd fuse:dir create_dir_perms;
+allow goodixfingerprintd fuse:file create_file_perms;
+r_dir_file(goodixfingerprintd, sdcard_type)
+allow goodixfingerprintd sdcard_type:file write;
+allow goodixfingerprintd app_data_file:dir search;
+allow goodixfingerprintd app_data_file:file rw_file_perms;
+allow goodixfingerprintd self:netlink_socket create;
+allow goodixfingerprintd system_data_file:dir { write open read add_name create};
+allow goodixfingerprintd system_data_file:file { open};
+
+# allow TEE
+allow goodixfingerprintd tee_device:chr_file { open read ioctl write };
+allow goodixfingerprintd mobicore_device:chr_file { open read ioctl write };
+allow goodixfingerprintd mobicore_tui_device:chr_file { open read ioctl write };
+allow goodixfingerprintd mobicore_user_device:chr_file { open read ioctl write };
+allow goodixfingerprintd self:netlink_socket read;
+allow goodixfingerprintd goodixfingerprintd:netlink_socket read;
+allow goodixfingerprintd storage_file:dir create_dir_perms;
+allow goodixfingerprintd storage_file:lnk_file create_file_perms;
+allow goodixfingerprintd tee_device:chr_file { rw_file_perms };
+
+# allow Mobicore
+allow goodixfingerprintd mobicore_data_file:file create_file_perms;
+allow goodixfingerprintd mobicore_data_file:chr_file { rw_file_perms setattr };
+r_dir_file(goodixfingerprintd, mobicore_data_file)
+allow goodixfingerprintd mobicore_data_file:dir create_dir_perms;
+allow goodixfingerprintd mobicore_data_file:dir ra_dir_perms;
+allow goodixfingerprintd mobicore_data_file:chr_file { open read ioctl write };

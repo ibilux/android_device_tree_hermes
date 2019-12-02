@@ -1,0 +1,19 @@
+# ==============================================
+# MTK Policy Rule
+# ============
+allow servicemanager goodix:dir { r_dir_perms };
+allow servicemanager goodix:file { r_file_perms };
+allow servicemanager goodix:process { getattr };
+allow servicemanager goodixfingerprintd:dir { r_dir_perms };
+allow servicemanager goodixfingerprintd:file { r_file_perms };
+allow servicemanager goodixfingerprintd:process { getattr };
+allow servicemanager fingerprintd:dir { r_dir_perms };
+allow servicemanager fingerprintd:file { r_file_perms };
+allow servicemanager fingerprintd:process { getattr };
+allow servicemanager mobicore:dir { r_dir_perms };
+allow servicemanager mobicore:file { r_file_perms };
+allow servicemanager mobicore:process { getattr };
+allow servicemanager guiext-server:dir { search };
+allow servicemanager guiext-server:file { read open };
+allow servicemanager guiext-server:process { getattr };
+allow servicemanager guiext-server_service:service_manager { add };

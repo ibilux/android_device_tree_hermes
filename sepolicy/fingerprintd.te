@@ -1,0 +1,9 @@
+# Fingerprint device
+allow fingerprintd sysfs:file rw_file_perms;
+allow fingerprintd fingerprintd_data_file:dir create_dir_perms;
+allow fingerprintd mobicore:unix_stream_socket connectto;
+
+allow fingerprintd mobicore_user_device:chr_file rw_file_perms;
+allow fingerprintd mobicore_data_file:dir search;
+allow fingerprintd mobicore_data_file:file { open read getattr };
+allow fingerprintd uhid_device:chr_file rw_file_perms;
