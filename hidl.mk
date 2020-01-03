@@ -72,6 +72,11 @@ PRODUCT_PACKAGES += \
     android.hardware.vibrator@1.0-impl \
     android.hardware.vibrator@1.0-service
 
+# ConsumerIr HIDL
+PRODUCT_PACKAGES += \
+    android.hardware.ir@1.0-impl \
+    android.hardware.ir@1.0-service
+
 # Lights
 PRODUCT_PACKAGES += \
     android.hardware.light@2.0-impl \
