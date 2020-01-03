@@ -6,7 +6,7 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
 	agps/crypto.c \
-	agps/icu53.c \
+	agps/icu56.c \
 	agps/ssl.c
 
 LOCAL_SHARED_LIBRARIES := \
