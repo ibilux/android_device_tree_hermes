@@ -19,7 +19,7 @@
 /dev/stpbt                            0660  bluetooth  radio
 
 # WIFI
-/dev/wmtWifi                          0660  system     system
+/dev/wmtWifi                          0660  wifi       wifi
 
 # FMRadio
 /dev/fm                               0660  system     media
