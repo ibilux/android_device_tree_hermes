@@ -56,5 +56,5 @@ ro.camera.sound.forced=0
 fmradio.driver.enable=1
 
 # Media Settings
-media.settings.xml=/system/etc/media_profiles.xml
+media.settings.xml=/system/vendor/etc/media_profiles.xml
 persist.media.treble_omx=false
