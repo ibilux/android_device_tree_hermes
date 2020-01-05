@@ -160,6 +160,15 @@
             <instance>default</instance>
         </interface>
     </hal>
+    <!-- <hal format="hidl">
+        <name>vendor.mediatek.hardware.pq</name>
+        <transport>hwbinder</transport>
+        <version>2.0</version>
+        <interface>
+            <name>IPictureQuality</name>
+            <instance>default</instance>
+        </interface>
+    </hal> -->
     <hal format="hidl">
         <name>android.hardware.media.omx</name>
         <transport>hwbinder</transport>
