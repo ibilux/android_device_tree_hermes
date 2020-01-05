@@ -57,11 +57,9 @@ public:
     ssize_t getSensorList(Sensor const* const** list);
     ssize_t getDynamicSensorList(Vector<Sensor>& list);
     Sensor const* getDefaultSensor(int type);
-
     // MTK
-    sp<SensorEventQueue> createEventQueue(String8 packageName, int mode = 0);
-    sp<SensorEventQueue> createEventQueue();
-
+    sp<SensorEventQueue> createEventQueue(String8 packageName = String8(""), int mode = 0);
+    //sp<SensorEventQueue> createEventQueue();
     bool isDataInjectionEnabled();
 
 private:
@@ -69,11 +67,8 @@ private:
     void sensorManagerDied();
 
     SensorManager(const String16& opPackageName);
-
     // MTK
-    SensorManager();
-
-
+    //SensorManager();
     status_t assertStateLocked();
 
 private:
@@ -89,11 +84,12 @@ private:
 };
 
 // MTK
+#ifdef MTK_HARDWARE
 extern "C" {
     extern android::Mutex _ZN7android9SingletonINS_13SensorManagerEE5sLockE;
     extern SensorManager *_ZN7android9SingletonINS_13SensorManagerEE9sInstanceE;
 }
-// MTK
+#endif  // MTK_HARDWARE
 
 
 // ----------------------------------------------------------------------------
