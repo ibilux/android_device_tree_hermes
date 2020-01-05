@@ -39,6 +39,7 @@
  * 2017/9/23: use custom spn list to match plmn		by: daniel_hk
  * 2017/9/23: fix newSmsInd for SMS not received	by: daniel_hk
  * 2018/1/13: fix convertRilCellInfoListToHal		by: daniel_hk
+ * 2020/01/05: handle ril identity in a better way		by: bilux (i.bilux@gmail.com)
  */
 
 #define LOG_TAG "RILC"
@@ -5574,12 +5575,17 @@ int radio::deleteSmsOnRuimResponse(int slotId,
     return 0;
 }
 
+typedef struct {
+    char *imei;
+    char *imeisv;
+    char *esnHex;
+    char *meidHex;
+} RIL_IDENTITY;
+
 int radio::getDeviceIdentityResponse(int slotId,
 				    int responseType, int serial, RIL_Errno e, void *response,
 				    size_t responseLen) {
-#if VDBG
     RLOGD("getDeviceIdentityResponse: serial %d", serial);
-#endif
 
     if (radioService[slotId]->mRadioResponse != NULL) {
 	RadioResponseInfo responseInfo = {};
@@ -5595,13 +5601,15 @@ int radio::getDeviceIdentityResponse(int slotId,
 		    emptyString, emptyString, emptyString, emptyString);
 	    radioService[slotId]->checkReturnStatus(retStatus);
 	} else {
-	    char **resp = (char **) response;
+	    RIL_IDENTITY identity = *((RIL_IDENTITY *) response);
+            RLOGD("getDeviceIdentityResponse: IMEI=%s", identity.imei);
+            RLOGD("getDeviceIdentityResponse: IMEISV=%s", identity.imeisv);
 	    Return<void> retStatus
 		    = radioService[slotId]->mRadioResponse->getDeviceIdentityResponse(responseInfo,
-		    convertCharPtrToHidlString(resp[0]),
-		    convertCharPtrToHidlString(resp[1]),	// IMEISV
-		    convertCharPtrToHidlString(resp[2]),
-		    convertCharPtrToHidlString(resp[3]));
+		    convertCharPtrToHidlString(identity.imei),
+		    convertCharPtrToHidlString(identity.imeisv),	// IMEISV
+		    convertCharPtrToHidlString(identity.esnHex),
+		    convertCharPtrToHidlString(identity.meidHex));
 	    radioService[slotId]->checkReturnStatus(retStatus);
 	}
     } else {

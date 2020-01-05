@@ -41,6 +41,7 @@
 ** 2017/9/17: revert to my queuing, RIL working now!	by: daniel_hk
 ** 2017/9/23: handle only mtk unsol commands now	by: daniel_hk
 ** 2017/9/23: use custom spn list to match plmn		by: daniel_hk
+** 2020/01/05: handle ril identity in a better way		by: bilux (i.bilux@gmail.com)
 */
 
 #define LOG_TAG "RILC"
@@ -268,8 +269,17 @@ static size_t s_prevEcopsDataSize[SIM_COUNT];
 static int pendingUSRcnt = 0;
 static USRbuffer pendingUSR[MAX_PENDING_USR];
 #endif
+
 // device identity
-static char* Device_ID[SIM_COUNT * 4];
+typedef struct {
+    char *imei;
+    char *imeisv;
+    char *esnHex;
+    char *meidHex;
+} RIL_IDENTITY;
+
+static RIL_IDENTITY Device_ID[SIM_COUNT];
+
 #if (SIM_COUNT > 3)
   #define MAX_RIL_CHANNELS	24
 #elif (SIM_COUNT > 2)
@@ -1282,25 +1292,27 @@ RIL_onRequestComplete(RIL_Token t, RIL_Errno s_e, void *s_response, size_t s_res
 	RLOGD("C[locl]< %s", requestToString(pRI->pCI->requestNumber));
 	if (pRI->pCI->requestNumber == RIL_REQUEST_GET_IMEI) {
 	    int i = (int)socket_id;
-	    Device_ID[i*4] = (char*) response;
-	    RLOGD("IEMI= %s", Device_ID[i*4]);
+	    RLOGD("SOCKET_ID_IMEI= %d", i);
+            Device_ID[i].imei = (char*) response;
+	    RLOGD("IMEI=%s", Device_ID[i].imei);
 	}
 	else if (pRI->pCI->requestNumber == RIL_REQUEST_GET_IMEISV) {
 	    int i = (int)socket_id;
-	    Device_ID[i*4 + 1] = (char*) response;
-	    RLOGD("IEMISV= %s", Device_ID[i*4 + 1]);
+	    RLOGD("SOCKET_ID_IMEI_SV= %d", i);
+            Device_ID[i].imeisv = (char*) response;
+	    RLOGD("IMEISV=%s", Device_ID[i].imeisv);
 	}
 	goto done;
     }
 
-// *** handle unsupport but necessary requests
-    if(e == RIL_E_REQUEST_NOT_SUPPORTED) {
-	if (pRI->pCI->requestNumber == RIL_REQUEST_DEVICE_IDENTITY) {
+// *** handle unsupported but necessary requests
+    if (pRI->pCI->requestNumber == RIL_REQUEST_DEVICE_IDENTITY) {
+	RLOGD("Overriding RIL_REQUEST_DEVICE_IDENTITY");
 	    int i = (int)socket_id;
-	    response = (void *) &Device_ID[i*4];
-	    responselen = sizeof(char *) * 4;
+	    RLOGD("SOCKET_ID_IDENTITY= %d", i);
+	    response = &(Device_ID[i]);
+	    responselen = 4 * sizeof(char*);
 	    e = RIL_E_SUCCESS;
-	}
     }
 
     appendPrintBuf("[%04d]< %s",
