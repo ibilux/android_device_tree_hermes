@@ -35,6 +35,13 @@ ril_shared_libs := \
     android.hardware.radio@1.0 \
     android.hardware.radio.deprecated@1.0
 
+#ifeq ($(BOARD_USES_MTK_HARDWARE), true)
+#ril_shared_libs += \
+#    vendor.mediatek.hardware.radio@1.1 \
+#    vendor.mediatek.hardware.radio@2.0 \
+#    vendor.mediatek.hardware.radio.deprecated@1.1
+#endif
+
 ril_inc := external/nanopb-c \
     $(LOCAL_PATH)/../include
 

@@ -21,8 +21,8 @@ PRODUCT_PACKAGES += \
     android.hardware.audio@2.0-impl \
     android.hardware.audio@2.0-service \
     android.hardware.audio.effect@2.0-impl \
-    android.hardware.broadcastradio@1.0-impl
-#    android.hardware.soundtrigger@2.0-impl
+    android.hardware.broadcastradio@1.0-impl \
+    android.hardware.soundtrigger@2.0-impl
 
 # gralloc/graphics HAL/HW Composer
 PRODUCT_PACKAGES += \
@@ -39,10 +39,11 @@ PRODUCT_PACKAGES += \
 
 # Camera HAL
 PRODUCT_PACKAGES += \
-    camera.device@1.0-impl \
-    camera.device@3.2-impl \
-    android.hardware.camera.provider@2.4-impl \
-    android.hardware.camera.provider@2.4-service
+    #camera.device@1.0-impl \
+    #camera.device@3.2-impl \
+    android.hardware.camera.provider@2.4-impl
+    #android.hardware.camera.provider@2.4-service
+    #vendor.mediatek.hardware.pq@2.0_vendor \
 
 # Bluetooth HAL
 PRODUCT_PACKAGES += \
@@ -60,12 +61,12 @@ PRODUCT_PACKAGES += \
 # Keymaster HIDL
 PRODUCT_PACKAGES += \
     android.hardware.keymaster@3.0-impl
-#    android.hardware.keymaster@3.0-service
+    #android.hardware.keymaster@3.0-service
 
 # Gatekeeper HIDL
 PRODUCT_PACKAGES += \
     android.hardware.gatekeeper@1.0-impl
-#    android.hardware.gatekeeper@1.0-service
+    #android.hardware.gatekeeper@1.0-service
 
 # Vibrator
 PRODUCT_PACKAGES += \
@@ -103,6 +104,9 @@ PRODUCT_PACKAGES += \
     android.hardware.radio@1.0 \
     android.hardware.radio@1.1 \
     android.hardware.radio.deprecated@1.0
+    #vendor.mediatek.hardware.radio@1.1 \
+    #vendor.mediatek.hardware.radio@2.0 \
+    #vendor.mediatek.hardware.radio.deprecated@1.1
 
 # Tether Packages
 PRODUCT_PACKAGES += \
