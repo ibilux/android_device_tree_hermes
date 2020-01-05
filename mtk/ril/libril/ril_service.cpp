@@ -529,7 +529,12 @@ bool copyHidlStringToRil(char **dest, const hidl_string &src, RequestInfo *pRI) 
 	sendErrorResponse(pRI, RIL_E_NO_MEMORY);
 	return false;
     }
-    strncpy(*dest, src.c_str(), len + 1);
+    if (strlcpy(*dest, src.c_str(), len + 1) >= (len + 1)) {
+        RLOGE("Copy of the HIDL string has been truncated, as "
+              "the string length reported by size() does not "
+              "match the length of string returned by c_str().");
+        return false;
+    }
     return true;
 }
 
@@ -2707,7 +2712,7 @@ Return<void> RadioImpl::setRadioCapability(int32_t serial, const RadioCapability
     rilRc.phase = (int) rc.phase;
     rilRc.rat = (int) rc.raf;
     rilRc.status = (int) rc.status;
-    strncpy(rilRc.logicalModemUuid, rc.logicalModemUuid.c_str(), MAX_UUID_LENGTH);
+    strlcpy(rilRc.logicalModemUuid, rc.logicalModemUuid.c_str(), sizeof(rilRc.logicalModemUuid));
 
     android::my_enqueue(pRI->pCI->requestNumber, &rilRc, sizeof(rilRc), android::FMT_RAW, pRI);
 
