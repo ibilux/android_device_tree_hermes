@@ -512,7 +512,7 @@ service wifi2agps /vendor/bin/wifi2agps
     user wifi
     group gps inet
 
-service mnld /vendor/bin/mnld
+service mnld /vendor/xbin/mnld
     class main
     user gps
     group gps inet misc sdcard_rw sdcard_r media_rw system
