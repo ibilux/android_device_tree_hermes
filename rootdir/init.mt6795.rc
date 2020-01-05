@@ -513,12 +513,6 @@ service fuelgauged /vendor/bin/fuelgauged
     user system
     group system
 
-service sbchk /vendor/bin/sbchk
-    class core
-    user system
-    group system
-    oneshot
-
 # Accelerometer and gyroscope
 service bmi160d /vendor/bin/bmi160d
     class main
