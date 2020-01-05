@@ -444,10 +444,9 @@ typedef struct
 EpoData epo_data;
 static int epo_download_failed = 0;
 static int epo_download_retry = 1;
+#endif
 char chip_id[PROPERTY_VALUE_MAX];
 static int gps_mode = -1;
-
-#endif
 /*---------------------------------------------------------------------------*/
 typedef struct {
     int sock;
@@ -3368,12 +3367,16 @@ void mnld_to_gps_handler(int fd, GpsState* s) {   // from AGPSD->MNLD->HAL->FWK
         }
         case MNL_AGPS_CMD_REQUEST_SET_ID: {
             int flags = buff_get_int(buff, &offset);
-            g_agps_ctx.agps_ril_callbacks->request_setid(flags);
+            if (g_agps_ctx.agps_ril_callbacks != NULL){
+                g_agps_ctx.agps_ril_callbacks->request_setid(flags);
+            }
             break;
         }
         case MNL_AGPS_CMD_REQUEST_REFLOC: {
             int flags = buff_get_int(buff, &offset);
-            g_agps_ctx.agps_ril_callbacks->request_refloc(flags);
+            if (g_agps_ctx.agps_ril_callbacks != NULL){
+                g_agps_ctx.agps_ril_callbacks->request_refloc(flags);
+            }
             break;
         }
         case MNL_AGPS_CMD_AGPS_LOC: {   // 235
