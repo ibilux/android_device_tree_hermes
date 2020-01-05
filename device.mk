@@ -86,7 +86,8 @@ PRODUCT_PACKAGES += libion
 PRODUCT_PACKAGES += \
     gps.mt6795 \
     libcurl \
-    libnl_2
+    libnl_2 \
+    mtk_agpsd
 
 # Bluetooth
 PRODUCT_PACKAGES += \
