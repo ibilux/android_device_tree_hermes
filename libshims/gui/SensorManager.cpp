@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "Sensors"
+#define LOG_TAG "SensorsListener_shim"
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -39,9 +39,8 @@ namespace android {
 android::Mutex android::SensorManager::sLock;
 std::map<String16, SensorManager*> android::SensorManager::sPackageInstances;
 
-// MTK
+#ifdef MTK_HARDWARE
 static const String8 packageName8("");
-
 
 // be compatible with MTK Lollipop blobs
 extern "C" {
@@ -62,7 +61,13 @@ SensorManager::SensorManager()
 sp<SensorEventQueue> SensorManager::createEventQueue() {
 	return createEventQueue(packageName8, 0);
 }
-// MTK
+
+extern "C"{
+SensorManager& SensorManager::getInstance(){
+	return &SensorManager::getInstanceForPackage(String16("MtkCam/SensorListener"));
+	}
+}
+#endif  // MTK_HARDWARE
 
 SensorManager& SensorManager::getInstanceForPackage(const String16& packageName) {
     Mutex::Autolock _l(sLock);
@@ -131,7 +136,12 @@ void SensorManager::sensorManagerDied() {
     mSensors.clear();
 }
 
-status_t SensorManager::assertStateLocked() {
+#ifdef COMPAT_SENSORS_M
+status_t SensorManager::assertStateLocked() const
+#else
+status_t SensorManager::assertStateLocked()
+#endif
+{
     bool initSensorManager = false;
     if (mSensorServer == NULL) {
         initSensorManager = true;
@@ -186,7 +196,12 @@ status_t SensorManager::assertStateLocked() {
     return NO_ERROR;
 }
 
-ssize_t SensorManager::getSensorList(Sensor const* const** list) {
+#ifdef COMPAT_SENSORS_M
+ssize_t SensorManager::getSensorList(Sensor const* const** list) const
+#else
+ssize_t SensorManager::getSensorList(Sensor const* const** list)
+#endif
+{
     Mutex::Autolock _l(mLock);
     status_t err = assertStateLocked();
     if (err < 0) {
@@ -219,7 +234,8 @@ Sensor const* SensorManager::getDefaultSensor(int type)
         // a non_wake-up version.
         if (type == SENSOR_TYPE_PROXIMITY || type == SENSOR_TYPE_SIGNIFICANT_MOTION ||
             type == SENSOR_TYPE_TILT_DETECTOR || type == SENSOR_TYPE_WAKE_GESTURE ||
-            type == SENSOR_TYPE_GLANCE_GESTURE || type == SENSOR_TYPE_PICK_UP_GESTURE) {
+            type == SENSOR_TYPE_GLANCE_GESTURE || type == SENSOR_TYPE_PICK_UP_GESTURE ||
+            type == SENSOR_TYPE_WRIST_TILT_GESTURE) {
             wakeUpSensor = true;
         }
         // For now we just return the first sensor of that type we find.
