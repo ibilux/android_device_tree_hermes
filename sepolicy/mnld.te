@@ -82,3 +82,5 @@ allow mnld agpsd_data_file:file { open read write create getattr };
 
 allow mnld platformblk_device:dir { search };
 allow mnld apk_data_file:dir { search };
+
+allow mnld system_data_file:file { getattr write };

@@ -25,3 +25,5 @@ allow gsm0710muxd device:dir { write };
 #oreo 
 allow gsm0710muxd gsm0710muxd_prop:property_service { set };
 allow gsm0710muxd ctl_ril-daemon-mtk_prop:property_service { set };
+allow gsm0710muxd ril_muxreport_run_prop:property_service set;
+allow gsm0710muxd ril_ismdreseted_prop:property_service set;

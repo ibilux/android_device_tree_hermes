@@ -263,3 +263,7 @@ allow platform_app mobicore_device:chr_file rw_file_perms;
 # dev_info
 allow platform_app sysfs_devinfo:file r_file_perms;
 allow platform_app system_app_data_file:dir { getattr };
+
+# nfc oreo
+allow platform_app nfc_data_file:dir { getattr open };
+allow platform_app nfc_data_file:file { setattr getattr open read write };

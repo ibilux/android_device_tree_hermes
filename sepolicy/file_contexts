@@ -253,6 +253,7 @@
 /dev/socket/rild-via u:object_r:rild_via_socket:s0
 /dev/socket/rild-atci-c2k(/.*)? u:object_r:rild_atci_c2k_socket:s0
 /dev/socket/mal-mfi(/.*)? u:object_r:mal_mfi_socket:s0
+/dev/socket/mal_mfi(/.*)? u:object_r:mal_mfi_socket2:s0
 /dev/socket/rpc u:object_r:rpc_socket:s0
 /dev/socket/soc_vt_stk(/.*)? u:object_r:soc_vt_stk_socket:s0
 /dev/socket/soc_vt_svc(/.*)? u:object_r:soc_vt_svc_socket:s0
@@ -595,4 +596,14 @@
 
 # drm
 /(vendor|system/vendor)/bin/hw/android\.hardware\.drm@1\.0-service.widevine		u:object_r:hal_drm_widevine_exec:s0
-/sbin/isu.sh 													u:object_r:sbin_isush_exec:s0
+
+#isu
+#/sbin/isu.sh 													u:object_r:sbin_isush_exec:s0
+
+#ims 
+/(vendor|system/vendor)/bin/hw/vendor\.mediatek\.hardware\.imsa@1\.0-service	u:object_r:hal_imsa_service_exec:s0
+
+#lights
+/(vendor|system/vendor)/bin/hw/android\.hardware\.light@2\.0-service-mediatek	u:object_r:hal_lights_service_mediatek_exec:s0
+
+

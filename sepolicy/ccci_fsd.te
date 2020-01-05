@@ -24,3 +24,6 @@ allow ccci_fsd ccci_fsd:capability { dac_override };
 allow ccci_fsd mtk_md_prop:file { open read getattr };
 allow ccci_fsd nvram_prop:file { read open getattr };
 allow ccci_fsd nvram_data_file:dir { search create add_name remove_name };
+
+allow ccci_fsd ril_muxreport_run_prop:property_service set;
+allow ccci_fsd ril_ismdreseted_prop:property_service set;

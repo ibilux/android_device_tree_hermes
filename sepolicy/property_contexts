@@ -202,3 +202,5 @@ af.modem_1.status u:object_r:af_modem_status_prop:s0
 af.ril.speech.codec.info u:object_r:af_ril_speech_codec_info_prop:s0
 af.ril.hd.voice.status u:object_r:af_ril_hd_voice_status_prop:s0
 ro.ril.ecclist u:object_r:ro_ril_ecclist_prop:s0
+ril.muxreport.run u:object_r:ril_muxreport_run_prop:s0
+ril.IsMdReseted u:object_r:ril_ismdreseted_prop:s0

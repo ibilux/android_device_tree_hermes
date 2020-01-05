@@ -75,3 +75,9 @@ allow ccci_mdinit block_device:dir { search };
 #oreo
 allow ccci_mdinit { ctl_rildaemon_prop ctl_ril-daemon-mtk_prop ctl_ril-daemon-s_prop ctl_ril-daemon-d_prop ctl_ril-daemon-md2_prop }:property_service set;
 allow ccci_mdinit ril_active_md_prop:property_service set;
+set_prop(ccci_mdinit, volte_prop)
+allow ccci_mdinit volte_prop:property_service set;
+allow ccci_mdinit ril_muxreport_run_prop:property_service set;
+allow ccci_mdinit ril_ismdreseted_prop:property_service set;
+
+

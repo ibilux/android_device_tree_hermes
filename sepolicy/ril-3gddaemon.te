@@ -49,4 +49,5 @@ wakelock_use(ril-3gddaemon)
 allow ril-3gddaemon block_device:dir search;
 allow ril-3gddaemon para_block_device:blk_file rw_file_perms;
 allow ril-3gddaemon mal_mfi_socket:sock_file { w_file_perms };
+allow ril-3gddaemon mal_mfi_socket2:sock_file { w_file_perms };
 allow ril-3gddaemon mtkmal:unix_stream_socket connectto;

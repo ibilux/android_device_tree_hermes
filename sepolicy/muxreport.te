@@ -33,3 +33,6 @@ allow muxreport rootfs:lnk_file { getattr };
 
 allow muxreport sysfs_ccci:dir { search };
 allow muxreport sysfs_ccci:file { read open };
+allow muxreport ril_muxreport_run_prop:property_service set;
+allow muxreport ril_ismdreseted_prop:property_service set;
+allow muxreport ril_muxreport_run_prop:file { read open getattr };

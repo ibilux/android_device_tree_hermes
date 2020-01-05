@@ -34,6 +34,7 @@ allow volte_imsm_md volte_imsa1_socket:sock_file write;
 # IMSM connection
 allow volte_imsm_md mtkmal:unix_stream_socket connectto;
 allow volte_imsm_md mal_mfi_socket:sock_file write;
+allow volte_imsm_md mal_mfi_socket2:sock_file write;
 
 # NETd
 allow volte_imsm_md netd:unix_stream_socket connectto;

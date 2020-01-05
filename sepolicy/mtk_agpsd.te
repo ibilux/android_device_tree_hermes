@@ -47,7 +47,9 @@ allow mtk_agpsd tmpfs:dir { search };
 allow mtk_agpsd media_rw_data_file:dir search;
 
 #Oreo
-#allow mtk_agpsd mediatek_prop:file { read write open getattr };
-#allow mtk_agpsd kernel:system { module_request };
-#allow mtk_agpsd storage_file:dir { search };
-#allow mtk_agpsd system_file:file { lock };  
+allow mtk_agpsd mediatek_prop:file { read write open getattr };
+allow mtk_agpsd kernel:system { module_request };
+allow mtk_agpsd storage_file:dir { search };
+allow mtk_agpsd system_file:file { lock };
+
+allow mtk_agpsd init:unix_dgram_socket { sendto };

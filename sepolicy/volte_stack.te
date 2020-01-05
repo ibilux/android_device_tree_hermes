@@ -48,3 +48,4 @@ allow volte_stack self:tcp_socket connect;
 allow volte_stack port:tcp_socket name_connect;
 
 allow volte_stack volte_stack_socket:sock_file write;
+allow volte_stack kernel:system { module_request };

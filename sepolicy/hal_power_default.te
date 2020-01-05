@@ -28,3 +28,6 @@ allow hal_power_default proc_mtktz:file  { open read write };
 allow hal_power_default thermal_manager_data_file:file { open lock setattr getattr };
 allow hal_power_default thermal_manager_data_file:dir { search };
 allow hal_power_default hal_power_default:capability { chown fowner };
+allow hal_power_default sysfs_devices_system_cpu:file { read open write };
+allow hal_power_default thermal_manager_data_file:dir { open read write };
+allow hal_power_default debugfs:file { getattr open read write };
