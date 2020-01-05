@@ -42,6 +42,7 @@
  * 2020/01/05: handle ril identity in a better way		by: bilux (i.bilux@gmail.com)
  * 2020/01/05: fix a some invalid response errors		by: bilux (i.bilux@gmail.com)
  * 2020/01/05: use strlcpy instead of strncpy			by: bilux (i.bilux@gmail.com)
+ * 2020/01/05: change rild initial sequence				by: bilux (i.bilux@gmail.com)
  */
 
 #define LOG_TAG "RILC"
@@ -8442,6 +8443,9 @@ void radio::registerService(RIL_RadioFunctions *callbacks, CommandInfo *commands
     simCount = SIM_COUNT;
     #endif
 
+    s_vendorFunctions = callbacks;
+    s_commands = commands;
+
     configureRpcThreadpool(1, true /* callerWillJoin */);
     for (int i = 0; i < simCount; i++) {
 	pthread_rwlock_t *radioServiceRwlockPtr = getRadioServiceRwlock(i);
@@ -8460,9 +8464,6 @@ void radio::registerService(RIL_RadioFunctions *callbacks, CommandInfo *commands
 	ret = pthread_rwlock_unlock(radioServiceRwlockPtr);
 	assert(ret == 0);
     }
-
-    s_vendorFunctions = callbacks;
-    s_commands = commands;
 }
 
 void rilc_thread_pool() {
