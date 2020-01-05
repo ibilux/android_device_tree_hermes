@@ -38,3 +38,4 @@ allow bluetooth persist_bt_prop:file { read open getattr };
 allow bluetooth kmsg_device:chr_file { open write };
 #allow bluetooth init:binder { call transfer };
 
+allow bluetooth proc:file { getattr read open ioctl };

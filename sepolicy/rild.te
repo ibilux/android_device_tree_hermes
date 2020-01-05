@@ -19,6 +19,12 @@ allow rild platformblk_device:dir { search };
 allow rild para_block_device:blk_file { open read write ioctl };
 allow rild block_device:dir { search };
 # oreo for ims and volte
-allow rild mal_mfi_socket:sock_file { write };
-
+allow rild mtkmal:unix_stream_socket connectto;
+allow rild mal_mfi_socket:sock_file { open read write };
+allow rild mal_mfi_socket2:sock_file { open read write };
 set_prop(rild,ro_ril_ecclist_prop);
+allow rild rild_ims_socket:sock_file { open read write };
+allow rild ril_muxreport_run_prop:property_service set;
+allow rild ril_ismdreseted_prop:property_service set;
+allow rild ril_muxreport_run_prop:file { read open getattr };
+allow rild ril_ismdreseted_prop:file { read open getattr };

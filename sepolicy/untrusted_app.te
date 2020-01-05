@@ -73,6 +73,10 @@ allow untrusted_app_25 sysfs:file { getattr read open ioctl };
 allow untrusted_app_25 proc:file { getattr open read };
 allow untrusted_app_25 mediatek_prop:file  { getattr open read };
 
+allow untrusted_app_25 mediacodec:fifo_file { read write open getattr };
+
+allow untrusted_app_25 pq_service:service_manager { find };
+
 allow untrusted_app sysfs:file { open read getattr };
 allow untrusted_app proc:file { getattr read open };
 

@@ -303,3 +303,6 @@ allow system_server power_hal_data_files:dir  rw_dir_perms;
 allow system_server power_hal_devfs:file      rw_file_perms;
 allow system_server power_hal_sysfs:file      rw_file_perms;
 allow system_server power_hal_data_files:file rw_file_perms;
+
+
+allow system_server init:unix_dgram_socket { sendto };

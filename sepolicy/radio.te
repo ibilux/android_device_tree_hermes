@@ -162,6 +162,7 @@ allow vtservice radio:binder call;
 allow radio rild_imsm_socket:sock_file write;
 allow radio mtkmal:unix_stream_socket connectto;
 allow radio mal_mfi_socket:sock_file write;
+allow radio mal_mfi_socket2:sock_file write;
 
 
 # Date : WK15.34 2015/08/21

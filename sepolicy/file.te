@@ -48,6 +48,7 @@ type rild_atci_md2_socket, file_type;
 type rild_vsim_socket, file_type;
 type rild_vsim_md2_socket, file_type;
 type mal_mfi_socket, file_type;
+type mal_mfi_socket2, file_type;
 type netdiag_socket, file_type;
 type atci_service_socket, file_type;
 type atci_serv_fw_socket, file_type;

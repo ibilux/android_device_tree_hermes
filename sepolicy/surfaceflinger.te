@@ -94,3 +94,4 @@ allow surfaceflinger shell:fifo_file { read };
 #allow surfaceflinger hal_graphics_allocator_hwservice:hwservice_manager { add };
 
 allow surfaceflinger proc:file { getattr read open };
+allow surfaceflinger nfc:fifo_file { read };

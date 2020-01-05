@@ -136,3 +136,21 @@ allow init sbin_isush_exec:file { read open execute };
 allow init su_exec:file { relabelfrom };
 allow init system_data_file:file { append };
 
+# Volte
+#allow init hwservicemanager:binder { transfer call };
+#allow hwservicemanager init:dir { search };
+#allow hwservicemanager init:binder { call };
+
+#GPS
+allow init mtk_agpsd:unix_dgram_socket { sendto };
+allow init agpsd_data_file:sock_file { write };
+allow init mnld_device:chr_file { write ioctl read open };
+allow init device:chr_file { write ioctl read open };
+allow init init:tcp_socket { setopt bind accept listen };
+allow init port:tcp_socket { name_bind };
+allow init node:tcp_socket { node_bind };
+allow init storage_file:lnk_file { read };
+allow init mnt_user_file:lnk_file { read };
+allow init fuse:dir { search };
+allow init system_server:unix_dgram_socket { sendto };
+allow init system_data_file:sock_file { write };

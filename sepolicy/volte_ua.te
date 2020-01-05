@@ -29,3 +29,5 @@ allow volte_ua self:udp_socket read;
 unix_socket_connect(volte_ua, volte_stack, volte_stack)
 
 allow volte_ua volte_ua_socket:sock_file write;
+allow volte_ua kernel:system { module_request };
+allow volte_ua volte_ua:capability { setgid };

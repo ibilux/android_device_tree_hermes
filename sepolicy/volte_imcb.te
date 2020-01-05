@@ -35,3 +35,4 @@ allow volte_imcb self:tcp_socket write;
 unix_socket_connect(volte_imcb, volte_ua, volte_ua)
 
 allow volte_imcb volte_imcb_socket:sock_file write;
+allow volte_imcb kernel:system { module_request };

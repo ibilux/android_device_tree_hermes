@@ -191,3 +191,5 @@ type af_ril_speech_codec_info_prop , property_type, mtk_core_property_type;
 type af_ril_hd_voice_status_prop , property_type, mtk_core_property_type;
 type rild_ecc_prop , property_type, mtk_core_property_type;
 type ro_ril_ecclist_prop , property_type, mtk_core_property_type;
+type ril_muxreport_run_prop , property_type, mtk_core_property_type;
+type ril_ismdreseted_prop , property_type, mtk_core_property_type;
