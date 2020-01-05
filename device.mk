@@ -47,9 +47,6 @@ PRODUCT_PACKAGES += \
 # Power HAL
 PRODUCT_PACKAGES += power.mt6795
 
-# Lights
-PRODUCT_PACKAGES += lights.mt6795
-
 # RIL
 PRODUCT_PACKAGES += \
     libccci_util
