@@ -119,6 +119,7 @@ type mtgpio_device, dev_type;
 type mtk_kpd_device, dev_type;
 type network_device, dev_type;
 type nvram_device, dev_type;
+type nvram_block_device, dev_type;
 type pmt_device, dev_type;
 type preloader_device, dev_type;
 type pro_info_device, dev_type;
@@ -210,10 +211,6 @@ type teei_vfs_device, dev_type;
 type hid_gadget_device, dev_type;
 type tfa9890_device, dev_type;
 type voldblk_device, dev_type;
-
-# Fingerprint device
-type esfp0_device, dev_type, mlstrustedobject;
-
 
 type bootdevice_block_device, dev_type;
 type gps_device, dev_type;

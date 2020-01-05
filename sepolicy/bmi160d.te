@@ -1,0 +1,6 @@
+type bmi160d_exec, exec_type, file_type;
+type bmi160d, domain;
+
+init_daemon_domain(bmi160d)
+
+allow bmi160d bmi160d_data_file:file rw_file_perms;
