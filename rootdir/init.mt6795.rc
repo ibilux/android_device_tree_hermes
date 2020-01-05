@@ -277,10 +277,10 @@ on post-fs-data
 on charger
     write /proc/hps/input_boost_enabled 0
     write /proc/hps/num_limit_low_battery 1
-    write /proc/gpufreq/gpufreq_opp_max_freq 253500
-    write /proc/cpufreq/cpufreq_limited_max_freq_by_user 403000
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "powersave"
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 403000
+    write /proc/gpufreq/gpufreq_opp_max_freq 390000
+    write /proc/cpufreq/cpufreq_limited_max_freq_by_user 1183000
+    #write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "powersave"
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1183000
 
 on boot
 # default is root radio 0440
