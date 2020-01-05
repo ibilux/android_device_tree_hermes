@@ -91,3 +91,5 @@ allow kernel untrusted_app:fd { use };
 
 allow kernel tmpfs:file write;
 allow kernel untrusted_app:file { write };
+
+allow kernel cw2015_data_file:file rw_file_perms;
