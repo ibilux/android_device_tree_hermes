@@ -274,13 +274,13 @@ on post-fs-data
 # Clear the sim switch flag
     setprop persist.radio.simswitch ""
 
-on charger
-    write /proc/hps/input_boost_enabled 0
-    write /proc/hps/num_limit_low_battery 1
-    write /proc/gpufreq/gpufreq_opp_max_freq 253500
-    write /proc/cpufreq/cpufreq_limited_max_freq_by_user 403000
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "powersave"
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 403000
+#on charger
+    #write /proc/hps/input_boost_enabled 0
+    #write /proc/hps/num_limit_low_battery 1
+    #write /proc/gpufreq/gpufreq_opp_max_freq 253500
+    #write /proc/cpufreq/cpufreq_limited_max_freq_by_user 403000
+    #write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "powersave"
+    #write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 403000
 
 on boot
 # default is root radio 0440
