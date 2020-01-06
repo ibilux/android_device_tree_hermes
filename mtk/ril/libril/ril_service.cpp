@@ -43,6 +43,7 @@
  * 2020/01/05: fix a some invalid response errors		by: bilux (i.bilux@gmail.com)
  * 2020/01/05: use strlcpy instead of strncpy			by: bilux (i.bilux@gmail.com)
  * 2020/01/05: change rild initial sequence				by: bilux (i.bilux@gmail.com)
+ * 2020/01/07: hack single dialog USSDs					by: bilux (i.bilux@gmail.com)
  */
 
 #define LOG_TAG "RILC"
@@ -6924,6 +6925,28 @@ int radio::newSmsOnSimInd(int slotId, int indicationType,
     return 0;
 }
 
+/**
+ * RIL_UNSOL_ON_USSD
+ *
+ * Called when a new USSD message is received.
+ *
+ * "data" is const char **
+ * ((const char **)data)[0] points to a type code, which is
+ *  one of these string values:
+ *      "0"   USSD-Notify -- text in ((const char **)data)[1]
+ *      "1"   USSD-Request -- text in ((const char **)data)[1]
+ *      "2"   Session terminated by network
+ *      "3"   other local client (eg, SIM Toolkit) has responded
+ *      "4"   Operation not supported
+ *      "5"   Network timeout
+ *
+ * The USSD session is assumed to persist if the type code is "1", otherwise
+ * the current session (if any) is assumed to have terminated.
+ *
+ * ((const char **)data)[1] points to a message string if applicable, which
+ * should be coded as dcs in ((const char **)data)[2]
+ */
+
 int radio::onUssdInd(int slotId, int indicationType,
 		     int token, RIL_Errno e, void *response, size_t responseLen) {
     if (radioService[slotId] != NULL && radioService[slotId]->mRadioIndication != NULL) {
@@ -6938,6 +6961,11 @@ int radio::onUssdInd(int slotId, int indicationType,
 #if VDBG
 	RLOGD("onUssdInd: mode %s", mode);
 #endif
+	// Hack single dialog USSDs
+	if ((atoi(mode) == 2 || atoi(mode) == 3) && strlen(strings[1]) > 0){
+		modeType = (UssdModeType) 0;
+	}
+
 	Return<void> retStatus = radioService[slotId]->mRadioIndication->onUssd(
 		convertIntToRadioIndicationType(indicationType), modeType, msg);
 	radioService[slotId]->checkReturnStatus(retStatus);
