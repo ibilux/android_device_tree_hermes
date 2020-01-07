@@ -1,4 +1,3 @@
 subdirs = [
-    "hidl",
     "mtk/camera",
 ]
