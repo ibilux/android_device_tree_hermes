@@ -116,9 +116,6 @@ PRODUCT_PACKAGES += \
 # XML Parser
 PRODUCT_PACKAGES += libxml2
 
-# hw composer
-PRODUCT_PACKAGES += hwcomposer.mt6795
-
 # Stlport
 PRODUCT_COPY_FILES += \
     $(DEVICE_PATH)/prebuilts/libstlport/lib/libstlport.so:system/lib/libstlport.so \
