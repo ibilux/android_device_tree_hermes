@@ -95,10 +95,12 @@ on post-fs-data
     chmod 0660 /dev/gyroscope
     chmod 0660 /dev/gsensor
     chmod 0660 /dev/als_ps
+    chmod 0660 /dev/aal_als
     chown system system /dev/gyroscope
     chown system system /dev/hwmsensor
     chown system system /dev/gsensor
     chown system system /dev/als_ps
+    chown system system /dev/aal_als
 
     chmod 0660 /sys/class/misc/m_acc_misc/accenablenodata
     chmod 0660 /sys/class/misc/m_acc_misc/accactive
