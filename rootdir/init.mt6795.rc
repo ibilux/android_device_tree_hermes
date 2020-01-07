@@ -652,12 +652,12 @@ on property:sys.boot_completed=1
     chmod 0666 /d/ged/hal/custom_upbound_gpu_freq
 
 # Modem related nodes
-    #chown media audio /dev/ccci_aud
-    #chown radio radio /dev/ccci_fs
-    #chown radio radio /dev/ccci_ioctl0
-    #chown radio radio /dev/ccci_ioctl1
-    #chown radio radio /dev/ccci_ipc_1220_0
-    #chown radio radio /dev/ccci_monitor
+    chown media audio /dev/ccci_aud
+    chown radio radio /dev/ccci_fs
+    chown radio radio /dev/ccci_ioctl0
+    chown radio radio /dev/ccci_ioctl1
+    chown radio radio /dev/ccci_ipc_1220_0
+    chown radio radio /dev/ccci_monitor
 
 # Boot mode
     #chmod 666 /sys/devices/virtual/BOOT/BOOT/boot/boot_mode
