@@ -176,7 +176,6 @@ allow system_server save_locale_prop:property_service set;
 # Date: WK14.47
 # Operation : Sanity
 # Purpose : for /system/app/mcRegistry and /proc/secmem (TEE enable)
-allow system_server mobicore_data_file:dir r_dir_perms;
 allow system_server proc_secmem:file { rw_file_perms };
 
 # Date: WK14.47
@@ -261,11 +260,6 @@ allow system_server surfaceflinger:fifo_file rw_file_perms;
 allow system_server sw_sync_device:chr_file { read write getattr open ioctl };
 allow system_server wifi_data_file:sock_file { unlink };
 
-# Goodixfingerprintd
-binder_call(system_server,goodixfingerprintd)
-allow system_server McDriverDaemon_device:chr_file rw_file_perms;
-allow system_server tee_device:chr_file r_file_perms;
-allow system_server goodixfingerprintd_device:chr_file rw_file_perms;
 # Nougat
 #allow system_server dalvikcache_data_file:file execute;
 

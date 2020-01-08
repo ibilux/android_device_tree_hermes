@@ -105,10 +105,6 @@ set_prop(meta_tst, powerctl_prop)
 # Date: WK14.45
 # Operation : Migration
 # Purpose : HDCP
-allow meta_tst mobicore:unix_stream_socket connectto;
-allow meta_tst mobicore_data_file:dir search;
-allow meta_tst mobicore_data_file:file { getattr read open lock};
-allow meta_tst mobicore_user_device:chr_file { read write open ioctl};
 allow meta_tst persist_data_file:dir { create setattr write add_name search};
 allow meta_tst persist_data_file:file { read write create open getattr setattr};
 
@@ -128,7 +124,6 @@ allow meta_tst eemcs_device:chr_file { read write ioctl open };
 #Date WK14.49
 #Operation : Migration
 #Purpose : DRM key installation
-allow meta_tst mobicore_data_file:file getattr;
 allow meta_tst shell_exec:file { read open execute_no_trans };
 allow meta_tst system_data_file:dir create;
 #allow meta_tst system_data_file:file { setattr append };

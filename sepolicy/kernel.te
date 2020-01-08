@@ -52,11 +52,6 @@ allow kernel nvram_data_file:lnk_file read;
 # Operation : Migration
 # Purpose : grant proc_thermal for dir search
 allow kernel proc_thermal:dir search;
-allow kernel mobicore_data_file:file read;
-allow kernel mobicore_data_file:file open;
-allow kernel mobicore_data_file:file getattr;
-allow kernel mobicore_data_file:file write;
-allow kernel mobicore_data_file:file rename;
 
 #dontaudit kernel self:capability mknod;
 allow kernel self:capability mknod ;

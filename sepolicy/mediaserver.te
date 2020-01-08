@@ -266,10 +266,6 @@ allow mediaserver sysfs_lowmemorykiller:file { read open };
 # Date: WK14.45
 # Operation : Migration
 # Purpose : HDCP
-allow mediaserver mobicore:unix_stream_socket connectto;
-allow mediaserver mobicore_data_file:dir search;
-allow mediaserver mobicore_data_file:file { getattr read open lock};
-allow mediaserver mobicore_user_device:chr_file { read write open ioctl};
 allow mediaserver persist_data_file:dir { create write add_name search};
 allow mediaserver persist_data_file:file { read write create open getattr };
 
@@ -351,7 +347,6 @@ allow mediaserver thermal_manager_data_file:file setattr;
 # Date : WK14.52
 # Operation : WVL1 IT
 # Purpose : SVP module operates secmem driver
-allow mediaserver mobicore_data_file:file getattr;
 allow mediaserver proc_secmem:file ioctl;
 
 # Date : WK15.03

@@ -59,11 +59,8 @@ allow untrusted_app pq_service:service_manager { find };
 # Package: com.mediatek.multiwindow.service
 allow untrusted_app mtk_mwblacklist_service:service_manager find;
 
-allow untrusted_app goodixfingerprintd_device:chr_file rw_file_perms;
-allow untrusted_app mobicore_device:chr_file rw_file_perms;
-allow untrusted_app McDriverDaemon_device:chr_file rw_file_perms;
-allow untrusted_app goodixfingerprintd_lib_file:file { read getattr open ioctl lock };
 allow untrusted_app proc:file { open read ioctl };
+
 # oreo
 
 allow untrusted_app_25 proc:file { read open ioctl };

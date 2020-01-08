@@ -56,12 +56,6 @@ allow surfaceflinger sf_rtt_file:dir {relabelto getattr};
 allow surfaceflinger em_svr:dir search;
 allow surfaceflinger em_svr:file { read getattr open };
 
-# need to check what is this allowance for
-allow surfaceflinger mobicore:unix_stream_socket connectto;
-allow surfaceflinger mobicore_data_file:file { read getattr open };
-allow surfaceflinger mobicore_user_device:chr_file { read write ioctl open };
-allow surfaceflinger mobicore_data_file:dir search;
-
 # take down the boot time for bootprof
 
 # notify perf service of SF information for performance

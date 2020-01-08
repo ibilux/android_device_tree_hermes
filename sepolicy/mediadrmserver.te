@@ -9,13 +9,9 @@
 # Operation : WVL1 IT
 # Purpose : SVP module operates secmem driver
 allow mediadrmserver init:unix_stream_socket connectto;
-allow mediadrmserver mobicore_data_file:file { read open getattr};
-allow mediadrmserver mobicore_user_device:chr_file { read write ioctl open };
 allow mediadrmserver proc:file { read ioctl open };
 allow mediadrmserver property_socket:sock_file write;
-allow mediadrmserver mobicore:unix_stream_socket connectto;
 allow mediadrmserver proc_secmem:file { read write ioctl open};
-allow mediadrmserver mobicore_data_file:dir search;
 allow mediadrmserver persist_data_file:file { read getattr open };
 allow mediadrmserver persist_data_file:dir search;
 

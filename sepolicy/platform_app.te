@@ -166,12 +166,6 @@ allow platform_app radio_data_file:dir search;
 allow platform_app init:unix_stream_socket connectto;
 allow platform_app cmddumper:unix_stream_socket connectto;
 
-# Date : 2014/12/30
-# Operation : TUI Migration
-# Purpose : TUI service need to access tui device driver
-# Package: com.trustonic.tuiservice.TuiService
-allow platform_app mobicore_tui_device:chr_file { read open ioctl };
-
 # Date : 2015/01/13
 # Operation : New feature for GPS Log
 # Purpose : MTKLogger need setup local socket with mnld
@@ -251,14 +245,6 @@ allow platform_app aal_service:service_manager { find };
 # Purpose : allow platform_app to find mw_blacklist
 # Package: com.mediatek.multiwindow.service
 allow platform_app mtk_mwblacklist_service:service_manager find;
-
-# Date : 2015/12/9
-# Operation : Migration
-# Purpose : Added for Fingerprint
-# Package: com.android.systemui
-allow platform_app goodixfingerprintd_device:chr_file rw_file_perms;
-allow platform_app goodixfingerprintd:binder { call transfer };
-allow platform_app mobicore_device:chr_file rw_file_perms;
 
 # dev_info
 allow platform_app sysfs_devinfo:file r_file_perms;

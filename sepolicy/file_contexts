@@ -17,7 +17,6 @@
 /data/aee_exp(/.*)?  u:object_r:aee_exp_data_file:s0
 /data/agps_supl(/.*)?    u:object_r:agpsd_data_file:s0
 /data/anr/SF_RTT(/.*)? u:object_r:sf_rtt_file:s0
-/data/app/mcRegistry(/.*)? u:object_r:mobicore_data_file:s0
 /data/ccci_cfg(/.*)? u:object_r:ccci_cfg_file:s0
 /data/flashless(/.*)? u:object_r:c2k_file:s0
 /data/core(/.*)? u:object_r:aee_core_data_file:s0
@@ -149,9 +148,6 @@
 /dev/MJC(/.*)? u:object_r:MJC_device:s0
 /dev/m_mag_misc(/.*)? u:object_r:m_mag_misc_device:s0
 /dev/mmp(/.*)? u:object_r:mmp_device:s0
-/dev/mobicore u:object_r:mobicore_admin_device:s0
-/dev/mobicore-user u:object_r:mobicore_user_device:s0
-/dev/t-base-tui u:object_r:mobicore_tui_device:s0
 /dev/msensor(/.*)? u:object_r:msensor_device:s0
 /dev/MT6516_H264_DEC(/.*)? u:object_r:MT6516_H264_DEC_device:s0
 /dev/mt6516-IDP(/.*)? u:object_r:mt6516_IDP_device:s0
@@ -366,7 +362,6 @@
 #############################
 # System files
 #
-/system/app/mcRegistry(/.*)? u:object_r:mobicore_data_file:s0
 /(system|system\/vendor|vendor)/bin/stp_dump3 u:object_r:stp_dump3_exec:s0
 /(system|system\/vendor|vendor)/bin/aal u:object_r:aal_exec:s0
 /(system|system\/vendor|vendor)/bin/aee_core_forwarder u:object_r:aee_core_forwarder_exec:s0
@@ -416,7 +411,6 @@
 /(system|system\/vendor|vendor)/bin/launchpppoe u:object_r:launchpppoe_exec:s0
 /(system|system\/vendor|vendor)/bin/matv u:object_r:matv_exec:s0
 /(system|system\/vendor|vendor)/bin/mc6420d u:object_r:mc6420d_exec:s0
-/(system|system\/vendor|vendor)/bin/mcDriverDaemon u:object_r:mobicore_exec:s0
 /(system|system\/vendor|vendor)/bin/mdlogger u:object_r:mdlogger_exec:s0
 /(system|system\/vendor|vendor)/bin/memsicd3416x u:object_r:memsicd3416x_exec:s0
 /(system|system\/vendor|vendor)/bin/memsicd u:object_r:memsicd_exec:s0
@@ -534,15 +528,6 @@
 
 /data/data(/.*)?       u:object_r:system_data_file:s0
 /dev/socket/sdcard u:object_r:vold_socket:s0
-
-# Mobicore files
-/(system|system\/vendor|vendor)/lib64/libMcClient.so  u:object_r:mobicore_lib_file:s0
-/(system|system\/vendor|vendor)/lib/libMcClient.so  u:object_r:mobicore_lib_file:s0
-/(system|system\/vendor|vendor)/lib64/libMcRegistry.so  u:object_r:mobicore_lib_file:s0
-/(system|system\/vendor|vendor)/lib/libMcRegistry.so  u:object_r:mobicore_lib_file:s0
-/(system|system\/vendor|vendor)/lib/libMcGatekeeper.so u:object_r:mobicore_lib_file:s0
-/(system|system\/vendor|vendor)/lib64/libMcGatekeeper.so u:object_r:mobicore_lib_file:s0
-/data/misc/mcRegistry(/.*)? u:object_r:mobicore_data_file:s0
 
 # Other
 #/sys/devices/platform/mtk_disp_mgr.0/rgb                        u:object_r:display_color_sysfs:s0
