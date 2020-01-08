@@ -11,6 +11,3 @@ allow domain exm0_device:chr_file { read write ioctl open };
 # Operation : Migration
 # Purpose : for device bring up, not to block early migration
 
-# Fingerprint
-allow domain McDriverDaemon_device:chr_file rw_file_perms;
-allow domain mobicore_device:chr_file rw_file_perms;

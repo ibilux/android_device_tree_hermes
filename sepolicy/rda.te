@@ -16,15 +16,6 @@ init_daemon_domain(rda)
 
 # Date : WK15.42
 # Operation : RDA Migration
-# Purpose : allow RDA loading and connecting to trustonic TA
-#============= rda ==============
-allow rda mobicore:unix_stream_socket connectto;
-allow rda mobicore_data_file:file r_file_perms;
-allow rda mobicore_user_device:chr_file rw_file_perms;
-allow rda mobicore_data_file:dir search;
-
-# Date : WK15.42
-# Operation : RDA Migration
 # Purpose : allow RDA read proc data for r symptom detection
 allow rda domain:dir { getattr search };
 allow rda domain:file { read open };

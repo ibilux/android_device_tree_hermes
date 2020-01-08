@@ -60,10 +60,6 @@ allow drmserver mediaserver:fifo_file write;
 # Date : WK14.52
 # Operation : WVL1 IT
 # Purpose : SVP module operates secmem driver and SVP module operate tee
-allow drmserver mobicore:unix_stream_socket connectto;
-allow drmserver mobicore_data_file:file { read getattr open lock};
-allow drmserver mobicore_data_file:dir search;
-allow drmserver mobicore_user_device:chr_file { read write ioctl open };
 allow drmserver persist_data_file:file { read getattr open };
 allow drmserver persist_data_file:dir search;
 allow drmserver proc_secmem:file { read write ioctl open };

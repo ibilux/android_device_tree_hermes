@@ -16,4 +16,3 @@ allow hal_drm_widevine media_data_file:file create_file_perms;
 
 allow hal_drm_widevine kernel:system { module_request };
 
-allow hal_drm_widevine mobicore_lib_file:file { getattr open read };
