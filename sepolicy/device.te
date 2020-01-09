@@ -119,7 +119,7 @@ type mtgpio_device, dev_type;
 type mtk_kpd_device, dev_type;
 type network_device, dev_type;
 type nvram_device, dev_type;
-type nvram_block_device, dev_type;
+#type nvram_block_device, dev_type;
 type pmt_device, dev_type;
 type preloader_device, dev_type;
 type pro_info_device, dev_type;
