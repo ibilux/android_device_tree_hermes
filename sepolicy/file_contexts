@@ -578,9 +578,9 @@
 #/sbin/isu.sh 													u:object_r:sbin_isush_exec:s0
 
 #ims 
-/(vendor|system/vendor)/bin/hw/vendor\.mediatek\.hardware\.imsa@1\.0-service	u:object_r:hal_imsa_service_exec:s0
+#/(vendor|system/vendor)/bin/hw/vendor\.mediatek\.hardware\.imsa@1\.0-service	u:object_r:hal_imsa_service_exec:s0
 
 #lights
-/(vendor|system/vendor)/bin/hw/android\.hardware\.light@2\.0-service-mediatek	u:object_r:hal_lights_service_mediatek_exec:s0
+#/(vendor|system/vendor)/bin/hw/android\.hardware\.light@2\.0-service-mediatek	u:object_r:hal_lights_service_mediatek_exec:s0
 
 
