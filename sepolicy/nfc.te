@@ -103,8 +103,8 @@ allow nfc init:unix_stream_socket { write read setopt };
 # allow nfc dumpstate:fd use;
 # allow nfc dumpstate:unix_stream_socket { read write getopt getattr };
 allow nfc kernel:system  { module_request };
-allow nfc system_data_file:dir { write add_name remove_name };
-allow nfc system_data_file:sock_file { create setattr write unlink };
+#allow nfc system_data_file:dir { write add_name remove_name };
+#allow nfc system_data_file:sock_file { create setattr write unlink };
 
 # Oreo
 
