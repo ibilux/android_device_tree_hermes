@@ -135,7 +135,7 @@ allow system_app ctl_rbfota_prop:property_service set;
 # Operation: SQC
 # Purpose: [Settings][RenderThread][operate device file failed]
 # Package: com.android.settings
-allow system_app proc_secmem:file rw_file_perms;
+#allow system_app proc_secmem:file rw_file_perms;
 
 # Date : 2014/11/20
 # Operation: SQC

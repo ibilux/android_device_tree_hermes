@@ -159,7 +159,7 @@ allow debuggerd sf_bqdump_data_file:file { read getattr unlink open };
 allow debuggerd custom_file:dir search;
 
 # avc:  denied  { read } for  pid=4503 comm="screencap" name="secmem0" dev="proc"
-allow debuggerd proc_secmem:file r_file_perms;
+#allow debuggerd proc_secmem:file r_file_perms;
 
 #add debuggerd policy
 allow debuggerd mnt_user_file:dir search;

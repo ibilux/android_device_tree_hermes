@@ -7,7 +7,7 @@
 # Operation : Migration
 # Purpose : for L early bring up
 allow bootanim self:netlink_socket { read bind create write};
-allow bootanim proc_secmem:file { read open};
+#allow bootanim proc_secmem:file { read open};
 
 # Date : WK14.32
 # Operation : Migration
