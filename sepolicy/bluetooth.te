@@ -15,7 +15,7 @@ allow bluetooth nvdata_file:file { read write getattr open };
 allow bluetooth nvdata_file:lnk_file r_file_perms;
 
 allow bluetooth block_device:dir search;
-allow bluetooth proc_secmem:file { read open };
+#allow bluetooth proc_secmem:file { read open };
 
 # Date : WK15.36
 # Operation : Migration

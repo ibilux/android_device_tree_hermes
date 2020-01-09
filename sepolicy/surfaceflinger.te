@@ -43,7 +43,7 @@ binder_call(surfaceflinger, ipod)
 allow surfaceflinger qemu_pipe_device:chr_file rw_file_perms;
 
 # for SVP secure memory allocation
-allow surfaceflinger proc_secmem:file { read write open ioctl };
+#allow surfaceflinger proc_secmem:file { read write open ioctl };
 
 # for watchdog
 allow surfaceflinger anr_data_file:dir { relabelfrom read remove_name getattr };

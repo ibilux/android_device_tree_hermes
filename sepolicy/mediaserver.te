@@ -332,7 +332,7 @@ allow mediaserver untrusted_app:file { read open getattr };
 # Data : 2014/11/26
 # Operation : Camera display client
 # Purpose : for access proc_secmem
-allow mediaserver proc_secmem:file { read write open};
+#allow mediaserver proc_secmem:file { read write open};
 
 # Date : WK14.49
 # Operation : WFD
@@ -347,7 +347,7 @@ allow mediaserver thermal_manager_data_file:file setattr;
 # Date : WK14.52
 # Operation : WVL1 IT
 # Purpose : SVP module operates secmem driver
-allow mediaserver proc_secmem:file ioctl;
+#allow mediaserver proc_secmem:file ioctl;
 
 # Date : WK15.03
 # Operation : Migration

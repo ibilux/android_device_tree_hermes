@@ -30,7 +30,7 @@ allow untrusted_app protect_s_data_file:dir getattr;
 # Date : W1452
 # Operation : WVL1 Modular DRM IT
 # Purpose : Allow svp client alloc sec mem
-allow untrusted_app proc_secmem:file { read ioctl open };
+#allow untrusted_app proc_secmem:file { read ioctl open };
 
 # Date : W1537
 # Operation: M0 Migration

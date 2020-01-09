@@ -176,7 +176,7 @@ allow system_server save_locale_prop:property_service set;
 # Date: WK14.47
 # Operation : Sanity
 # Purpose : for /system/app/mcRegistry and /proc/secmem (TEE enable)
-allow system_server proc_secmem:file { rw_file_perms };
+#allow system_server proc_secmem:file { rw_file_perms };
 
 # Date: WK14.47
 # Operation : Sanity

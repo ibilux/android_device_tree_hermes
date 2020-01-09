@@ -62,7 +62,7 @@ allow drmserver mediaserver:fifo_file write;
 # Purpose : SVP module operates secmem driver and SVP module operate tee
 allow drmserver persist_data_file:file { read getattr open };
 allow drmserver persist_data_file:dir search;
-allow drmserver proc_secmem:file { read write ioctl open };
+#allow drmserver proc_secmem:file { read write ioctl open };
 
 # Date : WK15.15
 # Operation : GMS APP SQC
