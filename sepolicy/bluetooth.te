@@ -32,7 +32,7 @@ allow bluetooth wmt_prop:file { getattr open };
 
 allow bluetooth keystore_service:service_manager find;
 allow bluetooth nvram_prop:file { open getattr read };
-allow bluetooth nvram_device:blk_file { open read write };
+allow bluetooth nvram_device:blk_file { open };
 allow bluetooth wmt_prop:file { read open getattr };
 allow bluetooth persist_bt_prop:file { read open getattr };
 allow bluetooth kmsg_device:chr_file { open write };
