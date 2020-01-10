@@ -8,7 +8,7 @@ This branch is device tree for building LineageOS 15.1 Rom for Xiaomi Redmi Note
   - Adjustable brightness
   - Audio
   - Auto brightness
-  - RIL (calls & mobile data)
+  - RIL (calls & mobile data & ussd)
   - Video
   - Gallery
   - Mic
@@ -22,19 +22,19 @@ This branch is device tree for building LineageOS 15.1 Rom for Xiaomi Redmi Note
   - Online/Offline charging
   - Built-in Signature Spoofing (for MicroG)
   - USB tethering
-
-### NOT working:
-  - Camera
   - IR Blaster
   - Vibration
   - Rotation sensor
-  - Proximity sensor
   - MTP and Mass Storage modes
+  - USSD
+  - Lights
+
+### NOT working:
+  - Camera
+  - Proximity sensor
 
 ### Bugs:
   - graphical glitches
-  - ussd
-  - Lights (only red & green leds are working for now)
 
 ### Credits:
   - Dinolek
