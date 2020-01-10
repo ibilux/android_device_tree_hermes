@@ -74,7 +74,7 @@ PRODUCT_PACKAGES += \
     libui_ext
 
 # Camera
-PRODUCT_PACKAGES += libcamera_parameters_mtk
+#PRODUCT_PACKAGES += libcamera_parameters_mtk
 
 # Ion
 PRODUCT_PACKAGES += libion
