@@ -13,6 +13,9 @@ PRODUCT_PROPERTY_OVERRIDES += debug.hwui.use_buffer_age=false
 # AudioFlinger
 PRODUCT_PROPERTY_OVERRIDES += ro.af.client_heap_size_kbyte=7168
 
+# This should turn off specific memory-intensive features that work poorly on low-memory devices
+PRODUCT_PROPERTY_OVERRIDES += ro.config.low_ram=true
+
 ### product property overrides ###
 
 # Enable call recording
