@@ -1,0 +1,40 @@
+From 06ef0b2951fb4de0c1b3fa6af7856b14b510e526 Mon Sep 17 00:00:00 2001
+From: Bilux <i.bilux@gmail.com>
+Date: Thu, 30 Jan 2020 23:46:53 +0100
+Subject: [PATCH] add mtk support for healthd
+
+---
+ health/1.0/default/Android.mk | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/health/1.0/default/Android.mk b/health/1.0/default/Android.mk
+index 199ab4120..e4202d63d 100644
+--- a/health/1.0/default/Android.mk
++++ b/health/1.0/default/Android.mk
+@@ -4,10 +4,14 @@ include $(CLEAR_VARS)
+ LOCAL_MODULE := android.hardware.health@1.0-impl
+ LOCAL_PROPRIETARY_MODULE := true
+ LOCAL_MODULE_RELATIVE_PATH := hw
+-LOCAL_C_INCLUDES := system/core/base/include
++LOCAL_C_INCLUDES := system/core/healthd/include system/core/base/include
+ LOCAL_SRC_FILES := \
+     Health.cpp \
+ 
++ifeq ($(BOARD_USES_MTK_HARDWARE),true)
++ LOCAL_CFLAGS += -DMTK_HARDWARE
++endif
++
+ LOCAL_HEADER_LIBRARIES := libhealthd_headers
+ 
+ LOCAL_SHARED_LIBRARIES := \
+@@ -17,8 +21,9 @@ LOCAL_SHARED_LIBRARIES := \
+     liblog \
+     libutils \
+     android.hardware.health@1.0 \
++    libminui
+ 
+-LOCAL_STATIC_LIBRARIES := android.hardware.health@1.0-convert
++LOCAL_STATIC_LIBRARIES := libminui android.hardware.health@1.0-convert
+ 
+ LOCAL_HAL_STATIC_LIBRARIES := libhealthd
+ 
