@@ -117,20 +117,20 @@ TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 
 # Shim libs
 TARGET_LD_SHIM_LIBS := \
-        /system/vendor/bin/mtk_agpsd|libshim_agps.so\
-        /system/lib/libmedia.so|libshim_snd.so\
-        /system/lib64/libmedia.so|libshim_snd.so\
-        /system/lib/libgui.so|libshim_gui.so\
-        /system/lib64/libgui.so|libshim_gui.so\
-        /system/lib/libcutils.so|libshim_atomic.so\
-        /system/lib64/libcutils.so|libshim_atomic.so\
-        /system/lib/libc.so|libshims_bionic.so\
-        /system/lib64/libc.so|libshims_bionic.so\
-        /system/vendor/lib/libMtkOmxVdec.so|libshim_omx.so\
-        /system/lib/liblog.so|libshim_xlog.so\
-        /system/lib64/liblog.so|libshim_xlog.so\
-        /system/lib/libnetutils.so|libnetutils.so\
-        /system/lib64/libnetutils.so|libnetutils.so\
+        #/system/vendor/bin/mtk_agpsd|libshim_agps.so\
+        #/system/lib/libmedia.so|libshim_snd.so\
+        #/system/lib64/libmedia.so|libshim_snd.so\
+        #/system/lib/libgui.so|libshim_gui.so\
+        #/system/lib64/libgui.so|libshim_gui.so\
+        #/system/lib/libcutils.so|libshim_atomic.so\
+        #/system/lib64/libcutils.so|libshim_atomic.so\
+        #/system/lib/libc.so|libshim_bionic.so\
+        #/system/lib64/libc.so|libshim_bionic.so\
+        #/system/vendor/lib/libMtkOmxVdec.so|libshim_omx.so\
+        #/system/lib/liblog.so|libshim_xlog.so\
+        #/system/lib64/liblog.so|libshim_xlog.so\
+        #/system/lib/libnetutils.so|libshim_netutils.so\
+        #/system/lib64/libnetutils.so|libshim_netutils.so\
         /system/lib/libui.so|libshim_ui.so\
         /system/lib64/libui.so|libshim_ui.so
 

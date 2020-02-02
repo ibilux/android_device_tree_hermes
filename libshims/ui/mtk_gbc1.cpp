@@ -18,10 +18,10 @@ extern "C" {
         func(instance, inWidth, inHeight, inFormat, inUsage, my_requestorName);
     }
 
-    void _ZN7android5Fence4waitEi(int);
+    /*void _ZN7android5Fence4waitEi(int);
 
     void _ZN7android5Fence4waitEj(unsigned int timeout) {
         _ZN7android5Fence4waitEi(static_cast<int>(timeout));
-    }
+    }*/
 
 }
