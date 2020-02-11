@@ -276,6 +276,7 @@ index a098d59..ab74a6f 100644
 +        ALOGE("create ctl socket failed\n");
 +        return -1;
 +    }
++
 +    ret = ioctl(ctl_sock, SIOCSTXQSTATE, &ifr);
 +    if(ret < 0)
 +        ALOGE("ifc_set_txq_state failed, err:%d(%s)\n", errno, strerror(errno));
@@ -315,7 +316,6 @@ index a098d59..ab74a6f 100644
 +}
 +
 +#endif /* MTK_HARDWARE */
-+
 diff --git a/libnetutils/include/netutils/ifc.h b/libnetutils/include/netutils/ifc.h
 index 3b27234..116c5c0 100644
 --- a/libnetutils/include/netutils/ifc.h

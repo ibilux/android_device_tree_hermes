@@ -61,7 +61,7 @@ index 3f365df..c3cd0d5 100644
 +	    case RIL_REQUEST_SET_ECC_LIST:
 +                 return "RIL_REQUEST_SET_ECC_LIST";
 +            case RIL_REQUEST_MODEM_POWEROFF:
-+           	 return "RIL_REQUEST_MODEM_POWEROFF";
++                 return "RIL_REQUEST_MODEM_POWEROFF";
 +	    case RIL_REQUEST_MODEM_POWERON:
 +                 return "RIL_REQUEST_MODEM_POWERON";
              default: return "<unknown request>";
