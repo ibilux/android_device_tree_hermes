@@ -7,9 +7,9 @@ Since this was approved for cm-13.0, it needs put back in here.
 
 Change-Id: Ibbffdced9ee86370821e4c8766a8dc9fe6a6af99
 ---
- core/jni/fd_utils-inl-extra.h | 29 +++++++++++++++++++++++++++++
+ core/jni/fd_utils-inl-extra.h | 30 +++++++++++++++++++++++++++++
  core/jni/fd_utils.cpp         |  5 +++++
- 2 files changed, 34 insertions(+)
+ 2 files changed, 35 insertions(+)
  create mode 100644 core/jni/fd_utils-inl-extra.h
 
 diff --git a/core/jni/fd_utils-inl-extra.h b/core/jni/fd_utils-inl-extra.h
@@ -36,6 +36,7 @@ index 00000000000..993c320897e
 +
 +/*
 +#define PATH_WHITELIST_EXTRA_H \
++    "/proc/ged", \
 +    "/proc/apid", \
 +    "/proc/aprf",
 +*/

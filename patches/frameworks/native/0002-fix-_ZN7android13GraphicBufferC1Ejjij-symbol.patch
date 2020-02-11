@@ -5,15 +5,15 @@ Subject: [PATCH] fix "_ZN7android13GraphicBufferC1Ejjij" symbol
 
 Signed-off-by: bilux <i.bilux@gmail.com>
 ---
- include/ui/GraphicBuffer.h |  7 ++++++
- libs/ui/Android.bp         |  1 -
- libs/ui/GraphicBuffer.cpp  | 44 ++++++++++++++++++++++++++++++++++++++
+ libs/ui/include/ui/GraphicBuffer.h |  7 ++++++
+ libs/ui/Android.bp                 |  1 -
+ libs/ui/GraphicBuffer.cpp          | 44 ++++++++++++++++++++++++++++++++++++++
  3 files changed, 51 insertions(+), 1 deletion(-)
 
-diff --git a/include/ui/GraphicBuffer.h b/include/ui/GraphicBuffer.h
+diff --git a/libs/ui/include/ui/GraphicBuffer.h b/libs/ui/include/ui/GraphicBuffer.h
 index 95c2d22..15e3901 100644
---- a/include/ui/GraphicBuffer.h
-+++ b/include/ui/GraphicBuffer.h
+--- a/libs/ui/include/ui/GraphicBuffer.h
++++ b/libs/ui/include/ui/GraphicBuffer.h
 @@ -80,9 +80,16 @@ public:
  
      // Create a GraphicBuffer by allocating and managing a buffer internally.
