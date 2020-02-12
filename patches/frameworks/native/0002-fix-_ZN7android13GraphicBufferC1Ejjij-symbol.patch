@@ -1,36 +1,30 @@
-From 88f564a28194b4612761bc281719fbf86985b624 Mon Sep 17 00:00:00 2001
+From ffe83f3ab7150b1fd3d72cf95ca296783e4f252b Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Fri, 7 Feb 2020 22:21:06 +0100
-Subject: [PATCH] fix "_ZN7android13GraphicBufferC1Ejjij" symbol
+Subject: [PATCH] fix "_ZN7android13GraphicBufferC1Ejjij" symbol on frameworks_native
 
 Signed-off-by: bilux <i.bilux@gmail.com>
 ---
- libs/ui/include/ui/GraphicBuffer.h |  7 ++++++
+ libs/ui/include/ui/GraphicBuffer.h |  4 ++++
  libs/ui/Android.bp                 |  1 -
- libs/ui/GraphicBuffer.cpp          | 44 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 51 insertions(+), 1 deletion(-)
+ libs/ui/GraphicBuffer.cpp          | 46 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 50 insertions(+), 1 deletion(-)
 
 diff --git a/libs/ui/include/ui/GraphicBuffer.h b/libs/ui/include/ui/GraphicBuffer.h
-index 95c2d22..15e3901 100644
+index 95c2d22..11f3972 100644
 --- a/libs/ui/include/ui/GraphicBuffer.h
 +++ b/libs/ui/include/ui/GraphicBuffer.h
-@@ -80,9 +80,16 @@ public:
+@@ -80,6 +80,10 @@ public:
  
      // Create a GraphicBuffer by allocating and managing a buffer internally.
      // This function is privileged.  See reallocate for details.
 +#ifdef MTK_HARDWARE
 +    GraphicBuffer(uint32_t inWidth, uint32_t inHeight, PixelFormat inFormat,
 +            uint32_t inUsage);
-+    GraphicBuffer(uint32_t inWidth, uint32_t inHeight, PixelFormat inFormat,
-+            uint32_t inUsage, std::string requestorName);
-+#else
++#endif
      GraphicBuffer(uint32_t inWidth, uint32_t inHeight, PixelFormat inFormat,
              uint32_t inLayerCount, uint64_t inUsage,
              std::string requestorName = "<Unknown>");
-+#endif
- 
-     // Create a GraphicBuffer from an existing handle.
-     enum HandleWrapMethod : uint8_t {
 diff --git a/libs/ui/Android.bp b/libs/ui/Android.bp
 index 59173cb..fa9e6cf 100644
 --- a/libs/ui/Android.bp
@@ -44,7 +38,7 @@ index 59173cb..fa9e6cf 100644
          // The static constructors and destructors in this library have not been noted to
          // introduce significant overheads
 diff --git a/libs/ui/GraphicBuffer.cpp b/libs/ui/GraphicBuffer.cpp
-index 6235bd6..7c31960 100644
+index 6235bd6..3a399a0 100644
 --- a/libs/ui/GraphicBuffer.cpp
 +++ b/libs/ui/GraphicBuffer.cpp
 @@ -28,6 +28,32 @@
@@ -80,7 +74,7 @@ index 6235bd6..7c31960 100644
  // ===========================================================================
  // Buffer and implementation of ANativeWindowBuffer
  // ===========================================================================
-@@ -57,6 +83,24 @@ GraphicBuffer::GraphicBuffer()
+@@ -57,6 +83,26 @@ GraphicBuffer::GraphicBuffer()
      handle = NULL;
  }
  
@@ -98,7 +92,9 @@ index 6235bd6..7c31960 100644
 +    usage  = 0;
 +    layerCount = 0;
 +    handle = NULL;
-+    mInitCheck = initSize(inWidth, inHeight, inFormat, inUsage, "<Unknown>");
++    std::string requestorName = "<unknown>";
++    mInitCheck = initWithSize(inWidth, inHeight, inFormat,
++            inUsage, std::move(requestorName));
 +}
 +#endif
 +
