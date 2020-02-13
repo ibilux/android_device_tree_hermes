@@ -126,7 +126,9 @@ include $(BUILD_SHARED_LIBRARY)
 ## libshim_ui
 include $(CLEAR_VARS)
 
-LOCAL_SRC_FILES := ui/mtk_ui.cpp
+LOCAL_SRC_FILES := \
+	#ui/mtk_ui.cpp \
+	ui/mtk_gbc1.cpp
 
 LOCAL_SHARED_LIBRARIES := \
 	libbinder \
