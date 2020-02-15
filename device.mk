@@ -42,7 +42,8 @@ PRODUCT_PACKAGES += \
     libshim_xlog \
     libshim_gui \
     libshim_agps \
-    libshim_netutils
+    libshim_netutils \
+    libshim_cam
 
 # Power HAL
 PRODUCT_PACKAGES += power.mt6795

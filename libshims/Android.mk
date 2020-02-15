@@ -140,3 +140,23 @@ LOCAL_MODULE := libshim_ui
 LOCAL_CFLAGS := -O3 -Wno-unused-variable -Wno-unused-parameter
 LOCAL_PROPRIETARY_MODULE := true
 include $(BUILD_SHARED_LIBRARY)
+
+####### cam #######
+## libshim_cam
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := cam/mtk_camhack.cpp
+
+LOCAL_SHARED_LIBRARIES := \
+	libgui \
+	libui
+
+LOCAL_C_INCLUDES := \
+    frameworks/native/include
+
+LOCAL_MODULE := libshim_cam
+
+LOCAL_MODULE_TAGS := optional
+LOCAL_CFLAGS := -O3 -Wno-unused-variable -Wno-unused-parameter
+LOCAL_PROPRIETARY_MODULE := true
+include $(BUILD_SHARED_LIBRARY)
