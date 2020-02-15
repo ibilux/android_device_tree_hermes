@@ -75,3 +75,4 @@ allow cameraserver untrusted_app_25:fifo_file { read write };
 
 allow cameraserver platform_app:fifo_file { getattr read open };
 allow cameraserver Vcodec_device:chr_file { open getattr read write ioctl };
+#allow cameraserver shell_exec:file { execute read open execute_no_trans };

@@ -39,3 +39,5 @@ allow mediacodec mtk_rrc_device:chr_file { ioctl  read open write };
 
 allow mediacodec untrusted_app:fifo_file { read };
 allow mediacodec pq_conf_prop:file { getattr open read };
+allow mediacodec platform_app:fifo_file { read write open getattr };
+allow platform_app mediacodec:fifo_file { read write open getattr };

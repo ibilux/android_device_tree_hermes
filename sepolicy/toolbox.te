@@ -35,19 +35,19 @@ allow toolbox device:chr_file { create };
 
 allow toolbox cache_file:dir { getattr };
 allow toolbox storage_file:dir { getattr };
-#allow toolbox labeledfs:filesystem { remount };
-allow toolbox su_exec:file { getattr };
+allow toolbox labeledfs:filesystem { remount };
+allow toolbox su_exec:file { setattr getattr };
 allow toolbox rootfs:dir { read open  };
 allow toolbox cache_file:dir { search };
 
 #isu
-allow toolbox system_block_device:blk_file { getattr setattr open read ioctl };
+allow toolbox system_block_device:blk_file { getattr setattr open read write ioctl };
 allow toolbox init:fifo_file { getattr };
 allow toolbox storage_file:dir { search };
 allow toolbox mnt_media_rw_file:dir { search };
 allow toolbox property_socket:sock_file { write };
 allow toolbox init:unix_stream_socket { connectto };
-allow toolbox su_exec:file { open };
-allow toolbox system_file:dir  { add_name remove_name };
-allow toolbox system_file:file { read open };
-allow toolbox system_file:lnk_file { read open };
+allow toolbox su_exec:file { relabelto open  write };
+allow toolbox system_file:dir  { add_name remove_name write };
+allow toolbox system_file:file { create read open  write unlink rename };
+allow toolbox system_file:lnk_file { create read open write unlink rename };
