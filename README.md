@@ -31,10 +31,9 @@ This branch is device tree for building LineageOS 15.1 Rom for Xiaomi Redmi Note
 
 ### NOT working:
   - Camera
-  - Proximity sensor
 
 ### Bugs:
-  - graphical glitches
+  - ?
 
 ### Credits:
   - Dinolek
