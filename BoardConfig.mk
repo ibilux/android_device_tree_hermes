@@ -118,7 +118,9 @@ TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 # Shim libs
 TARGET_LD_SHIM_LIBS := \
         /system/vendor/lib/libcam_utils.so|libshim_cam.so \
-        /system/vendor/lib64/libcam_utils.so|libshim_cam.so
+        /system/vendor/lib64/libcam_utils.so|libshim_cam.so \
+        /system/vendor/lib/libcam.utils.sensorlistener.so|libshim_gui.so \
+        /system/vendor/lib64/libcam.utils.sensorlistener.so|libshim_gui.so
         #/system/vendor/bin/mtk_agpsd|libshim_agps.so\
         #/system/lib/libmedia.so|libshim_snd.so\
         #/system/lib64/libmedia.so|libshim_snd.so\

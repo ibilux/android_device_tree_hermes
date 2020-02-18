@@ -42,8 +42,8 @@ include $(BUILD_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
-	gui/mtk_gui.cpp \
 	gui/SensorManager.cpp
+	#gui/mtk_gui.cpp \
 
 LOCAL_SHARED_LIBRARIES := \
 	libbinder \
