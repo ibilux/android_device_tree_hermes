@@ -75,7 +75,7 @@ allow mnld sysfs_boot_mode:file r_file_perms;
 allow mnld nvram_prop:file { read open getattr };
 # allow mnld device:chr_file { read write open };
 allow mnld storage_file:dir { search };
-allow mnld device:chr_file { open read write };
+#allow mnld device:chr_file { open read write };
 allow mnld kernel:system { module_request };
 allow mnld kmsg_device:chr_file { open read write };
 allow mnld agpsd_data_file:file { open read write create getattr };
@@ -83,4 +83,4 @@ allow mnld agpsd_data_file:file { open read write create getattr };
 allow mnld platformblk_device:dir { search };
 allow mnld apk_data_file:dir { search };
 
-allow mnld system_data_file:file { getattr write };
+allow mnld system_data_file:file { getattr };

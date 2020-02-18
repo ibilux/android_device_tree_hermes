@@ -154,4 +154,4 @@ allow vold properties_serial:file { getattr read open };
 
 # O
 allow vold system_data_file:lnk_file { create getattr unlink };
-allow vold system_data_file:file { ioctl unlink write };
+allow vold system_data_file:file { ioctl };

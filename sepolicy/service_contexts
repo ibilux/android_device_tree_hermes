@@ -44,3 +44,4 @@ hotknotnativeservice    u:object_r:hotknot_native_service:s0
 wfo                 u:object_r:radio_service:s0
 multiwindow     u:object_r:mtk_multiwindow_service:s0
 mw_blacklist   u:object_r:mtk_mwblacklist_service:s0
+

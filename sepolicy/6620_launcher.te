@@ -28,7 +28,7 @@ allow mtk_6620_launcher stpwmt_device:chr_file { read write ioctl open };
 allow mtk_6620_launcher devpts:chr_file { read write };
 init_daemon_domain(mtk_6620_launcher)
 
-allow mtk_6620_launcher vendor_file:file { entrypoint };
+#allow mtk_6620_launcher vendor_file:file { entrypoint };
 
 allow mtk_6620_launcher stpwmt_device:chr_file rw_file_perms;
 set_prop(mtk_6620_launcher, wmt_prop)

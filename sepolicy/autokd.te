@@ -57,7 +57,7 @@ allow autokd rootfs:lnk_file { getattr };
 allow autokd nvram_prop:file { open read getattr };
 allow autokd vold_encryption_type_prop:file { read open getattr };
 allow autokd sysfs_boot_mode:file { open read  };
-allow autokd debugfs:file { read open };
+#allow autokd debugfs:file { read open };
 allow autokd shell_exec:file { getattr };
 allow autokd toolbox_exec:file { execute getattr read open execute_no_trans };
 allow autokd kmsg_device:chr_file { write open };
@@ -65,4 +65,4 @@ allow autokd kmsg_device:chr_file { write open };
 allow autokd system_prop:property_service { set };
 allow autokd platformblk_device:dir { search };
 #
-allow autokd system_data_file:file { write read getattr unlink };
+allow autokd system_data_file:file { read getattr };

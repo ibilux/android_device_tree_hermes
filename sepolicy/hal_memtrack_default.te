@@ -1,7 +1,7 @@
 # memtrack fix
 
 
-allow hal_memtrack_default debugfs:file { open read getattr };
+allow hal_memtrack_default debugfs:file { getattr };
 allow hal_memtrack_default debugfs:dir { read open getattr };
 allow hal_memtrack_default proc:file { read open read ioctl };
 

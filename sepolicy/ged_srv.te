@@ -19,4 +19,4 @@ allow ged_srv surfaceflinger_service:service_manager find;
 allow ged_srv self:netlink_kobject_uevent_socket { bind create setopt read};
 allow ged_srv sysfs_boot_mode:file r_file_perms;
 # O
-allow ged_srv debugfs:file { open read write getattr };
+allow ged_srv debugfs:file { getattr };

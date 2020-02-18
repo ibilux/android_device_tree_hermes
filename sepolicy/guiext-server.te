@@ -28,7 +28,7 @@ allow guiext-server platform_app:binder call;
 allow guiext-server app_data_file:file write;
 
 # for SVP secure memory allocation
-allow guiext-server proc_secmem:file { read write open };
+#allow guiext-server proc_secmem:file { read write open };
 
 # allow guiext-server to read/write fifo
 allow guiext-server surfaceflinger:fifo_file {read write};

@@ -109,8 +109,8 @@ allow init proc:dir { write };
 allow init self:capability mknod ;
 allow init vendor_configs_file:dir { mounton };
 allow init kernel:system { module_request };
-allow init system_file:file { execute_no_trans };
-allow init vendor_file:file { execute_no_trans };
+#allow init system_file:file { execute_no_trans };
+#allow init vendor_file:file { execute_no_trans };
 # Bluetooth
 #allow init bluetooth:binder { call };
 #allow init hwservicemanager:binder { call };
@@ -131,9 +131,9 @@ allow init vendor_file:file { execute_no_trans };
 
 #isu
 type sbin_isush_exec,exec_type,file_type;
-allow init shell_exec:file { execute_no_trans };
+#allow init shell_exec:file { execute_no_trans };
 allow init sbin_isush_exec:file { read open execute };
-allow init su_exec:file { relabelfrom };
+#allow init su_exec:file { relabelfrom };
 allow init system_data_file:file { append };
 
 # Volte
@@ -145,7 +145,7 @@ allow init system_data_file:file { append };
 allow init mtk_agpsd:unix_dgram_socket { sendto };
 allow init agpsd_data_file:sock_file { write };
 allow init mnld_device:chr_file { write ioctl read open };
-allow init device:chr_file { write ioctl read open };
+allow init device:chr_file { ioctl };
 allow init init:tcp_socket { setopt bind accept listen };
 allow init port:tcp_socket { name_bind };
 allow init node:tcp_socket { node_bind };
