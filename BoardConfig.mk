@@ -122,7 +122,8 @@ TARGET_LD_SHIM_LIBS := \
         /system/vendor/lib/libcam.utils.sensorlistener.so|libshim_gui.so \
         /system/vendor/lib64/libcam.utils.sensorlistener.so|libshim_gui.so \
         /system/vendor/lib/libmmsdkservice.feature.so|libshim_mmsdk.so \
-        /system/vendor/lib64/libmmsdkservice.feature.so|libshim_mmsdk.so
+        /system/vendor/lib64/libmmsdkservice.feature.so|libshim_mmsdk.so \
+        /system/vendor/lib/libMtkOmxVdec.so|libshim_omx.so
         #/system/vendor/bin/mtk_agpsd|libshim_agps.so\
         #/system/lib/libmedia.so|libshim_snd.so\
         #/system/lib64/libmedia.so|libshim_snd.so\
@@ -132,7 +133,6 @@ TARGET_LD_SHIM_LIBS := \
         #/system/lib64/libcutils.so|libshim_atomic.so\
         #/system/lib/libc.so|libshim_bionic.so\
         #/system/lib64/libc.so|libshim_bionic.so\
-        #/system/vendor/lib/libMtkOmxVdec.so|libshim_omx.so\
         #/system/lib/liblog.so|libshim_xlog.so\
         #/system/lib64/liblog.so|libshim_xlog.so\
         #/system/lib/libnetutils.so|libshim_netutils.so\
