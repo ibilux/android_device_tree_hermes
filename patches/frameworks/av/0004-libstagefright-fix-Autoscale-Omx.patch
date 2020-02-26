@@ -1,4 +1,4 @@
-From ed11e3570ebd1a24b633a09e2b01f195fc692991 Mon Sep 17 00:00:00 2001
+From b6e2c6bae1cc0ed9b452d37056cd68f5e4b56876 Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Thu, 30 Jan 2020 18:23:15 +0100
 Subject: [PATCH] libstagefright: fix Autoscale Omx

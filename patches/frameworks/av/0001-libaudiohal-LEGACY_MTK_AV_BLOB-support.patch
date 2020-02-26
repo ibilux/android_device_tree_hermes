@@ -1,7 +1,7 @@
-From de59db4be718ec821977016bdcd5c5c523f53ab6 Mon Sep 17 00:00:00 2001
-From: danielhk <daniel.p6800@gmail.com>
-Date: Sat, 3 Mar 2018 20:05:51 +0800
-Subject: [PATCH 1/6] libaudiohal:LEGACY_MTK_AV_BLOB support
+From ac44fbcf038c89a480ab947cb7f87f621b9b05c5 Mon Sep 17 00:00:00 2001
+From: bilux <i.bilux@gmail.com>
+Date: Thu, 30 Jan 2020 18:13:35 +0100
+Subject: [PATCH] libaudiohal:LEGACY_MTK_AV_BLOB support
 
 Set LEGACY_MTK_AV_BLOB := ture to enable
 Oreo's audio_stream_in_t definition changed. Old blobs from MTK (and
@@ -14,6 +14,8 @@ unsupported.
 3. close the mIn and free the memory at closeOutputStream()
 Note: legacy_audio_stream_in_t is defined in the overrided audio.h in
 device tree
+
+Signed-off-by: bilux <i.bilux@gmail.com>
 ---
  media/libaudiohal/Android.mk         |  4 ++++
  media/libaudiohal/DeviceHalLocal.cpp | 17 +++++++++++++++++
@@ -89,5 +91,5 @@ index 865f296..6cc5601 100644
  
      // Can not be constructed directly by clients.
 -- 
-2.7.4
+2.25.0
 

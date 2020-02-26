@@ -1,12 +1,12 @@
-From f106fe48fded6b17931a017c901889d23f5e1626 Mon Sep 17 00:00:00 2001
-From: danielhk <daniel.p6800@gmail.com>
-Date: Sat, 3 Mar 2018 20:15:53 +0800
-Subject: [PATCH 3/6] libmedia:Add MTK media profiles
+From f22b8b69cfef0ff4f666a31877263b5e08115c4b Mon Sep 17 00:00:00 2001
+From: bilux <i.bilux@gmail.com>
+Date: Thu, 30 Jan 2020 18:14:58 +0100
+Subject: [PATCH] libmedia:Add MTK media profiles
 
-Change-Id: I5f76da2f83119536fdba2cede7391344268ee61e
+Signed-off-by: bilux <i.bilux@gmail.com>
 ---
- media/libmedia/MediaProfiles.cpp             | 47 ++++++++++++++++++++++++++
- media/libmedia/include/media/MediaProfiles.h | 49 ++++++++++++++++++++++++++++
+ media/libmedia/MediaProfiles.cpp             | 47 +++++++++++++++++++
+ media/libmedia/include/media/MediaProfiles.h | 49 ++++++++++++++++++++
  2 files changed, 96 insertions(+)
 
 diff --git a/media/libmedia/MediaProfiles.cpp b/media/libmedia/MediaProfiles.cpp
@@ -152,5 +152,5 @@ index 6975581..601b529 100644
  
  enum video_decoder {
 -- 
-2.7.4
+2.25.0
 
