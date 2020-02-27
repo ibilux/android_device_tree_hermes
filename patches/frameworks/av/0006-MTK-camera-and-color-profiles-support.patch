@@ -1,4 +1,4 @@
-From 85c1a940b17dd3cbc2b28c2540785fd7cded6db5 Mon Sep 17 00:00:00 2001
+From fb7d4bfd02aa4e6d175408f9b5fda01f8dd3cc77 Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Sun, 23 Feb 2020 21:13:01 +0100
 Subject: [PATCH] MTK camera and color profiles support
@@ -36,9 +36,9 @@ Signed-off-by: bilux <i.bilux@gmail.com>
  media/libstagefright/omx/Android.bp           |  18 +
  media/libstagefright/omx/OMXUtils.cpp         |   4 +-
  services/camera/libcameraservice/Android.mk   |   2 +-
- .../libcameraservice/api1/CameraClient.cpp    |  39 +-
+ .../libcameraservice/api1/CameraClient.cpp    | 374 +++++++++-
  .../libcameraservice/api1/CameraClient.h      |  25 +
- 29 files changed, 2313 insertions(+), 10 deletions(-)
+ 29 files changed, 2647 insertions(+), 11 deletions(-)
  create mode 100644 camera/include/camera/MtkCamera.h
  create mode 100644 camera/include/camera/MtkCameraParameters.h
  create mode 100644 media/libstagefright/colorconversion/inc/DpBlitStream.h
@@ -2789,7 +2789,7 @@ index 5894837..720cb2e 100644
              if (params.bUsingNativeBuffers) {
                  size_t ystride = align(params.nStride, 16);
 diff --git a/services/camera/libcameraservice/Android.mk b/services/camera/libcameraservice/Android.mk
-index 7629594..0708852 100644
+index 7629594..e96993d 100644
 --- a/services/camera/libcameraservice/Android.mk
 +++ b/services/camera/libcameraservice/Android.mk
 @@ -95,7 +95,7 @@ LOCAL_C_INCLUDES += \
@@ -2797,12 +2797,12 @@ index 7629594..0708852 100644
      frameworks/av/services/camera/libcameraservice
  
 -LOCAL_CFLAGS += -Wall -Wextra -Werror
-+LOCAL_CFLAGS += -Wall -Wextra -Werror -DMTK_HARDWARE
++LOCAL_CFLAGS += -Wall -Wextra -Wno-narrowing -DMTK_HARDWARE
  
  # Workaround for invalid unused-lambda-capture warning http://b/38349491
  LOCAL_CLANG_CFLAGS += -Wno-error=unused-lambda-capture
 diff --git a/services/camera/libcameraservice/api1/CameraClient.cpp b/services/camera/libcameraservice/api1/CameraClient.cpp
-index 48757ac..a1ebc38 100644
+index 48757ac..9392f90 100644
 --- a/services/camera/libcameraservice/api1/CameraClient.cpp
 +++ b/services/camera/libcameraservice/api1/CameraClient.cpp
 @@ -26,6 +26,11 @@
@@ -2905,10 +2905,14 @@ index 48757ac..a1ebc38 100644
          case CAMERA_MSG_SHUTTER:
              // ext1 is the dimension of the yuv picture.
              client->handleShutter();
-@@ -886,6 +918,11 @@ void CameraClient::dataCallback(int32_t msgType,
+@@ -885,7 +917,14 @@ void CameraClient::dataCallback(int32_t msgType,
+         return;
      }
  
-     switch (msgType & ~CAMERA_MSG_PREVIEW_METADATA) {
+-    switch (msgType & ~CAMERA_MSG_PREVIEW_METADATA) {
++    int64_t msgTypeMeta = (msgType & ~CAMERA_MSG_PREVIEW_METADATA);
++
++    switch (msgTypeMeta) {
 +#ifdef MTK_HARDWARE
 +        case MTK_CAMERA_MSG_EXT_DATA:
 +            client->handleMtkExtData(dataPtr, metadata);
@@ -2917,6 +2921,342 @@ index 48757ac..a1ebc38 100644
          case CAMERA_MSG_PREVIEW_FRAME:
              client->handlePreviewData(msgType, dataPtr, metadata);
              break;
+@@ -1205,4 +1244,335 @@ status_t CameraClient::setVideoTarget(const sp<IGraphicBufferProducer>& bufferPr
+     return INVALID_OPERATION;
+ }
+ 
++#ifdef MTK_HARDWARE
++/******************************************************************************
++ *
++ ******************************************************************************/
++void CameraClient::playRecordingSound()
++{
++    CameraParameters params(mHardware->getParameters());
++    int value = 0;
++    value = params.getInt("rec-mute-ogg");
++    if (value != 1) {
++        sCameraService->playSound(CameraService::SOUND_RECORDING_START);
++    }
++}
++
++
++/******************************************************************************
++ *
++ ******************************************************************************/
++void CameraClient::handleMtkExtNotify(int32_t ext1, int32_t ext2)
++{
++    int32_t const extMsgType = ext1;
++    switch  (extMsgType)
++    {
++    case MTK_CAMERA_MSG_EXT_NOTIFY_CAPTURE_DONE:
++        handleMtkExtCaptureDone(ext1, ext2);
++        break;
++    //
++    case MTK_CAMERA_MSG_EXT_NOTIFY_SHUTTER:
++        handleMtkExtShutter(ext1, ext2);
++        break;
++    //
++    case MTK_CAMERA_MSG_EXT_NOTIFY_BURST_SHUTTER:
++        handleMtkExtBurstShutter(ext1, ext2);
++        break;
++    case MTK_CAMERA_MSG_EXT_NOTIFY_CONTINUOUS_SHUTTER:
++        handleMtkExtContinuousShutter(ext1, ext2);
++        break;
++    case MTK_CAMERA_MSG_EXT_NOTIFY_CONTINUOUS_END:
++        handleMtkExtContinuousEnd(ext1, ext2);
++        break;
++    //
++    default:
++        handleGenericNotify(MTK_CAMERA_MSG_EXT_NOTIFY, ext1, ext2);
++        break;
++    }
++}
++
++
++/******************************************************************************
++ *
++ ******************************************************************************/
++void CameraClient::handleMtkExtData(const sp<IMemory>& dataPtr, camera_frame_metadata_t *metadata)
++{
++    MtkCamMsgExtDataHelper MtkExtDataHelper;
++
++    if  ( ! MtkExtDataHelper.init(dataPtr) ) {
++        ALOGE("[handleMtkExtData] MtkCamMsgExtDataHelper::init fail - dataPtr(%p), this(%p)", dataPtr.get(), this);
++        return;
++    }
++
++//    void*   const pvExtParam   = MtkExtDataHelper.getExtParamBase();
++//    size_t  const ExtParamSize = MtkExtDataHelper.getExtParamSize();
++    switch  (MtkExtDataHelper.getExtMsgType())
++    {
++    case MTK_CAMERA_MSG_EXT_DATA_COMPRESSED_IMAGE:
++        handleMtkExtDataCompressedImage(dataPtr, metadata);
++        break;
++    //
++    case MTK_CAMERA_MSG_EXT_DATA_BURST_SHOT:
++        handleMtkExtDataBurstShot(dataPtr, metadata);
++        break;
++    //
++    case MTK_CAMERA_MSG_EXT_DATA_CONTINUOUS_SHOT:
++        handleMtkExtDataContinuousShot(dataPtr, metadata);
++        break;
++    //
++    default:
++        handleGenericData(MTK_CAMERA_MSG_EXT_DATA, dataPtr, metadata);
++        break;
++    }
++    MtkExtDataHelper.uninit();
++}
++
++
++/******************************************************************************
++ *  Shutter Callback (not disable CAMERA_MSG_SHUTTER)
++ *      ext2: 1: CameraService will play shutter sound.
++ ******************************************************************************/
++void CameraClient::handleMtkExtShutter(int32_t /*ext1*/, int32_t ext2)
++{
++    ALOGD("[%s] (ext2, mPlayShutterSound)=(%d, %d) \r\n", __FUNCTION__, ext2, mPlayShutterSound);
++
++    if  ( 1 == ext2 ) {
++        if (mPlayShutterSound) {
++            sCameraService->playSound(CameraService::SOUND_SHUTTER);
++        }
++    }
++
++    sp<hardware::ICameraClient> c = mRemoteCallback;
++    if (c != 0) {
++//!++
++#if 1
++#else
++        mLock.unlock();
++#endif
++//!--
++        c->notifyCallback(CAMERA_MSG_SHUTTER, 0, 0);
++        if (!lockIfMessageWanted(CAMERA_MSG_SHUTTER)) return;
++    }
++//    disableMsgType(CAMERA_MSG_SHUTTER);
++
++//!++
++#if 1
++#else
++    mLock.unlock();
++#endif
++//!--
++}
++
++
++/******************************************************************************
++ *  Burst Shutter Callback Handler
++ *       ext2: count-down shutter number; 0: the last one shutter.
++ ******************************************************************************/
++void CameraClient::handleMtkExtBurstShutter(int32_t /*ext1*/, int32_t ext2)
++{
++    handleShutter();
++    if  (0 < ext2) {
++        //  not the last one burst shutter.
++        enableMsgType(CAMERA_MSG_SHUTTER);
++        ALOGD("[handleMtkExtBurstShutter] count-down burst shutter number:%d - enableMsgType(CAMERA_MSG_SHUTTER) \r\n", ext2);
++    }
++    else {
++        ALOGD("[handleMtkExtBurstShutter] the last one burst shutter \r\n");
++    }
++}
++
++
++/******************************************************************************
++ *  Burst Shot (EV Shot)
++ *      int[0]: the total shut count.
++ *      int[1]: count-down shut number; 0: the last one shut.
++ ******************************************************************************/
++void CameraClient::handleMtkExtDataBurstShot(const sp<IMemory>& dataPtr, camera_frame_metadata_t */*metadata*/)
++{
++    MtkCamMsgExtDataHelper MtkExtDataHelper;
++    if  ( ! MtkExtDataHelper.init(dataPtr) ) {
++        ALOGE("[%s] MtkCamMsgExtDataHelper::init fail - dataPtr(%p), this(%p) \r\n", __FUNCTION__, dataPtr.get(), this);
++        return;
++    }
++    //
++    uint_t const*const pExtParam = (uint_t const*)MtkExtDataHelper.getExtParamBase();
++    uint_t const uTotalShutCount = pExtParam[0];
++    uint_t const uCountdownIndex = pExtParam[1];
++    //
++    size_t const    imageSize   = MtkExtDataHelper.getExtParamSize()    - sizeof(uint_t) * 2;
++    ssize_t const   imageOffset = MtkExtDataHelper.getExtParamOffset()  + sizeof(uint_t) * 2;
++    sp<MemoryBase> image = new MemoryBase(MtkExtDataHelper.getHeap(), imageOffset, imageSize);
++    //
++    MtkExtDataHelper.uninit();
++    //
++    //
++    if  (0 < uCountdownIndex) {
++        //  not the last one burst shut.
++        ALOGD("[%s] count-down burst shut number:%d/%d - (size, offset)=(%zu, %zd) \r\n", __FUNCTION__, uCountdownIndex, uTotalShutCount, imageSize, imageOffset);
++    }
++    else {
++        disableMsgType(CAMERA_MSG_COMPRESSED_IMAGE);
++        ALOGD("[%s] the last one burst shut - (size, offset)=(%zu, %zd) \r\n", __FUNCTION__, imageSize, imageOffset);
++    }
++    //
++    if (image == 0) {
++        ALOGE("[%s] fail to new MemoryBase \r\n", __FUNCTION__);
++        return;
++    }
++    //
++    sp<hardware::ICameraClient> c = mRemoteCallback;
++//!++
++#if 1
++#else
++    mLock.unlock();
++#endif
++//!--
++    if (c != 0) {
++        c->dataCallback(CAMERA_MSG_COMPRESSED_IMAGE, image, NULL);
++    }
++}
++
++
++/******************************************************************************
++*   Continuous Shutter Callback Handler
++*       ext2: current continuous shutter number.
++*******************************************************************************/
++void CameraClient::handleMtkExtContinuousShutter(int32_t /*ext1*/, int32_t ext2)
++{
++    //if (mPlayShutterSound) {
++    //    sCameraService->playSound(CameraService::SOUND_SHUTTER);
++    //}
++
++    sp<hardware::ICameraClient> c = mRemoteCallback;
++    if (c != 0) {
++//!++
++#if 1
++#else
++        mLock.unlock();
++#endif
++//!--
++        c->notifyCallback(CAMERA_MSG_SHUTTER, 0, 0);
++        if (!lockIfMessageWanted(CAMERA_MSG_SHUTTER)) return;
++    }
++    //disableMsgType(CAMERA_MSG_SHUTTER);
++
++//!++
++#if 1
++#else
++    mLock.unlock();
++#endif
++//!--
++
++    //enableMsgType(CAMERA_MSG_SHUTTER);
++    ALOGD("[handleMtkExtContinuousShutter] current continuous shutter number:%d \n", ext2);
++}
++
++
++/******************************************************************************
++ *  Continuous Shot
++ *      int[0]: current continuous shut number.
++ ******************************************************************************/
++void CameraClient::handleMtkExtDataContinuousShot(const sp<IMemory>& dataPtr, camera_frame_metadata_t */*metadata*/)
++{
++    MtkCamMsgExtDataHelper MtkExtDataHelper;
++    if  ( ! MtkExtDataHelper.init(dataPtr) ) {
++        ALOGE("[%s] MtkCamMsgExtDataHelper::init fail - dataPtr(%p), this(%p) \r\n", __FUNCTION__, dataPtr.get(), this);
++        return;
++    }
++    //
++    uint_t const*const pExtParam = (uint_t const*)MtkExtDataHelper.getExtParamBase();
++    uint_t const uCurShutCount = pExtParam[0];
++    //
++    size_t const    imageSize   = MtkExtDataHelper.getExtParamSize()    - sizeof(uint_t) * 1;
++    ssize_t const   imageOffset = MtkExtDataHelper.getExtParamOffset()  + sizeof(uint_t) * 1;
++    sp<MemoryBase> image = new MemoryBase(MtkExtDataHelper.getHeap(), imageOffset, imageSize);
++    //
++    MtkExtDataHelper.uninit();
++
++    ALOGD("[%s] current continuous shut number:%d - (size, offset)=(%zu, %zd) \r\n", __FUNCTION__,  uCurShutCount, imageSize, imageOffset);
++
++    //
++    if (image == 0) {
++        ALOGE("[%s] fail to new MemoryBase \r\n", __FUNCTION__);
++        return;
++    }
++    //
++    sp<hardware::ICameraClient> c = mRemoteCallback;
++//!++
++#if 1
++#else
++    mLock.unlock();
++#endif
++//!--
++    if (c != 0) {
++        c->dataCallback(CAMERA_MSG_COMPRESSED_IMAGE, image, NULL);
++    }
++}
++
++
++/******************************************************************************
++ *  Continuous EndCallback Handler
++ ******************************************************************************/
++void CameraClient::handleMtkExtContinuousEnd(int32_t ext1, int32_t ext2)
++{
++    disableMsgType(CAMERA_MSG_SHUTTER);
++    disableMsgType(CAMERA_MSG_COMPRESSED_IMAGE);
++    handleGenericNotify(MTK_CAMERA_MSG_EXT_NOTIFY, ext1, ext2);
++    ALOGD("[handleMtkExtContinuousEnd] total continuous shut number is %d \n", ext2);
++}
++
++
++/******************************************************************************
++ *  Capture done (disable CAMERA_MSG_SHUTTER / CAMERA_MSG_COMPRESSED_IMAGE)
++ ******************************************************************************/
++void CameraClient::handleMtkExtCaptureDone(int32_t /*ext1*/, int32_t /*ext2*/)
++{
++    ALOGD("[%s] disable CAMERA_MSG_SHUTTER / CAMERA_MSG_COMPRESSED_IMAGE \r\n", __FUNCTION__);
++    disableMsgType(CAMERA_MSG_SHUTTER);
++    disableMsgType(CAMERA_MSG_COMPRESSED_IMAGE);
++}
++
++
++/******************************************************************************
++ *  Compressed Image (not disable CAMERA_MSG_COMPRESSED_IMAGE)
++ *      int[0]: current shut index; 0: the first one shut.
++ ******************************************************************************/
++void CameraClient::handleMtkExtDataCompressedImage(const sp<IMemory>& dataPtr, camera_frame_metadata_t */*metadata*/)
++{
++    MtkCamMsgExtDataHelper MtkExtDataHelper;
++    if  ( ! MtkExtDataHelper.init(dataPtr) ) {
++        ALOGE("[%s] MtkCamMsgExtDataHelper::init fail - dataPtr(%p), this(%p) \r\n", __FUNCTION__, dataPtr.get(), this);
++        return;
++    }
++    //
++    uint_t const*const pExtParam = (uint_t const*)MtkExtDataHelper.getExtParamBase();
++    uint_t const      uShutIndex = pExtParam[0];
++    //
++    size_t const    imageSize   = MtkExtDataHelper.getExtParamSize()    - sizeof(uint_t) * 1;
++    ssize_t const   imageOffset = MtkExtDataHelper.getExtParamOffset()  + sizeof(uint_t) * 1;
++    sp<MemoryBase> image = new MemoryBase(MtkExtDataHelper.getHeap(), imageOffset, imageSize);
++    //
++    MtkExtDataHelper.uninit();
++
++    ALOGD("[%s] current shut index:%d - (size, offset)=(%zu, %zd) \r\n", __FUNCTION__, uShutIndex, imageSize, imageOffset);
++    //
++    if (image == 0) {
++        ALOGE("[%s] fail to new MemoryBase \r\n", __FUNCTION__);
++        return;
++    }
++    //
++    sp<hardware::ICameraClient> c = mRemoteCallback;
++//!++
++#if 1
++#else
++    mLock.unlock();
++#endif
++//!--
++
++    if (c != 0) {
++        c->dataCallback(CAMERA_MSG_COMPRESSED_IMAGE, image, NULL);
++    }
++}
++#endif
++
+ }; // namespace android
 diff --git a/services/camera/libcameraservice/api1/CameraClient.h b/services/camera/libcameraservice/api1/CameraClient.h
 index a0d9d0a..84c2a4d 100644
 --- a/services/camera/libcameraservice/api1/CameraClient.h
