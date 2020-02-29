@@ -58,7 +58,6 @@
 /data/setkey_bak.conf    u:object_r:ims_ipsec_data_file:s0
 /data/setkey_latest.conf u:object_r:ims_ipsec_data_file:s0
 /data/key_provisioning(/.*)?         u:object_r:key_install_data_file:s0
-/data/lastsoc                        u:object_r:cw2015_data_file:s0
 
 ##########################
 # Devices
@@ -567,6 +566,7 @@
 /sys/power/enable_dm_hotplug                                     u:object_r:power_hal_sysfs:s0
 /sys/class/input_booster(/.*)                                    u:object_r:power_hal_sysfs:s0
 /data/power(/.*)                                                 u:object_r:power_hal_data_files:s0
+/data/lastsoc                                                    u:object_r:cw2015_data_file:s0
 
 # drm
 /(vendor|system/vendor)/bin/hw/android\.hardware\.drm@1\.0-service.widevine		u:object_r:hal_drm_widevine_exec:s0

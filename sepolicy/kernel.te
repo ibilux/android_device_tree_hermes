@@ -74,6 +74,7 @@ allow system_server power_hal_data_files:dir  rw_dir_perms;
 allow system_server power_hal_devfs:file      rw_file_perms;
 allow system_server power_hal_sysfs:file      rw_file_perms;
 allow system_server power_hal_data_files:file rw_file_perms;
+allow kernel cw2015_data_file:file            { ioctl open create read getattr lock write append };
 
 # DRM
 
@@ -87,4 +88,4 @@ allow kernel untrusted_app:fd { use };
 allow kernel tmpfs:file write;
 allow kernel untrusted_app:file { write };
 
-allow kernel cw2015_data_file:file rw_file_perms;
+
