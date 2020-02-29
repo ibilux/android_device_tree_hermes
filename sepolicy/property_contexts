@@ -132,9 +132,8 @@ persist.md    u:object_r:persist_md_prop:s0
 
 #=============allow sensor daemon==============
 ctl.msensord     u:object_r:ctl_msensord_prop:s0
-ctl.bmm050d     u:object_r:ctl_bmm050d_prop:s0
+ctl.bmi160d     u:object_r:ctl_bmi160d_prop:s0
 ctl.s62xd     u:object_r:ctl_s62xd_prop:s0
-ctl.bmm056d     u:object_r:ctl_bmm056d_prop:s0
 ctl.akmd8963     u:object_r:ctl_akmd8963_prop:s0
 ctl.akmd09911     u:object_r:ctl_akmd09911_prop:s0
 ctl.akmd09912     u:object_r:ctl_akmd09912_prop:s0

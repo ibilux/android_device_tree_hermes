@@ -142,7 +142,6 @@ type sensor_data_file, file_type, data_file_type;
 type msensor_data_file, file_type, data_file_type;
 type stp_dump_data_file, file_type,data_file_type;
 type system_sensor_data_file, file_type;
-type bmm050_sensor_log_file, file_type,data_file_type;
 type sysfs_gsensor_file, file_type,sysfs_type;
 type sysfs_msensor_file, file_type,sysfs_type;
 type sysfs_keypad_file, file_type,sysfs_type;

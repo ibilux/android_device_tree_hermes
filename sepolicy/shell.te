@@ -18,7 +18,7 @@ allow shell atcid_exec:file rx_file_perms;
 allow shell audiocmdservice_atci_exec:file rx_file_perms;
 allow shell autokd_exec:file rx_file_perms;
 allow shell batterywarning_exec:file rx_file_perms;
-allow shell bmm050d_exec:file rx_file_perms;
+allow shell bmi160d_exec:file rx_file_perms;
 allow shell boot_logo_updater_exec:file rx_file_perms;
 allow shell bootanim_exec:file rx_file_perms;
 allow shell ccci_fsd_exec:file rx_file_perms;

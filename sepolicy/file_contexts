@@ -38,7 +38,6 @@
 /data/misc/ppp(/.*)? u:object_r:ppp_data_file:s0
 /data/.tp(/.*)? u:object_r:thermal_manager_data_file:s0
 /data/misc/radvd(/.*)? u:object_r:radvd_data_file:s0
-#/data/misc/sensor.log		u:object_r:bmm050_sensor_log_file:s0
 /data/misc/sensor.log       u:object_r:bmi160d_data_file:s0
 /data/misc/sensor(/.*)?		u:object_r:sensor_data_file:s0
 /data/mxg2320(/.*)?         u:object_r:mxg2320_data_file:s0
@@ -378,8 +377,6 @@
 /(system|system\/vendor|vendor)/bin/bmi160d          u:object_r:bmi160d_exec:s0
 /(system|system\/vendor|vendor)/bin/6620_launcher    u:object_r:mtk_6620_launcher_exec:s0
 /(system|system\/vendor|vendor)/bin/batterywarning u:object_r:batterywarning_exec:s0
-/(system|system\/vendor|vendor)/bin/bmm050d u:object_r:bmm050d_exec:s0
-/(system|system\/vendor|vendor)/bin/bmm056d u:object_r:bmm056d_exec:s0
 /(system|system\/vendor|vendor)/bin/boot_logo_updater u:object_r:boot_logo_updater_exec:s0
 /(system|system\/vendor|vendor)/bin/br_app_data_service u:object_r:br_app_data_service_exec:s0
 /(system|system\/vendor|vendor)/bin/ccci_fsd                                            u:object_r:ccci_fsd_exec:s0
