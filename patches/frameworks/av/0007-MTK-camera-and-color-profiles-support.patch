@@ -1,4 +1,4 @@
-From 4045c16144ee150184c8ca2a2d287cce3f3bb1af Mon Sep 17 00:00:00 2001
+From 7a1271a8a5bcebe651fcc50d95eb24ec2d943152 Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Sun, 23 Feb 2020 21:13:01 +0100
 Subject: [PATCH] MTK camera and color profiles support
@@ -38,9 +38,9 @@ Signed-off-by: bilux <i.bilux@gmail.com>
  media/libstagefright/omx/Android.bp           |  18 +
  media/libstagefright/omx/OMXUtils.cpp         |   4 +-
  services/camera/libcameraservice/Android.mk   |   2 +-
- .../libcameraservice/api1/CameraClient.cpp    | 374 +++++++++-
+ .../libcameraservice/api1/CameraClient.cpp    | 370 +++++++++-
  .../libcameraservice/api1/CameraClient.h      |  25 +
- 31 files changed, 3376 insertions(+), 11 deletions(-)
+ 31 files changed, 3373 insertions(+), 10 deletions(-)
  create mode 100644 camera/MtkCamera.cpp
  create mode 100644 camera/MtkCameraParameters.cpp
  create mode 100644 camera/include/camera/MtkCamera.h
@@ -3554,7 +3554,7 @@ index 7629594..e96993d 100644
  # Workaround for invalid unused-lambda-capture warning http://b/38349491
  LOCAL_CLANG_CFLAGS += -Wno-error=unused-lambda-capture
 diff --git a/services/camera/libcameraservice/api1/CameraClient.cpp b/services/camera/libcameraservice/api1/CameraClient.cpp
-index 48757ac..9392f90 100644
+index 48757ac..59094a8 100644
 --- a/services/camera/libcameraservice/api1/CameraClient.cpp
 +++ b/services/camera/libcameraservice/api1/CameraClient.cpp
 @@ -26,6 +26,11 @@
@@ -3575,7 +3575,7 @@ index 48757ac..9392f90 100644
      // Enable zoom, error, focus, and metadata messages by default
 +#ifdef MTK_HARDWARE
 +    enableMsgType(CAMERA_MSG_ERROR | CAMERA_MSG_ZOOM | CAMERA_MSG_FOCUS |
-+                  CAMERA_MSG_PREVIEW_METADATA | CAMERA_MSG_FOCUS_MOVE|
++                  CAMERA_MSG_PREVIEW_METADATA | CAMERA_MSG_FOCUS_MOVE |
 +                  MTK_CAMERA_MSG_EXT_NOTIFY | MTK_CAMERA_MSG_EXT_DATA);
 +#else
      enableMsgType(CAMERA_MSG_ERROR | CAMERA_MSG_ZOOM | CAMERA_MSG_FOCUS |
@@ -3657,23 +3657,19 @@ index 48757ac..9392f90 100644
          case CAMERA_MSG_SHUTTER:
              // ext1 is the dimension of the yuv picture.
              client->handleShutter();
-@@ -885,7 +917,14 @@ void CameraClient::dataCallback(int32_t msgType,
+@@ -885,6 +917,11 @@ void CameraClient::dataCallback(int32_t msgType,
          return;
      }
  
--    switch (msgType & ~CAMERA_MSG_PREVIEW_METADATA) {
-+    int64_t msgTypeMeta = (msgType & ~CAMERA_MSG_PREVIEW_METADATA);
++    if ((msgType & MTK_CAMERA_MSG_EXT_DATA)) {
++        client->handleMtkExtData(dataPtr, metadata);
++        return;
++    }
 +
-+    switch (msgTypeMeta) {
-+#ifdef MTK_HARDWARE
-+        case MTK_CAMERA_MSG_EXT_DATA:
-+            client->handleMtkExtData(dataPtr, metadata);
-+            break;
-+#endif
+     switch (msgType & ~CAMERA_MSG_PREVIEW_METADATA) {
          case CAMERA_MSG_PREVIEW_FRAME:
              client->handlePreviewData(msgType, dataPtr, metadata);
-             break;
-@@ -1205,4 +1244,335 @@ status_t CameraClient::setVideoTarget(const sp<IGraphicBufferProducer>& bufferPr
+@@ -1205,4 +1242,335 @@ status_t CameraClient::setVideoTarget(const sp<IGraphicBufferProducer>& bufferPr
      return INVALID_OPERATION;
  }
  
@@ -4053,5 +4049,5 @@ index a0d9d0a..84c2a4d 100644
      int                  mBurstCnt;
  };
 -- 
-2.25.0
+2.25.1
 

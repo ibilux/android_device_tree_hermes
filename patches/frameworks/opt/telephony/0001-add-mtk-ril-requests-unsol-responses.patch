@@ -1,15 +1,15 @@
-From f1093e0e5671807294e66a218b65dd7b12626cbe Mon Sep 17 00:00:00 2001
-From: vishalk17 <vishalkapadi95@gmail.com>
-Date: Fri, 3 Aug 2018 18:57:24 +0000
-Subject: [PATCH 1/1] RIL.java: add mtk ril requests & unsol responses
+From 6299db8c0d799c89b3091692fbc0088d51adf90b Mon Sep 17 00:00:00 2001
+From: bilux <i.bilux@gmail.com>
+Date: Sat, 15 Feb 2020 18:43:26 +0100
+Subject: [PATCH] add mtk ril requests & unsol responses
 
-Change-Id: I9a2003a72869e835be6175739bd76c14d8e659e9
+Signed-off-by: bilux <i.bilux@gmail.com>
 ---
- src/java/com/android/internal/telephony/RIL.java | 53 ++++++++++++++++++++++++
+ .../com/android/internal/telephony/RIL.java   | 53 +++++++++++++++++++
  1 file changed, 53 insertions(+)
 
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 3f365df..c3cd0d5 100644
+index 3f365df..c71dee2 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
 @@ -279,6 +279,33 @@ public class RIL extends BaseCommands implements CommandsInterface {
@@ -20,11 +20,11 @@ index 3f365df..c3cd0d5 100644
 +
 +    static final int RIL_REQUEST_VENDOR_BASE = 2000;
 +    static final int RIL_REQUEST_MODEM_POWEROFF = (RIL_REQUEST_VENDOR_BASE + 10);
-+//    static final int RIL_REQUEST_DUAL_SIM_MODE_SWITCH  = (RIL_REQUEST_VENDOR_BASE + 11);
-+//    static final int RIL_REQUEST_USIM_AUTHENTICATION  = (RIL_REQUEST_VENDOR_BASE + 27);
++    //static final int RIL_REQUEST_DUAL_SIM_MODE_SWITCH  = (RIL_REQUEST_VENDOR_BASE + 11);
++    //static final int RIL_REQUEST_USIM_AUTHENTICATION  = (RIL_REQUEST_VENDOR_BASE + 27);
 +    static final int RIL_REQUEST_MODEM_POWERON = (RIL_REQUEST_VENDOR_BASE + 28);
 +    static final int RIL_REQUEST_RESUME_REGISTRATION  = (RIL_REQUEST_VENDOR_BASE + 65);
-+//    static final int RIL_REQUEST_SIM_INTERFACE_SWITCH  = (RIL_REQUEST_VENDOR_BASE + 68);
++    //static final int RIL_REQUEST_SIM_INTERFACE_SWITCH  = (RIL_REQUEST_VENDOR_BASE + 68);
 +    static final int RIL_REQUEST_SET_CALL_INDICATION = (RIL_REQUEST_VENDOR_BASE + 86);
 +    static final int RIL_REQUEST_EMERGENCY_DIAL = (RIL_REQUEST_VENDOR_BASE + 87);
 +    static final int RIL_REQUEST_SET_ECC_SERVICE_CATEGORY = (RIL_REQUEST_VENDOR_BASE + 88);
@@ -40,8 +40,8 @@ index 3f365df..c3cd0d5 100644
 +    static final int RIL_UNSOL_CALL_INFO_INDICATION = (RIL_UNSOL_VENDOR_BASE + 49);
 +    static final int RIL_UNSOL_MD_STATE_CHANGE = (RIL_UNSOL_VENDOR_BASE + 53);
 +    static final int RIL_UNSOL_SET_ATTACH_APN = (RIL_UNSOL_VENDOR_BASE + 73);
-+//    static final int RIL_UNSOL_MAL_AT_INFO = (RIL_UNSOL_VENDOR_BASE + 74);
-+//    static final int RIL_UNSOL_MAIN_SIM_INFO = (RIL_UNSOL_VENDOR_BASE + 75);
++    //static final int RIL_UNSOL_MAL_AT_INFO = (RIL_UNSOL_VENDOR_BASE + 74);
++    //static final int RIL_UNSOL_MAIN_SIM_INFO = (RIL_UNSOL_VENDOR_BASE + 75);
 +
      /**
       * Wake lock timeout should be longer than the longest timeout in
@@ -52,18 +52,18 @@ index 3f365df..c3cd0d5 100644
                  return "RIL_REQUEST_SIM_QUERY_ATR";
 +            case RIL_REQUEST_RESUME_REGISTRATION:
 +                return "RIL_REQUEST_RESUME_REGISTRATION";
-+	    case RIL_REQUEST_SET_CALL_INDICATION:
-+                 return "RIL_REQUEST_SET_CALL_INDICATION";
-+	    case RIL_REQUEST_EMERGENCY_DIAL:
-+	         return "RIL_REQUEST_EMERGENCY_DIAL";
-+	    case RIL_REQUEST_SET_ECC_SERVICE_CATEGORY:
-+	         return "RIL_REQUEST_SET_ECC_SERVICE_CATEGORY";
-+	    case RIL_REQUEST_SET_ECC_LIST:
-+                 return "RIL_REQUEST_SET_ECC_LIST";
++            case RIL_REQUEST_SET_CALL_INDICATION:
++                return "RIL_REQUEST_SET_CALL_INDICATION";
++            case RIL_REQUEST_EMERGENCY_DIAL:
++                return "RIL_REQUEST_EMERGENCY_DIAL";
++            case RIL_REQUEST_SET_ECC_SERVICE_CATEGORY:
++                return "RIL_REQUEST_SET_ECC_SERVICE_CATEGORY";
++            case RIL_REQUEST_SET_ECC_LIST:
++                return "RIL_REQUEST_SET_ECC_LIST";
 +            case RIL_REQUEST_MODEM_POWEROFF:
-+                 return "RIL_REQUEST_MODEM_POWEROFF";
-+	    case RIL_REQUEST_MODEM_POWERON:
-+                 return "RIL_REQUEST_MODEM_POWERON";
++                return "RIL_REQUEST_MODEM_POWEROFF";
++            case RIL_REQUEST_MODEM_POWERON:
++                return "RIL_REQUEST_MODEM_POWERON";
              default: return "<unknown request>";
          }
      }
@@ -71,21 +71,21 @@ index 3f365df..c3cd0d5 100644
                  return "RIL_UNSOL_CARRIER_INFO_IMSI_ENCRYPTION";
              case RIL_UNSOL_NETWORK_SCAN_RESULT:
                  return "RIL_UNSOL_NETWORK_SCAN_RESULT";
-+	    case RIL_UNSOL_RESPONSE_REGISTRATION_SUSPENDED:
-+	        return "RIL_UNSOL_RESPONSE_REGISTRATION_SUSPENDED";
-+	    case RIL_UNSOL_INCOMING_CALL_INDICATION:
++            case RIL_UNSOL_RESPONSE_REGISTRATION_SUSPENDED:
++                return "RIL_UNSOL_RESPONSE_REGISTRATION_SUSPENDED";
++            case RIL_UNSOL_INCOMING_CALL_INDICATION:
 +                return "RIL_UNSOL_INCOMING_CALL_INDICATION";
-+	    case RIL_UNSOL_CALL_INFO_INDICATION:
-+	         return "RIL_UNSOL_CALL_PROGRESS";
-+	    case RIL_UNSOL_MD_STATE_CHANGE:
-+		 return "RIL_UNSOL_MD_STATE_CHANGE";
-+	    case RIL_UNSOL_SET_ATTACH_APN:
-+                 return "RIL_UNSOL_SET_ATTACH_APN";
-+	    case RIL_UNSOL_RESPONSE_PS_NETWORK_STATE_CHANGED:
-+                 return "RIL_UNSOL_RESPONSE_PS_NETWORK_STATE_CHANGED";
++            case RIL_UNSOL_CALL_INFO_INDICATION:
++                return "RIL_UNSOL_CALL_PROGRESS";
++            case RIL_UNSOL_MD_STATE_CHANGE:
++                return "RIL_UNSOL_MD_STATE_CHANGE";
++            case RIL_UNSOL_SET_ATTACH_APN:
++                return "RIL_UNSOL_SET_ATTACH_APN";
++            case RIL_UNSOL_RESPONSE_PS_NETWORK_STATE_CHANGED:
++                return "RIL_UNSOL_RESPONSE_PS_NETWORK_STATE_CHANGED";
              default:
                  return "<unknown response>";
          }
 -- 
-2.7.4
+2.25.1
 
