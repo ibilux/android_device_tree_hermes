@@ -3508,7 +3508,7 @@ index 1a00fb9..322503e 100644
 +    ],
 +
 +    product_variables: {
-+        lineage: {
++        viper: {
 +            needs_legacy_camera_hal1_dyn_native_handle: {
 +                cppflags: ["-DNEEDS_LEGACY_CAMERA_HAL1_DYN_NATIVE_HANDLE"],
 +            },

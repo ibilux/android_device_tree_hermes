@@ -1,16 +1,15 @@
-From bb225829405dfd2ea802c217edc8175605fa4561 Mon Sep 17 00:00:00 2001
+From 7693129f840aec4981f63706698df38eaf765682 Mon Sep 17 00:00:00 2001
 From: Bilux <i.bilux@gmail.com>
-Date: Thu, 30 Jan 2020 23:33:04 +0100
+Date: Sun, 15 Mar 2020 20:07:11 +0100
 Subject: [PATCH] sensors: fix proximity sensor
 
 Lower the requirement of proximity sensor API version to 1.1
 ---
- libs/sensor/Sensor.cpp        | 8 ++++++++
- libs/sensor/SensorManager.cpp | 2 +-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+ libs/sensor/Sensor.cpp | 8 +++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/libs/sensor/Sensor.cpp b/libs/sensor/Sensor.cpp
-index 2383516c9..52e836072 100644
+index a0e368c7e..e556b7d9f 100644
 --- a/libs/sensor/Sensor.cpp
 +++ b/libs/sensor/Sensor.cpp
 @@ -52,6 +52,7 @@ Sensor::Sensor(struct sensor_t const& hwSensor, const uuid_t& uuid, int halVersi
@@ -42,16 +41,3 @@ index 2383516c9..52e836072 100644
  }
  
  Sensor::~Sensor() {
-diff --git a/libs/sensor/SensorManager.cpp b/libs/sensor/SensorManager.cpp
-index 5fbaf1bf1..cc240683c 100644
---- a/libs/sensor/SensorManager.cpp
-+++ b/libs/sensor/SensorManager.cpp
-@@ -93,7 +93,7 @@ SensorManager& SensorManager::getInstanceForPackage(const String16& packageName)
- 
- SensorManager::SensorManager(const String16& opPackageName)
-     : mSensorList(0), mOpPackageName(opPackageName), mDirectConnectionHandle(1) {
--    Mutex::Autolock _l(mLock);
-+    //Mutex::Autolock _l(mLock); // okay we're not locked here, but it's not needed during construction
-     assertStateLocked();
- }
- 
