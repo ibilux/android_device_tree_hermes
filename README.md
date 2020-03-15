@@ -1,6 +1,6 @@
-# LineageOS 15.1 Device tree for Xiaomi Redmi Note 2 (HERMES) - Vanzo Vendor (Android M blobs)
+# ViperOS Oreo Device tree for Xiaomi Redmi Note 2 (HERMES) - Vanzo Vendor (Android M blobs)
 
-This branch is device tree for building LineageOS 15.1 Rom for Xiaomi Redmi Note 2 (HERMES) with android M blobs based on Vanzo Vendor (ALPS-MP-M0.MP11-V1_VZ6795_LWT_M).
+This branch is device tree for building ViperOS Oreo Rom for Xiaomi Redmi Note 2 (HERMES) with android M blobs based on Vanzo Vendor (ALPS-MP-M0.MP11-V1_VZ6795_LWT_M).
 
 ---
 
