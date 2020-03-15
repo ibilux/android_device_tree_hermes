@@ -6,8 +6,7 @@ Subject: [PATCH] sensors: fix proximity sensor
 Lower the requirement of proximity sensor API version to 1.1
 ---
  libs/sensor/Sensor.cpp        | 8 ++++++++
- libs/sensor/SensorManager.cpp | 2 +-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+ 1 file changed, 8 insertions(+), 0 deletion(-)
 
 diff --git a/libs/sensor/Sensor.cpp b/libs/sensor/Sensor.cpp
 index 2383516c9..52e836072 100644
@@ -42,16 +41,3 @@ index 2383516c9..52e836072 100644
  }
  
  Sensor::~Sensor() {
-diff --git a/libs/sensor/SensorManager.cpp b/libs/sensor/SensorManager.cpp
-index 5fbaf1bf1..cc240683c 100644
---- a/libs/sensor/SensorManager.cpp
-+++ b/libs/sensor/SensorManager.cpp
-@@ -93,7 +93,7 @@ SensorManager& SensorManager::getInstanceForPackage(const String16& packageName)
- 
- SensorManager::SensorManager(const String16& opPackageName)
-     : mSensorList(0), mOpPackageName(opPackageName), mDirectConnectionHandle(1) {
--    Mutex::Autolock _l(mLock);
-+    //Mutex::Autolock _l(mLock); // okay we're not locked here, but it's not needed during construction
-     assertStateLocked();
- }
- 
