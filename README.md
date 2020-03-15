@@ -28,10 +28,10 @@ This branch is device tree for building LineageOS 15.1 Rom for Xiaomi Redmi Note
   - MTP and Mass Storage modes
   - USSD
   - Lights
-  - Camera (Photos only)
+  - Camera (Photos & Video recording)
 
 ### NOT working:
-  - Camera video recording
+  - ?
 
 ### Bugs:
   - ?
