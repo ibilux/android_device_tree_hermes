@@ -1,0 +1,984 @@
+From 7deeaf8a884eaa669c67175868a7bd44c69b7c10 Mon Sep 17 00:00:00 2001
+From: Jeff Sharkey <jsharkey@android.com>
+Date: Tue, 16 Jul 2019 16:50:42 -0600
+Subject: [PATCH 5/5] RESTRICT AUTOMERGE Strict SQLiteQueryBuilder needs to be
+ stricter.
+
+Malicious callers can leak side-channel information by using
+subqueries in any untrusted inputs where SQLite allows "expr" values.
+
+This change offers setStrictGrammar() to prevent this by outright
+blocking subqueries in WHERE and HAVING clauses, and by requiring
+that GROUP BY and ORDER BY clauses be composed only of valid columns.
+
+This change also offers setStrictColumns() to require that all
+untrusted column names are valid, such as those in ContentValues.
+
+Relaxes to always allow aggregation operators on returned columns,
+since untrusted callers can always calculate these manually.
+
+Bug: 135270103
+Bug: 135269143
+Test: atest android.database.sqlite.cts.SQLiteQueryBuilderTest
+Test: atest FrameworksCoreTests:android.database.sqlite.SQLiteTokenizerTest
+Exempt-From-Owner-Approval: already approved in downstream branch
+Change-Id: I6290afd19c966a8bdca71c377c88210d921a9f25
+(cherry picked from commit 216bbc2a2e4f697d88f8fd633646e3c0433246f1)
+---
+ .../database/sqlite/SQLiteQueryBuilder.java        | 351 ++++++++++++++++++---
+ .../android/database/sqlite/SQLiteTokenizer.java   | 297 +++++++++++++++++
+ .../database/sqlite/SQLiteTokenizerTest.java       | 169 ++++++++++
+ 3 files changed, 775 insertions(+), 42 deletions(-)
+ create mode 100644 core/java/android/database/sqlite/SQLiteTokenizer.java
+ create mode 100644 core/tests/coretests/src/android/database/sqlite/SQLiteTokenizerTest.java
+
+diff --git a/core/java/android/database/sqlite/SQLiteQueryBuilder.java b/core/java/android/database/sqlite/SQLiteQueryBuilder.java
+index 442e4cf..7bd26b6 100644
+--- a/core/java/android/database/sqlite/SQLiteQueryBuilder.java
++++ b/core/java/android/database/sqlite/SQLiteQueryBuilder.java
+@@ -28,14 +28,19 @@ import android.provider.BaseColumns;
+ import android.text.TextUtils;
+ import android.util.Log;
+ 
++import com.android.internal.util.ArrayUtils;
++
+ import libcore.util.EmptyArray;
+ 
+ import java.util.Arrays;
+ import java.util.Iterator;
++import java.util.List;
++import java.util.Locale;
+ import java.util.Map;
+ import java.util.Map.Entry;
+ import java.util.Objects;
+ import java.util.Set;
++import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ 
+ /**
+@@ -45,15 +50,24 @@ import java.util.regex.Pattern;
+ public class SQLiteQueryBuilder
+ {
+     private static final String TAG = "SQLiteQueryBuilder";
+-    private static final Pattern sLimitPattern =
+-            Pattern.compile("\\s*\\d+\\s*(,\\s*\\d+\\s*)?");
+ 
+     private Map<String, String> mProjectionMap = null;
++
++    private static final Pattern sAggregationPattern = Pattern.compile(
++            "(?i)(AVG|COUNT|MAX|MIN|SUM|TOTAL|GROUP_CONCAT)\\((.+)\\)");
++
++    private List<Pattern> mProjectionGreylist = null;
++
+     private String mTables = "";
+     private StringBuilder mWhereClause = null;  // lazily created
+     private boolean mDistinct;
+     private SQLiteDatabase.CursorFactory mFactory;
+-    private boolean mStrict;
++
++    private static final int STRICT_PARENTHESES = 1 << 0;
++    private static final int STRICT_COLUMNS = 1 << 1;
++    private static final int STRICT_GRAMMAR = 1 << 2;
++
++    private int mStrictFlags;
+ 
+     public SQLiteQueryBuilder() {
+         mDistinct = false;
+@@ -139,6 +153,37 @@ public class SQLiteQueryBuilder
+     }
+ 
+     /**
++     * Gets the projection map for the query, as last configured by
++     * {@link #setProjectionMap(Map)}.
++     *
++     * @hide
++     */
++    public @Nullable Map<String, String> getProjectionMap() {
++        return mProjectionMap;
++    }
++
++    /**
++     * Sets a projection greylist of columns that will be allowed through, even
++     * when {@link #setStrict(boolean)} is enabled. This provides a way for
++     * abusive custom columns like {@code COUNT(*)} to continue working.
++     *
++     * @hide
++     */
++    public void setProjectionGreylist(@Nullable List<Pattern> projectionGreylist) {
++        mProjectionGreylist = projectionGreylist;
++    }
++
++    /**
++     * Gets the projection greylist for the query, as last configured by
++     * {@link #setProjectionGreylist(List)}.
++     *
++     * @hide
++     */
++    public @Nullable List<Pattern> getProjectionGreylist() {
++        return mProjectionGreylist;
++    }
++
++    /**
+      * Sets the cursor factory to be used for the query.  You can use
+      * one factory for all queries on a database but it is normally
+      * easier to specify the factory when doing this query.
+@@ -170,8 +215,90 @@ public class SQLiteQueryBuilder
+      * </ul>
+      * By default, this value is false.
+      */
+-    public void setStrict(boolean flag) {
+-        mStrict = flag;
++    public void setStrict(boolean strict) {
++        if (strict) {
++            mStrictFlags |= STRICT_PARENTHESES;
++        } else {
++            mStrictFlags &= ~STRICT_PARENTHESES;
++        }
++    }
++
++    /**
++     * Get if the query is marked as strict, as last configured by
++     * {@link #setStrict(boolean)}.
++     *
++     * @hide
++     */
++    public boolean isStrict() {
++        return (mStrictFlags & STRICT_PARENTHESES) != 0;
++    }
++
++    /**
++     * When enabled, verify that all projections and {@link ContentValues} only
++     * contain valid columns as defined by {@link #setProjectionMap(Map)}.
++     * <p>
++     * This enforcement applies to {@link #insert}, {@link #query}, and
++     * {@link #update} operations. Any enforcement failures will throw an
++     * {@link IllegalArgumentException}.
++     *
++     * @hide
++     */
++    public void setStrictColumns(boolean strictColumns) {
++        if (strictColumns) {
++            mStrictFlags |= STRICT_COLUMNS;
++        } else {
++            mStrictFlags &= ~STRICT_COLUMNS;
++        }
++    }
++
++    /**
++     * Get if the query is marked as strict, as last configured by
++     * {@link #setStrictColumns(boolean)}.
++     *
++     * @hide
++     */
++    public boolean isStrictColumns() {
++        return (mStrictFlags & STRICT_COLUMNS) != 0;
++    }
++
++    /**
++     * When enabled, verify that all untrusted SQL conforms to a restricted SQL
++     * grammar. Here are the restrictions applied:
++     * <ul>
++     * <li>In {@code WHERE} and {@code HAVING} clauses: subqueries, raising, and
++     * windowing terms are rejected.
++     * <li>In {@code GROUP BY} clauses: only valid columns are allowed.
++     * <li>In {@code ORDER BY} clauses: only valid columns, collation, and
++     * ordering terms are allowed.
++     * <li>In {@code LIMIT} clauses: only numerical values and offset terms are
++     * allowed.
++     * </ul>
++     * All column references must be valid as defined by
++     * {@link #setProjectionMap(Map)}.
++     * <p>
++     * This enforcement applies to {@link #query}, {@link #update} and
++     * {@link #delete} operations. This enforcement does not apply to trusted
++     * inputs, such as those provided by {@link #appendWhere}. Any enforcement
++     * failures will throw an {@link IllegalArgumentException}.
++     *
++     * @hide
++     */
++    public void setStrictGrammar(boolean strictGrammar) {
++        if (strictGrammar) {
++            mStrictFlags |= STRICT_GRAMMAR;
++        } else {
++            mStrictFlags &= ~STRICT_GRAMMAR;
++        }
++    }
++
++    /**
++     * Get if the query is marked as strict, as last configured by
++     * {@link #setStrictGrammar(boolean)}.
++     *
++     * @hide
++     */
++    public boolean isStrictGrammar() {
++        return (mStrictFlags & STRICT_GRAMMAR) != 0;
+     }
+ 
+     /**
+@@ -207,9 +334,6 @@ public class SQLiteQueryBuilder
+             throw new IllegalArgumentException(
+                     "HAVING clauses are only permitted when using a groupBy clause");
+         }
+-        if (!TextUtils.isEmpty(limit) && !sLimitPattern.matcher(limit).matches()) {
+-            throw new IllegalArgumentException("invalid LIMIT clauses:" + limit);
+-        }
+ 
+         StringBuilder query = new StringBuilder(120);
+ 
+@@ -383,7 +507,13 @@ public class SQLiteQueryBuilder
+                 projectionIn, selection, groupBy, having,
+                 sortOrder, limit);
+ 
+-        if (mStrict && selection != null && selection.length() > 0) {
++        if (isStrictColumns()) {
++            enforceStrictColumns(projectionIn);
++        }
++        if (isStrictGrammar()) {
++            enforceStrictGrammar(selection, groupBy, having, sortOrder, limit);
++        }
++        if (isStrict()) {
+             // Validate the user-supplied selection to detect syntactic anomalies
+             // in the selection string that could indicate a SQL injection attempt.
+             // The idea is to ensure that the selection clause is a valid SQL expression
+@@ -401,7 +531,7 @@ public class SQLiteQueryBuilder
+ 
+             // Execute wrapped query for extra protection
+             final String wrappedSql = buildQuery(projectionIn, wrap(selection), groupBy,
+-                    having, sortOrder, limit);
++                    wrap(having), sortOrder, limit);
+             sql = wrappedSql;
+         } else {
+             // Execute unwrapped query
+@@ -446,7 +576,13 @@ public class SQLiteQueryBuilder
+         final String sql;
+         final String unwrappedSql = buildUpdate(values, selection);
+ 
+-        if (mStrict) {
++        if (isStrictColumns()) {
++            enforceStrictColumns(values);
++        }
++        if (isStrictGrammar()) {
++            enforceStrictGrammar(selection, null, null, null, null);
++        }
++        if (isStrict()) {
+             // Validate the user-supplied selection to detect syntactic anomalies
+             // in the selection string that could indicate a SQL injection attempt.
+             // The idea is to ensure that the selection clause is a valid SQL expression
+@@ -516,7 +652,10 @@ public class SQLiteQueryBuilder
+         final String sql;
+         final String unwrappedSql = buildDelete(selection);
+ 
+-        if (mStrict) {
++        if (isStrictGrammar()) {
++            enforceStrictGrammar(selection, null, null, null, null);
++        }
++        if (isStrict()) {
+             // Validate the user-supplied selection to detect syntactic anomalies
+             // in the selection string that could indicate a SQL injection attempt.
+             // The idea is to ensure that the selection clause is a valid SQL expression
+@@ -551,6 +690,82 @@ public class SQLiteQueryBuilder
+         return db.executeSql(sql, sqlArgs);
+     }
+ 
++    private void enforceStrictColumns(@Nullable String[] projection) {
++        Objects.requireNonNull(mProjectionMap, "No projection map defined");
++
++        computeProjection(projection);
++    }
++
++    private void enforceStrictColumns(@NonNull ContentValues values) {
++        Objects.requireNonNull(mProjectionMap, "No projection map defined");
++
++        final Set<String> rawValues = values.keySet();
++        final Iterator<String> rawValuesIt = rawValues.iterator();
++        while (rawValuesIt.hasNext()) {
++            final String column = rawValuesIt.next();
++            if (!mProjectionMap.containsKey(column)) {
++                throw new IllegalArgumentException("Invalid column " + column);
++            }
++        }
++    }
++
++    private void enforceStrictGrammar(@Nullable String selection, @Nullable String groupBy,
++            @Nullable String having, @Nullable String sortOrder, @Nullable String limit) {
++        SQLiteTokenizer.tokenize(selection, SQLiteTokenizer.OPTION_NONE,
++                this::enforceStrictGrammarWhereHaving);
++        SQLiteTokenizer.tokenize(groupBy, SQLiteTokenizer.OPTION_NONE,
++                this::enforceStrictGrammarGroupBy);
++        SQLiteTokenizer.tokenize(having, SQLiteTokenizer.OPTION_NONE,
++                this::enforceStrictGrammarWhereHaving);
++        SQLiteTokenizer.tokenize(sortOrder, SQLiteTokenizer.OPTION_NONE,
++                this::enforceStrictGrammarOrderBy);
++        SQLiteTokenizer.tokenize(limit, SQLiteTokenizer.OPTION_NONE,
++                this::enforceStrictGrammarLimit);
++    }
++
++    private void enforceStrictGrammarWhereHaving(@NonNull String token) {
++        if (isTableOrColumn(token)) return;
++        if (SQLiteTokenizer.isFunction(token)) return;
++        if (SQLiteTokenizer.isType(token)) return;
++
++        // NOTE: we explicitly don't allow SELECT subqueries, since they could
++        // leak data that should have been filtered by the trusted where clause
++        switch (token.toUpperCase(Locale.US)) {
++            case "AND": case "AS": case "BETWEEN": case "BINARY":
++            case "CASE": case "CAST": case "COLLATE": case "DISTINCT":
++            case "ELSE": case "END": case "ESCAPE": case "EXISTS":
++            case "GLOB": case "IN": case "IS": case "ISNULL":
++            case "LIKE": case "MATCH": case "NOCASE": case "NOT":
++            case "NOTNULL": case "NULL": case "OR": case "REGEXP":
++            case "RTRIM": case "THEN": case "WHEN":
++                return;
++        }
++        throw new IllegalArgumentException("Invalid token " + token);
++    }
++
++    private void enforceStrictGrammarGroupBy(@NonNull String token) {
++        if (isTableOrColumn(token)) return;
++        throw new IllegalArgumentException("Invalid token " + token);
++    }
++
++    private void enforceStrictGrammarOrderBy(@NonNull String token) {
++        if (isTableOrColumn(token)) return;
++        switch (token.toUpperCase(Locale.US)) {
++            case "COLLATE": case "ASC": case "DESC":
++            case "BINARY": case "RTRIM": case "NOCASE":
++                return;
++        }
++        throw new IllegalArgumentException("Invalid token " + token);
++    }
++
++    private void enforceStrictGrammarLimit(@NonNull String token) {
++        switch (token.toUpperCase(Locale.US)) {
++            case "OFFSET":
++                return;
++        }
++        throw new IllegalArgumentException("Invalid token " + token);
++    }
++
+     /**
+      * Construct a SELECT statement suitable for use in a group of
+      * SELECT statements that will be joined through UNION operators
+@@ -611,7 +826,7 @@ public class SQLiteQueryBuilder
+ 
+         StringBuilder sql = new StringBuilder(120);
+         sql.append("UPDATE ");
+-        sql.append(mTables);
++        sql.append(SQLiteDatabase.findEditTable(mTables));
+         sql.append(" SET ");
+ 
+         final String[] rawKeys = values.keySet().toArray(EmptyArray.STRING);
+@@ -632,7 +847,7 @@ public class SQLiteQueryBuilder
+     public String buildDelete(String selection) {
+         StringBuilder sql = new StringBuilder(120);
+         sql.append("DELETE FROM ");
+-        sql.append(mTables);
++        sql.append(SQLiteDatabase.findEditTable(mTables));
+ 
+         final String where = computeWhere(selection);
+         appendClause(sql, " WHERE ", where);
+@@ -763,35 +978,23 @@ public class SQLiteQueryBuilder
+         return query.toString();
+     }
+ 
+-    private String[] computeProjection(String[] projectionIn) {
+-        if (projectionIn != null && projectionIn.length > 0) {
+-            if (mProjectionMap != null) {
+-                String[] projection = new String[projectionIn.length];
+-                int length = projectionIn.length;
+-
+-                for (int i = 0; i < length; i++) {
+-                    String userColumn = projectionIn[i];
+-                    String column = mProjectionMap.get(userColumn);
+-
+-                    if (column != null) {
+-                        projection[i] = column;
+-                        continue;
+-                    }
+-
+-                    if (!mStrict &&
+-                            ( userColumn.contains(" AS ") || userColumn.contains(" as "))) {
+-                        /* A column alias already exist */
+-                        projection[i] = userColumn;
+-                        continue;
+-                    }
++    private static @NonNull String maybeWithOperator(@Nullable String operator,
++            @NonNull String column) {
++        if (operator != null) {
++            return operator + "(" + column + ")";
++        } else {
++            return column;
++        }
++    }
+ 
+-                    throw new IllegalArgumentException("Invalid column "
+-                            + projectionIn[i]);
+-                }
+-                return projection;
+-            } else {
+-                return projectionIn;
++    /** {@hide} */
++    public @Nullable String[] computeProjection(@Nullable String[] projectionIn) {
++        if (!ArrayUtils.isEmpty(projectionIn)) {
++            String[] projectionOut = new String[projectionIn.length];
++            for (int i = 0; i < projectionIn.length; i++) {
++                projectionOut[i] = computeSingleProjectionOrThrow(projectionIn[i]);
+             }
++            return projectionOut;
+         } else if (mProjectionMap != null) {
+             // Return all columns in projection map.
+             Set<Entry<String, String>> entrySet = mProjectionMap.entrySet();
+@@ -813,7 +1016,71 @@ public class SQLiteQueryBuilder
+         return null;
+     }
+ 
+-    private @Nullable String computeWhere(@Nullable String selection) {
++    private @NonNull String computeSingleProjectionOrThrow(@NonNull String userColumn) {
++        final String column = computeSingleProjection(userColumn);
++        if (column != null) {
++            return column;
++        } else {
++            throw new IllegalArgumentException("Invalid column " + userColumn);
++        }
++    }
++
++    private @Nullable String computeSingleProjection(@NonNull String userColumn) {
++        // When no mapping provided, anything goes
++        if (mProjectionMap == null) {
++            return userColumn;
++        }
++
++        String operator = null;
++        String column = mProjectionMap.get(userColumn);
++
++        // When no direct match found, look for aggregation
++        if (column == null) {
++            final Matcher matcher = sAggregationPattern.matcher(userColumn);
++            if (matcher.matches()) {
++                operator = matcher.group(1);
++                userColumn = matcher.group(2);
++                column = mProjectionMap.get(userColumn);
++            }
++        }
++
++        if (column != null) {
++            return maybeWithOperator(operator, column);
++        }
++
++        if (mStrictFlags == 0
++                && (userColumn.contains(" AS ") || userColumn.contains(" as "))) {
++            /* A column alias already exist */
++            return maybeWithOperator(operator, userColumn);
++        }
++
++        // If greylist is configured, we might be willing to let
++        // this custom column bypass our strict checks.
++        if (mProjectionGreylist != null) {
++            boolean match = false;
++            for (Pattern p : mProjectionGreylist) {
++                if (p.matcher(userColumn).matches()) {
++                    match = true;
++                    break;
++                }
++            }
++
++            if (match) {
++                Log.w(TAG, "Allowing abusive custom column: " + userColumn);
++                return maybeWithOperator(operator, userColumn);
++            }
++        }
++
++        return null;
++    }
++
++    private boolean isTableOrColumn(String token) {
++        if (mTables.equals(token)) return true;
++        return computeSingleProjection(token) != null;
++    }
++
++    /** {@hide} */
++    public @Nullable String computeWhere(@Nullable String selection) {
+         final boolean hasInternal = !TextUtils.isEmpty(mWhereClause);
+         final boolean hasExternal = !TextUtils.isEmpty(selection);
+ 
+diff --git a/core/java/android/database/sqlite/SQLiteTokenizer.java b/core/java/android/database/sqlite/SQLiteTokenizer.java
+new file mode 100644
+index 0000000..7e7c3fb
+--- /dev/null
++++ b/core/java/android/database/sqlite/SQLiteTokenizer.java
+@@ -0,0 +1,297 @@
++/*
++ * Copyright (C) 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package android.database.sqlite;
++
++import android.annotation.NonNull;
++import android.annotation.Nullable;
++
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Locale;
++import java.util.function.Consumer;
++
++/**
++ * SQL Tokenizer specialized to extract tokens from SQL (snippets).
++ * <p>
++ * Based on sqlite3GetToken() in tokenzie.c in SQLite.
++ * <p>
++ * Source for v3.8.6 (which android uses): http://www.sqlite.org/src/artifact/ae45399d6252b4d7
++ * (Latest source as of now: http://www.sqlite.org/src/artifact/78c8085bc7af1922)
++ * <p>
++ * Also draft spec: http://www.sqlite.org/draft/tokenreq.html
++ *
++ * @hide
++ */
++public class SQLiteTokenizer {
++    private static boolean isAlpha(char ch) {
++        return ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || (ch == '_');
++    }
++
++    private static boolean isNum(char ch) {
++        return ('0' <= ch && ch <= '9');
++    }
++
++    private static boolean isAlNum(char ch) {
++        return isAlpha(ch) || isNum(ch);
++    }
++
++    private static boolean isAnyOf(char ch, String set) {
++        return set.indexOf(ch) >= 0;
++    }
++
++    private static IllegalArgumentException genException(String message, String sql) {
++        throw new IllegalArgumentException(message + " in '" + sql + "'");
++    }
++
++    private static char peek(String s, int index) {
++        return index < s.length() ? s.charAt(index) : '\0';
++    }
++
++    public static final int OPTION_NONE = 0;
++
++    /**
++     * Require that SQL contains only tokens; any comments or values will result
++     * in an exception.
++     */
++    public static final int OPTION_TOKEN_ONLY = 1 << 0;
++
++    /**
++     * Tokenize the given SQL, returning the list of each encountered token.
++     *
++     * @throws IllegalArgumentException if invalid SQL is encountered.
++     */
++    public static List<String> tokenize(@Nullable String sql, int options) {
++        final ArrayList<String> res = new ArrayList<>();
++        tokenize(sql, options, res::add);
++        return res;
++    }
++
++    /**
++     * Tokenize the given SQL, sending each encountered token to the given
++     * {@link Consumer}.
++     *
++     * @throws IllegalArgumentException if invalid SQL is encountered.
++     */
++    public static void tokenize(@Nullable String sql, int options, Consumer<String> checker) {
++        if (sql == null) {
++            return;
++        }
++        int pos = 0;
++        final int len = sql.length();
++        while (pos < len) {
++            final char ch = peek(sql, pos);
++
++            // Regular token.
++            if (isAlpha(ch)) {
++                final int start = pos;
++                pos++;
++                while (isAlNum(peek(sql, pos))) {
++                    pos++;
++                }
++                final int end = pos;
++
++                final String token = sql.substring(start, end);
++                checker.accept(token);
++
++                continue;
++            }
++
++            // Handle quoted tokens
++            if (isAnyOf(ch, "'\"`")) {
++                final int quoteStart = pos;
++                pos++;
++
++                for (;;) {
++                    pos = sql.indexOf(ch, pos);
++                    if (pos < 0) {
++                        throw genException("Unterminated quote", sql);
++                    }
++                    if (peek(sql, pos + 1) != ch) {
++                        break;
++                    }
++                    // Quoted quote char -- e.g. "abc""def" is a single string.
++                    pos += 2;
++                }
++                final int quoteEnd = pos;
++                pos++;
++
++                if (ch != '\'') {
++                    // Extract the token
++                    final String tokenUnquoted = sql.substring(quoteStart + 1, quoteEnd);
++
++                    final String token;
++
++                    // Unquote if needed. i.e. "aa""bb" -> aa"bb
++                    if (tokenUnquoted.indexOf(ch) >= 0) {
++                        token = tokenUnquoted.replaceAll(
++                                String.valueOf(ch) + ch, String.valueOf(ch));
++                    } else {
++                        token = tokenUnquoted;
++                    }
++                    checker.accept(token);
++                } else {
++                    if ((options &= OPTION_TOKEN_ONLY) != 0) {
++                        throw genException("Non-token detected", sql);
++                    }
++                }
++                continue;
++            }
++            // Handle tokens enclosed in [...]
++            if (ch == '[') {
++                final int quoteStart = pos;
++                pos++;
++
++                pos = sql.indexOf(']', pos);
++                if (pos < 0) {
++                    throw genException("Unterminated quote", sql);
++                }
++                final int quoteEnd = pos;
++                pos++;
++
++                final String token = sql.substring(quoteStart + 1, quoteEnd);
++
++                checker.accept(token);
++                continue;
++            }
++            if ((options &= OPTION_TOKEN_ONLY) != 0) {
++                throw genException("Non-token detected", sql);
++            }
++
++            // Detect comments.
++            if (ch == '-' && peek(sql, pos + 1) == '-') {
++                pos += 2;
++                pos = sql.indexOf('\n', pos);
++                if (pos < 0) {
++                    // We disallow strings ending in an inline comment.
++                    throw genException("Unterminated comment", sql);
++                }
++                pos++;
++
++                continue;
++            }
++            if (ch == '/' && peek(sql, pos + 1) == '*') {
++                pos += 2;
++                pos = sql.indexOf("*/", pos);
++                if (pos < 0) {
++                    throw genException("Unterminated comment", sql);
++                }
++                pos += 2;
++
++                continue;
++            }
++
++            // Semicolon is never allowed.
++            if (ch == ';') {
++                throw genException("Semicolon is not allowed", sql);
++            }
++
++            // For this purpose, we can simply ignore other characters.
++            // (Note it doesn't handle the X'' literal properly and reports this X as a token,
++            // but that should be fine...)
++            pos++;
++        }
++    }
++
++    /**
++     * Test if given token is a
++     * <a href="https://www.sqlite.org/lang_keywords.html">SQLite reserved
++     * keyword</a>.
++     */
++    public static boolean isKeyword(@NonNull String token) {
++        switch (token.toUpperCase(Locale.US)) {
++            case "ABORT": case "ACTION": case "ADD": case "AFTER":
++            case "ALL": case "ALTER": case "ANALYZE": case "AND":
++            case "AS": case "ASC": case "ATTACH": case "AUTOINCREMENT":
++            case "BEFORE": case "BEGIN": case "BETWEEN": case "BINARY":
++            case "BY": case "CASCADE": case "CASE": case "CAST":
++            case "CHECK": case "COLLATE": case "COLUMN": case "COMMIT":
++            case "CONFLICT": case "CONSTRAINT": case "CREATE": case "CROSS":
++            case "CURRENT": case "CURRENT_DATE": case "CURRENT_TIME": case "CURRENT_TIMESTAMP":
++            case "DATABASE": case "DEFAULT": case "DEFERRABLE": case "DEFERRED":
++            case "DELETE": case "DESC": case "DETACH": case "DISTINCT":
++            case "DO": case "DROP": case "EACH": case "ELSE":
++            case "END": case "ESCAPE": case "EXCEPT": case "EXCLUDE":
++            case "EXCLUSIVE": case "EXISTS": case "EXPLAIN": case "FAIL":
++            case "FILTER": case "FOLLOWING": case "FOR": case "FOREIGN":
++            case "FROM": case "FULL": case "GLOB": case "GROUP":
++            case "GROUPS": case "HAVING": case "IF": case "IGNORE":
++            case "IMMEDIATE": case "IN": case "INDEX": case "INDEXED":
++            case "INITIALLY": case "INNER": case "INSERT": case "INSTEAD":
++            case "INTERSECT": case "INTO": case "IS": case "ISNULL":
++            case "JOIN": case "KEY": case "LEFT": case "LIKE":
++            case "LIMIT": case "MATCH": case "NATURAL": case "NO":
++            case "NOCASE": case "NOT": case "NOTHING": case "NOTNULL":
++            case "NULL": case "OF": case "OFFSET": case "ON":
++            case "OR": case "ORDER": case "OTHERS": case "OUTER":
++            case "OVER": case "PARTITION": case "PLAN": case "PRAGMA":
++            case "PRECEDING": case "PRIMARY": case "QUERY": case "RAISE":
++            case "RANGE": case "RECURSIVE": case "REFERENCES": case "REGEXP":
++            case "REINDEX": case "RELEASE": case "RENAME": case "REPLACE":
++            case "RESTRICT": case "RIGHT": case "ROLLBACK": case "ROW":
++            case "ROWS": case "RTRIM": case "SAVEPOINT": case "SELECT":
++            case "SET": case "TABLE": case "TEMP": case "TEMPORARY":
++            case "THEN": case "TIES": case "TO": case "TRANSACTION":
++            case "TRIGGER": case "UNBOUNDED": case "UNION": case "UNIQUE":
++            case "UPDATE": case "USING": case "VACUUM": case "VALUES":
++            case "VIEW": case "VIRTUAL": case "WHEN": case "WHERE":
++            case "WINDOW": case "WITH": case "WITHOUT":
++                return true;
++            default:
++                return false;
++        }
++    }
++
++    /**
++     * Test if given token is a
++     * <a href="https://www.sqlite.org/lang_corefunc.html">SQLite reserved
++     * function</a>.
++     */
++    public static boolean isFunction(@NonNull String token) {
++        switch (token.toLowerCase(Locale.US)) {
++            case "abs": case "avg": case "char": case "coalesce":
++            case "count": case "glob": case "group_concat": case "hex":
++            case "ifnull": case "instr": case "length": case "like":
++            case "likelihood": case "likely": case "lower": case "ltrim":
++            case "max": case "min": case "nullif": case "random":
++            case "randomblob": case "replace": case "round": case "rtrim":
++            case "substr": case "sum": case "total": case "trim":
++            case "typeof": case "unicode": case "unlikely": case "upper":
++            case "zeroblob":
++                return true;
++            default:
++                return false;
++        }
++    }
++
++    /**
++     * Test if given token is a
++     * <a href="https://www.sqlite.org/datatype3.html">SQLite reserved type</a>.
++     */
++    public static boolean isType(@NonNull String token) {
++        switch (token.toUpperCase(Locale.US)) {
++            case "INT": case "INTEGER": case "TINYINT": case "SMALLINT":
++            case "MEDIUMINT": case "BIGINT": case "INT2": case "INT8":
++            case "CHARACTER": case "VARCHAR": case "NCHAR": case "NVARCHAR":
++            case "TEXT": case "CLOB": case "BLOB": case "REAL":
++            case "DOUBLE": case "FLOAT": case "NUMERIC": case "DECIMAL":
++            case "BOOLEAN": case "DATE": case "DATETIME":
++                return true;
++            default:
++                return false;
++        }
++    }
++}
+diff --git a/core/tests/coretests/src/android/database/sqlite/SQLiteTokenizerTest.java b/core/tests/coretests/src/android/database/sqlite/SQLiteTokenizerTest.java
+new file mode 100644
+index 0000000..ece8c39
+--- /dev/null
++++ b/core/tests/coretests/src/android/database/sqlite/SQLiteTokenizerTest.java
+@@ -0,0 +1,169 @@
++/*
++ * Copyright (C) 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package android.database.sqlite;
++
++import static org.junit.Assert.assertEquals;
++import static org.junit.Assert.assertTrue;
++import static org.junit.Assert.fail;
++
++import org.junit.Test;
++
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.List;
++
++public class SQLiteTokenizerTest {
++    private List<String> getTokens(String sql) {
++        return SQLiteTokenizer.tokenize(sql, SQLiteTokenizer.OPTION_NONE);
++    }
++
++    private void checkTokens(String sql, String spaceSeparatedExpectedTokens) {
++        final List<String> expected = spaceSeparatedExpectedTokens == null
++                ? new ArrayList<>()
++                : Arrays.asList(spaceSeparatedExpectedTokens.split(" +"));
++
++        assertEquals(expected, getTokens(sql));
++    }
++
++    private void assertInvalidSql(String sql, String message) {
++        try {
++            getTokens(sql);
++            fail("Didn't throw InvalidSqlException");
++        } catch (IllegalArgumentException e) {
++            assertTrue("Expected " + e.getMessage() + " to contain " + message,
++                    e.getMessage().contains(message));
++        }
++    }
++
++    @Test
++    public void testWhitespaces() {
++        checkTokens("  select  \t\r\n a\n\n  ", "select a");
++        checkTokens("a b", "a b");
++    }
++
++    @Test
++    public void testComment() {
++        checkTokens("--\n", null);
++        checkTokens("a--\n", "a");
++        checkTokens("a--abcdef\n", "a");
++        checkTokens("a--abcdef\nx", "a x");
++        checkTokens("a--\nx", "a x");
++        assertInvalidSql("a--abcdef", "Unterminated comment");
++        assertInvalidSql("a--abcdef\ndef--", "Unterminated comment");
++
++        checkTokens("/**/", null);
++        assertInvalidSql("/*", "Unterminated comment");
++        assertInvalidSql("/*/", "Unterminated comment");
++        assertInvalidSql("/*\n* /*a", "Unterminated comment");
++        checkTokens("a/**/", "a");
++        checkTokens("/**/b", "b");
++        checkTokens("a/**/b", "a b");
++        checkTokens("a/* -- \n* /* **/b", "a b");
++    }
++
++    @Test
++    public void testStrings() {
++        assertInvalidSql("'", "Unterminated quote");
++        assertInvalidSql("a'", "Unterminated quote");
++        assertInvalidSql("a'''", "Unterminated quote");
++        assertInvalidSql("a''' ", "Unterminated quote");
++        checkTokens("''", null);
++        checkTokens("''''", null);
++        checkTokens("a''''b", "a b");
++        checkTokens("a' '' 'b", "a b");
++        checkTokens("'abc'", null);
++        checkTokens("'abc\ndef'", null);
++        checkTokens("a'abc\ndef'", "a");
++        checkTokens("'abc\ndef'b", "b");
++        checkTokens("a'abc\ndef'b", "a b");
++        checkTokens("a'''abc\nd''ef'''b", "a b");
++    }
++
++    @Test
++    public void testDoubleQuotes() {
++        assertInvalidSql("\"", "Unterminated quote");
++        assertInvalidSql("a\"", "Unterminated quote");
++        assertInvalidSql("a\"\"\"", "Unterminated quote");
++        assertInvalidSql("a\"\"\" ", "Unterminated quote");
++        checkTokens("\"\"", "");
++        checkTokens("\"\"\"\"", "\"");
++        checkTokens("a\"\"\"\"b", "a \" b");
++        checkTokens("a\"\t\"\"\t\"b", "a  \t\"\t  b");
++        checkTokens("\"abc\"", "abc");
++        checkTokens("\"abc\ndef\"", "abc\ndef");
++        checkTokens("a\"abc\ndef\"", "a abc\ndef");
++        checkTokens("\"abc\ndef\"b", "abc\ndef b");
++        checkTokens("a\"abc\ndef\"b", "a abc\ndef b");
++        checkTokens("a\"\"\"abc\nd\"\"ef\"\"\"b", "a \"abc\nd\"ef\" b");
++    }
++
++    @Test
++    public void testBackQuotes() {
++        assertInvalidSql("`", "Unterminated quote");
++        assertInvalidSql("a`", "Unterminated quote");
++        assertInvalidSql("a```", "Unterminated quote");
++        assertInvalidSql("a``` ", "Unterminated quote");
++        checkTokens("``", "");
++        checkTokens("````", "`");
++        checkTokens("a````b", "a ` b");
++        checkTokens("a`\t``\t`b", "a  \t`\t  b");
++        checkTokens("`abc`", "abc");
++        checkTokens("`abc\ndef`", "abc\ndef");
++        checkTokens("a`abc\ndef`", "a abc\ndef");
++        checkTokens("`abc\ndef`b", "abc\ndef b");
++        checkTokens("a`abc\ndef`b", "a abc\ndef b");
++        checkTokens("a```abc\nd``ef```b", "a `abc\nd`ef` b");
++    }
++
++    @Test
++    public void testBrackets() {
++        assertInvalidSql("[", "Unterminated quote");
++        assertInvalidSql("a[", "Unterminated quote");
++        assertInvalidSql("a[ ", "Unterminated quote");
++        assertInvalidSql("a[[ ", "Unterminated quote");
++        checkTokens("[]", "");
++        checkTokens("[[]", "[");
++        checkTokens("a[[]b", "a [ b");
++        checkTokens("a[\t[\t]b", "a  \t[\t  b");
++        checkTokens("[abc]", "abc");
++        checkTokens("[abc\ndef]", "abc\ndef");
++        checkTokens("a[abc\ndef]", "a abc\ndef");
++        checkTokens("[abc\ndef]b", "abc\ndef b");
++        checkTokens("a[abc\ndef]b", "a abc\ndef b");
++        checkTokens("a[[abc\nd[ef[]b", "a [abc\nd[ef[ b");
++    }
++
++    @Test
++    public void testSemicolons() {
++        assertInvalidSql(";", "Semicolon is not allowed");
++        assertInvalidSql("  ;", "Semicolon is not allowed");
++        assertInvalidSql(";  ", "Semicolon is not allowed");
++        assertInvalidSql("-;-", "Semicolon is not allowed");
++        checkTokens("--;\n", null);
++        checkTokens("/*;*/", null);
++        checkTokens("';'", null);
++        checkTokens("[;]", ";");
++        checkTokens("`;`", ";");
++    }
++
++    @Test
++    public void testTokens() {
++        checkTokens("a,abc,a00b,_1,_123,abcdef", "a abc a00b _1 _123 abcdef");
++        checkTokens("a--\nabc/**/a00b''_1'''ABC'''`_123`abc[d]\"e\"f",
++                "a abc a00b _1 _123 abc d e f");
++    }
++}
+-- 
+2.7.4
+
