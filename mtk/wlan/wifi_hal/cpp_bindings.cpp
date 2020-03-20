@@ -17,6 +17,7 @@
 #include <netlink/handlers.h>
 
 #include <ctype.h>
+#include <errno.h>
 
 #include "wifi_hal.h"
 #include "common.h"
@@ -582,6 +583,28 @@ static int no_seq_check(struct nl_msg *msg, void *arg)
 	return NL_OK;
 }
 
+wifi_error WifiCommand::kernelErrorToWifiHalError(int kerr)
+{
+    if (kerr >= 0)
+        return WIFI_SUCCESS;
+
+    switch (kerr) {
+        case -EOPNOTSUPP:
+            return WIFI_ERROR_NOT_SUPPORTED;
+        case -EAGAIN:
+            return WIFI_ERROR_NOT_AVAILABLE;
+        case -EINVAL:
+            return WIFI_ERROR_INVALID_ARGS;
+        case -ETIMEDOUT:
+            return WIFI_ERROR_TIMED_OUT;
+        case -ENOMEM:
+            return WIFI_ERROR_OUT_OF_MEMORY;
+        case -EBUSY:
+            return WIFI_ERROR_BUSY;
+    }
+    return WIFI_ERROR_UNKNOWN;
+}
+
 int WifiCommand::requestResponse() {
     int err = create();
     if (err < 0) {
@@ -622,7 +645,7 @@ int WifiCommand::requestResponse(WifiRequest& request) {
         ALOGD("WifiCommand::requestResponse err=%d", err);
 out:
     nl_cb_put(cb);
-    return err;
+    return kernelErrorToWifiHalError(err);
 }
 
 int WifiCommand::requestEvent(int cmd) {
@@ -641,8 +664,10 @@ int WifiCommand::requestEvent(int cmd) {
     ALOGD("WifiCommand::requestEvent waiting for response %d", cmd);
 
     res = nl_send_auto_complete(mInfo->cmd_sock, mMsg.getMessage());
-    if (res < 0)
+    if (res < 0) {
+        res = kernelErrorToWifiHalError(res);
         goto out;
+    }
 
     ALOGD("WifiCommand::requestEvent waiting for event");
     res = mCondition.wait();
@@ -666,8 +691,10 @@ int WifiCommand::requestVendorEvent(uint32_t id, int subcmd) {
         goto out;
 
     res = nl_send_auto_complete(mInfo->cmd_sock, mMsg.getMessage());
-    if (res < 0)
+    if (res < 0) {
+        res = kernelErrorToWifiHalError(res);
         goto out;
+    }
 
     res = mCondition.wait();
     if (res < 0)

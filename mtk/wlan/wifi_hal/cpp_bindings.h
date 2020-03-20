@@ -251,7 +251,7 @@ public:
     }
 
     virtual void addRef() {
-        int refs = __sync_add_and_fetch(&mRefs, 1);
+        __sync_add_and_fetch(&mRefs, 1);
         // ALOGD("addRef: WifiCommand %p has %d references", this, refs);
     }
 
@@ -279,6 +279,8 @@ public:
     int requestEvent(int cmd);
     int requestVendorEvent(uint32_t id, int subcmd);
     int requestResponse(WifiRequest& request);
+
+    wifi_error kernelErrorToWifiHalError(int kerr);
 
 protected:
     wifi_handle wifiHandle() {

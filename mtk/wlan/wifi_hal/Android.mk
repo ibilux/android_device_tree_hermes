@@ -24,10 +24,6 @@ LOCAL_CFLAGS += -Wno-unused-parameter -Wno-int-to-pointer-cast
 LOCAL_CFLAGS += -Wno-maybe-uninitialized -Wno-parentheses
 LOCAL_CPPFLAGS += -Wno-conversion-null
 
-ifeq ($(MTK_TC7_FEATURE), yes)
-LOCAL_CFLAGS += -DCONFIG_PNO_SUPPORT
-endif
-
 LOCAL_C_INCLUDES += \
 	external/libnl/include \
 	$(call include-path-for, libhardware_legacy)/hardware_legacy \
@@ -35,10 +31,9 @@ LOCAL_C_INCLUDES += \
 
 LOCAL_SRC_FILES := \
 	wifi_hal.cpp \
-	rtt.cpp \
 	common.cpp \
 	cpp_bindings.cpp \
-	gscan.cpp \
+	wifi_logger.cpp \
 	wifi_offload.cpp
 
 LOCAL_SHARED_LIBRARIES += libutils liblog

@@ -35,6 +35,24 @@
 #include "cpp_bindings.h"
 #include "cutils/properties.h"
 
+template<typename>
+struct DummyFunction;
+
+template<typename R, typename... Args>
+struct DummyFunction<R (*)(Args...)> {
+    static constexpr R invoke(Args...) { return WIFI_SUCCESS; }
+};
+
+template<typename... Args>
+struct DummyFunction<void (*)(Args...)> {
+    static constexpr void invoke(Args...) { }
+};
+
+template<typename T>
+void populateDummyFor(T& val) {
+    val = &DummyFunction<T>::invoke;
+}
+
 /*
  BUGBUG: normally, libnl allocates ports for all connections it makes; but
  being a static library, it doesn't really know how many other netlink connections
@@ -46,7 +64,6 @@
 #define WIFI_HAL_CMD_SOCK_PORT       644
 #define WIFI_HAL_EVENT_SOCK_PORT     645
 
-static void internal_event_handler(wifi_handle handle, int events);
 static int internal_no_seq_check(nl_msg *msg, void *arg);
 static int internal_valid_message_handler(nl_msg *msg, void *arg);
 static int wifi_get_multicast_id(wifi_handle handle, const char *name, const char *group);
@@ -56,34 +73,18 @@ static wifi_error wifi_start_rssi_monitoring(wifi_request_id id, wifi_interface_
                         iface, s8 max_rssi, s8 min_rssi, wifi_rssi_event_handler eh);
 static wifi_error wifi_stop_rssi_monitoring(wifi_request_id id, wifi_interface_handle iface);
 
-static wifi_error wifi_reset_log_handler_dummy(wifi_request_id id, wifi_interface_handle iface);
 static wifi_error wifi_get_wake_reason_stats_dummy(wifi_interface_handle iface,
     WLAN_DRIVER_WAKE_REASON_CNT *wifi_wake_reason_cnt);
 static wifi_error wifi_get_packet_filter_capabilities_dummy(
     wifi_interface_handle handle, u32 *version, u32 *max_len);
-static wifi_error wifi_configure_nd_offload_dummy(wifi_interface_handle iface, u8 enable);
-static wifi_error wifi_get_firmware_version_dummy(
-    wifi_interface_handle iface, char *buffer, int buffer_size);
-static wifi_error wifi_get_driver_version_dummy(
-    wifi_interface_handle iface, char *buffer, int buffer_size);
-static wifi_error wifi_get_ring_data_dummy(wifi_interface_handle iface, char *ring_name);
 static wifi_error wifi_get_ring_buffers_status_dummy(wifi_interface_handle iface,
     u32 *num_rings, wifi_ring_buffer_status *status);
 static wifi_error wifi_get_logger_supported_feature_set_dummy(wifi_interface_handle iface,
     unsigned int *support);
-static wifi_error wifi_start_logging_dummy(wifi_interface_handle iface, u32 verbose_level,
-    u32 flags, u32 max_interval_sec, u32 min_data_size, char *ring_name);
-static wifi_error wifi_start_pkt_fate_monitoring_dummy(wifi_interface_handle iface);
 static wifi_error wifi_get_tx_pkt_fates_dummy(wifi_interface_handle handle,
     wifi_tx_report *tx_report_bufs, size_t n_requested_fates, size_t *n_provided_fates);
 static wifi_error wifi_get_rx_pkt_fates_dummy(wifi_interface_handle handle,
     wifi_rx_report *rx_report_bufs, size_t n_requested_fates, size_t *n_provided_fates);
-static wifi_error wifi_get_driver_memory_dump_dummy(wifi_interface_handle iface,
-    wifi_driver_memory_dump_callbacks callbacks);
-static wifi_error wifi_set_log_handler_dummy(wifi_request_id id, wifi_interface_handle iface,
-    wifi_ring_buffer_data_handler handler);
-static wifi_error wifi_set_scanning_mac_oui_dummy(wifi_interface_handle handle, oui scan_oui);
-
 
 /* Initialize/Cleanup */
 
@@ -124,62 +125,41 @@ wifi_error init_wifi_vendor_hal_func_table(wifi_hal_fn *fn)
     fn->wifi_cleanup = wifi_cleanup;
     fn->wifi_event_loop = wifi_event_loop;
     fn->wifi_get_supported_feature_set = wifi_get_supported_feature_set;
-    fn->wifi_get_concurrency_matrix = wifi_get_concurrency_matrix;
-    fn->wifi_set_scanning_mac_oui =  wifi_set_scanning_mac_oui_dummy;
     fn->wifi_get_ifaces = wifi_get_ifaces;
     fn->wifi_get_iface_name = wifi_get_iface_name;
-    fn->wifi_start_gscan = wifi_start_gscan;
-    fn->wifi_stop_gscan = wifi_stop_gscan;
-    fn->wifi_get_cached_gscan_results = wifi_get_cached_gscan_results;
-    fn->wifi_set_bssid_hotlist = wifi_set_bssid_hotlist;
-    fn->wifi_reset_bssid_hotlist = wifi_reset_bssid_hotlist;
-    fn->wifi_set_significant_change_handler = wifi_set_significant_change_handler;
-    fn->wifi_reset_significant_change_handler = wifi_reset_significant_change_handler;
-    /*fn->wifi_get_gscan_capabilities = wifi_get_gscan_capabilities;*/
-    /*
-    fn->wifi_get_link_stats = wifi_get_link_stats;
-    fn->wifi_set_link_stats = wifi_set_link_stats;
-    fn->wifi_clear_link_stats = wifi_clear_link_stats;
-    */
-    fn->wifi_get_valid_channels = wifi_get_valid_channels;
-    fn->wifi_rtt_range_request = wifi_rtt_range_request;
-    fn->wifi_rtt_range_cancel = wifi_rtt_range_cancel;
-    fn->wifi_get_rtt_capabilities = wifi_get_rtt_capabilities;
-    /*fn->wifi_rtt_get_responder_info = wifi_rtt_get_responder_info;
-    fn->wifi_enable_responder = wifi_enable_responder;
-    fn->wifi_disable_responder = wifi_disable_responder;
-    fn->wifi_set_nodfs_flag = wifi_set_nodfs_flag;*/
-    fn->wifi_start_logging = wifi_start_logging_dummy;
-    fn->wifi_set_epno_list = wifi_set_epno_list;
-    fn->wifi_reset_epno_list = wifi_reset_epno_list;
     fn->wifi_set_country_code = wifi_set_country_code;
-    /*fn->wifi_get_firmware_memory_dump = wifi_get_firmware_memory_dump;*/
-    fn->wifi_set_log_handler = wifi_set_log_handler_dummy;
-    fn->wifi_reset_log_handler = wifi_reset_log_handler_dummy;
-    /*fn->wifi_set_alert_handler = wifi_set_alert_handler;
-    fn->wifi_reset_alert_handler = wifi_reset_alert_handler;*/
-    fn->wifi_get_firmware_version = wifi_get_firmware_version_dummy;
-    fn->wifi_get_ring_buffers_status = wifi_get_ring_buffers_status_dummy;
-    fn->wifi_get_logger_supported_feature_set = wifi_get_logger_supported_feature_set_dummy;
-    fn->wifi_get_ring_data = wifi_get_ring_data_dummy;
-    fn->wifi_get_driver_version = wifi_get_driver_version_dummy;
+    fn->wifi_get_firmware_version = wifi_get_firmware_version;
+    fn->wifi_get_driver_version = wifi_get_driver_version;
     fn->wifi_start_rssi_monitoring = wifi_start_rssi_monitoring;
     fn->wifi_stop_rssi_monitoring = wifi_stop_rssi_monitoring;
-    fn->wifi_configure_nd_offload = wifi_configure_nd_offload_dummy;
     fn->wifi_start_sending_offloaded_packet = wifi_start_sending_offloaded_packet;
     fn->wifi_stop_sending_offloaded_packet = wifi_stop_sending_offloaded_packet;
-    fn->wifi_start_pkt_fate_monitoring = wifi_start_pkt_fate_monitoring_dummy;
-    fn->wifi_get_tx_pkt_fates = wifi_get_tx_pkt_fates_dummy;
-    fn->wifi_get_rx_pkt_fates = wifi_get_rx_pkt_fates_dummy;
-    fn->wifi_get_packet_filter_capabilities = wifi_get_packet_filter_capabilities_dummy;
-
-    fn->wifi_get_driver_memory_dump = wifi_get_driver_memory_dump_dummy;
-    fn->wifi_get_wake_reason_stats = wifi_get_wake_reason_stats_dummy;
-    fn->wifi_get_packet_filter_capabilities = wifi_get_packet_filter_capabilities_dummy;
-
     fn->wifi_get_roaming_capabilities = wifi_get_roaming_capabilities;
     fn->wifi_configure_roaming = wifi_configure_roaming;
     fn->wifi_enable_firmware_roaming = wifi_enable_firmware_roaming;
+    fn->wifi_select_tx_power_scenario = wifi_select_tx_power_scenario;
+    fn->wifi_reset_tx_power_scenario = wifi_reset_tx_power_scenario;
+    fn->wifi_set_scanning_mac_oui = wifi_set_scanning_mac_oui;
+    fn->wifi_get_valid_channels = wifi_get_valid_channels;
+
+    fn->wifi_get_ring_buffers_status = wifi_get_ring_buffers_status_dummy;
+    fn->wifi_get_logger_supported_feature_set = wifi_get_logger_supported_feature_set_dummy;
+    fn->wifi_get_tx_pkt_fates = wifi_get_tx_pkt_fates_dummy;
+    fn->wifi_get_rx_pkt_fates = wifi_get_rx_pkt_fates_dummy;
+    fn->wifi_get_packet_filter_capabilities = wifi_get_packet_filter_capabilities_dummy;
+    fn->wifi_get_wake_reason_stats = wifi_get_wake_reason_stats_dummy;
+
+    populateDummyFor(fn->wifi_wait_for_driver_ready);
+    populateDummyFor(fn->wifi_set_nodfs_flag);
+    populateDummyFor(fn->wifi_set_log_handler);
+    populateDummyFor(fn->wifi_reset_log_handler);
+    populateDummyFor(fn->wifi_configure_nd_offload);
+    populateDummyFor(fn->wifi_start_pkt_fate_monitoring);
+    populateDummyFor(fn->wifi_get_driver_memory_dump);
+    populateDummyFor(fn->wifi_get_ring_data);
+    populateDummyFor(fn->wifi_start_logging);
+    populateDummyFor(fn->wifi_get_gscan_capabilities);
+
     return WIFI_SUCCESS;
 }
 
@@ -336,6 +316,13 @@ static void internal_cleaned_up_handler(wifi_handle handle)
         nl_socket_free(info->event_sock);
         info->cmd_sock = NULL;
         info->event_sock = NULL;
+    }
+
+    if (info->interfaces) {
+        int i = 0;
+        for (; i < info->num_interfaces; i++)
+            free(info->interfaces[i]);
+        free(info->interfaces);
     }
 
     (*cleaned_up_handler)(handle);
@@ -510,8 +497,6 @@ static int internal_valid_message_handler(nl_msg *msg, void *arg)
         ALOGV("event received %s", event.get_cmdString());
     }
 
-    bool dispatched = false;
-
     pthread_mutex_lock(&info->cb_lock);
 
     for (int i = 0; i < info->num_event_cb; i++) {
@@ -585,7 +570,6 @@ public:
         // ALOGD("handling reponse in %s", __func__);
 
         struct nlattr **tb = reply.attributes();
-        struct genlmsghdr *gnlh = reply.header();
         struct nlattr *mcgrp = NULL;
         int i;
 
@@ -912,8 +896,6 @@ public:
 
         if(feature_type == WIFI_ATTRIBUTE_FEATURE_SET) {
             ret = mMsg.create(GOOGLE_OUI, WIFI_SUBCMD_GET_FEATURE_SET);
-        } else if (feature_type == WIFI_ATTRIBUTE_NUM_FEATURE_SET) {
-            ret = mMsg.create(GOOGLE_OUI, WIFI_SUBCMD_GET_FEATURE_SET_MATRIX);
         } else if (feature_type == WIFI_ATTRIBUTE_ROAMING_CAPABILITIES) {
             ret = mMsg.create(GOOGLE_OUI, WIFI_SUBCMD_GET_ROAMING_CAPABILITIES);
         } else {
@@ -931,7 +913,7 @@ public:
 protected:
     virtual int handleResponse(WifiEvent& reply) {
 
-        ALOGD("In GetFeatureSetCommand::handleResponse");
+        ALOGD("In GetFeatureSetCommand::handleResponse for %d", feature_type);
 
         if (reply.get_cmd() != NL80211_CMD_VENDOR) {
             ALOGD("Ignore reply with cmd 0x%x", reply.get_cmd());
@@ -956,31 +938,7 @@ protected:
                 return NL_SKIP;
             }
             memcpy(fset, data, min(len, (int) sizeof(*fset)));
-        } else if (feature_type == WIFI_ATTRIBUTE_NUM_FEATURE_SET) {
-            int num_features_set = 0;
-            int i = 0;
-
-            if(!feature_matrix || !fm_size) {
-                ALOGE("feature_set pointer is not set");
-                return NL_SKIP;
-            }
-
-            for (nl_iterator it(vendor_data); it.has_next(); it.next()) {
-                if (it.get_type() == WIFI_ATTRIBUTE_NUM_FEATURE_SET) {
-                    num_features_set = it.get_u32();
-                    ALOGI("Get feature list with %d concurrent sets", num_features_set);
-                    if(set_size_max && (num_features_set > set_size_max))
-                        num_features_set = set_size_max;
-                    *fm_size = num_features_set;
-                } else if ((it.get_type() == WIFI_ATTRIBUTE_FEATURE_SET) &&
-                             i < num_features_set) {
-                    feature_matrix[i] = it.get_u32();
-                    i++;
-                } else {
-                    ALOGW("Ignore invalid attribute type = %d, size = %d",
-                            it.get_type(), it.get_len());
-                }
-            }
+            ALOGI("feature_set=0x%x", *fset);
         } else if (feature_type == WIFI_ATTRIBUTE_ROAMING_CAPABILITIES){
             if(!feature_matrix || !fm_size) {
                 ALOGE("feature_set pointer is not set");
@@ -993,6 +951,7 @@ protected:
             for (nl_iterator it(vendor_data); it.has_next(); it.next()) {
                 if (it.get_type() == WIFI_ATTRIBUTE_ROAMING_CAPABILITIES && i < set_size_max) {
                     feature_matrix[i] = it.get_u32() > max[i] ? max[i] : it.get_u32();
+                    ALOGI("feature_matrix %d: %d", i, feature_matrix[i]);
                     i++;
                 } else {
                     ALOGW("Ignore invalid attribute type = %d, idx = %d",
@@ -1006,6 +965,147 @@ protected:
 
 };
 
+class SelectTxPowerCommand : public WifiCommand {
+private:
+    int mScenario;
+public:
+    SelectTxPowerCommand(wifi_interface_handle handle, int scenario)
+        : WifiCommand("SelectTxPowerCommand", handle, 0) {
+            mScenario = scenario;
+        }
+    virtual int create() {
+        int ret;
+
+        ret = mMsg.create(GOOGLE_OUI, WIFI_SUBCMD_SELECT_TX_POWER_SCENARIO);
+        if (ret < 0) {
+             ALOGE("Can't create message to send to driver - %d", ret);
+             return ret;
+        }
+
+        nlattr *data = mMsg.attr_start(NL80211_ATTR_VENDOR_DATA);
+        ret = mMsg.put_u32(WIFI_ATTRIBUTE_TX_POWER_SCENARIO, mScenario);
+        if (ret < 0) {
+            return ret;
+        }
+
+        mMsg.attr_end(data);
+        return WIFI_SUCCESS;
+    }
+};
+
+class SetScanMacOuiCommand : public WifiCommand {
+private:
+    const byte *mScanMacOui;
+public:
+    SetScanMacOuiCommand(wifi_interface_handle handle, const oui scan_oui)
+        : WifiCommand("SetScanMacOuiCommand", handle, 0), mScanMacOui(scan_oui) {
+    }
+    virtual int create() {
+        ALOGI("Set scan mac oui");
+        int ret;
+
+        ret = mMsg.create(GOOGLE_OUI, WIFI_SUBCMD_SET_PNO_RANDOM_MAC_OUI);
+        if (ret < 0) {
+             ALOGE("Can't create message to send to driver - %d", ret);
+             return ret;
+        }
+
+        nlattr *data = mMsg.attr_start(NL80211_ATTR_VENDOR_DATA);
+        ret = mMsg.put(WIFI_ATTRIBUTE_PNO_RANDOM_MAC_OUI, (void *)mScanMacOui, sizeof(oui));
+        if (ret < 0) {
+            return ret;
+        }
+
+        mMsg.attr_end(data);
+        return WIFI_SUCCESS;
+    }
+};
+
+class GetChannelListCommand : public WifiCommand
+{
+private:
+    wifi_channel *mChannels;
+    int mMaxChannels;
+    int *mNumOfChannel;
+    int mBand;
+
+public:
+    GetChannelListCommand(wifi_interface_handle handle, int band, int max_channels,
+        wifi_channel *channels, int *num_channels)
+        : WifiCommand("GetChannelListCommand", handle, 0)
+    {
+        mBand = band;
+        mMaxChannels = max_channels;
+        mChannels = channels;
+        mNumOfChannel = num_channels;
+        memset(mChannels, 0, sizeof(wifi_channel) * mMaxChannels);
+    }
+
+    virtual int create() {
+        ALOGV("Creating message to get channel list; iface = %d", mIfaceInfo->id);
+
+        int ret = mMsg.create(GOOGLE_OUI, WIFI_SUBCMD_GET_CHANNEL_LIST);
+        if (ret < 0) {
+            return ret;
+        }
+
+        ALOGI("In GetChannelList::mBand=%d", mBand);
+
+        nlattr *data = mMsg.attr_start(NL80211_ATTR_VENDOR_DATA);
+        ret = mMsg.put_u32(WIFI_ATTRIBUTE_BAND, mBand);
+        if (ret < 0) {
+            return ret;
+        }
+
+        mMsg.attr_end(data);
+        return ret;
+    }
+
+protected:
+    virtual int handleResponse(WifiEvent& reply) {
+
+        ALOGV("In GetChannelList::handleResponse");
+
+        if (reply.get_cmd() != NL80211_CMD_VENDOR) {
+            ALOGE("Ignore reply with cmd 0x%x", reply.get_cmd());
+            return NL_SKIP;
+        }
+
+        int vendor_id = reply.get_vendor_id();
+        int subcmd = reply.get_vendor_subcmd();
+        ALOGV("vendor_id = 0x%x, subcmd = 0x%x", vendor_id, subcmd);
+
+        nlattr *vendor = reply.get_attribute(NL80211_ATTR_VENDOR_DATA);
+        int len = reply.get_vendor_data_len();
+        if (vendor == NULL || len == 0) {
+            ALOGE("No vendor data in GetChannelList response, ignore it");
+            return NL_SKIP;
+        }
+
+        int num_channels = 0;
+        for (nl_iterator it(vendor); it.has_next(); it.next()) {
+            if (it.get_type() == WIFI_ATTRIBUTE_NUM_CHANNELS) {
+                num_channels = it.get_u32();
+                ALOGI("Get channel list with %d channels", num_channels);
+                if (num_channels > mMaxChannels)
+                    num_channels = mMaxChannels;
+                *mNumOfChannel = num_channels;
+            } else if (it.get_type() == WIFI_ATTRIBUTE_CHANNEL_LIST && num_channels) {
+                memcpy(mChannels, it.get_data(), sizeof(wifi_channel) * num_channels);
+            } else {
+                ALOGW("Ignore invalid attribute type = %d, size = %d",
+                        it.get_type(), it.get_len());
+            }
+        }
+
+        ALOGD("mChannels[0]=%d mChannels[1]=%d", *mChannels, *(mChannels + 1));
+
+        return NL_OK;
+    }
+};
+
+/////////////////////////////////////////////////////////////////////////
+
 static int wifi_get_multicast_id(wifi_handle handle, const char *name, const char *group)
 {
     GetMulticastIdCommand cmd(handle, name, group);
@@ -1016,11 +1116,9 @@ static int wifi_get_multicast_id(wifi_handle handle, const char *name, const cha
         return cmd.getId();
 }
 
-/////////////////////////////////////////////////////////////////////////
-
 static bool is_wifi_interface(const char *name)
 {
-    if (strncmp(name, "wlan", 4) != 0 && strncmp(name, "p2p", 3) != 0) {
+    if (strncmp(name, "wlan", 4) != 0 && strncmp(name, "p2p", 3) != 0 && strncmp(name, "ap", 2) != 0) {
         /* Not a wifi interface; ignore it */
         return false;
     } else {
@@ -1070,6 +1168,7 @@ wifi_error wifi_init_interfaces(wifi_handle handle)
         closedir(d);
         return WIFI_ERROR_OUT_OF_MEMORY;
     }
+    memset(info->interfaces, 0, sizeof(interface_info *) * n);
 
     int i = 0;
     while ((de = readdir(d))) {
@@ -1112,41 +1211,9 @@ wifi_error wifi_get_iface_name(wifi_interface_handle handle, char *name, size_t 
 
 wifi_error wifi_get_supported_feature_set(wifi_interface_handle handle, feature_set *pset)
 {
-#if 0
-    GetFeatureSetCommand command(handle, WIFI_ATTRIBUTE_FEATURE_SET, set, NULL, NULL, 1);
-    return (wifi_error)command.requestResponse();
-#else
-    feature_set set = 0;
-    char prop_buf[PROPERTY_VALUE_MAX];
-
-    property_get("ro.wlan.mtk.wifi.5g", prop_buf, NULL);
-    if (!strcmp(prop_buf, "1"))
-        set |= WIFI_FEATURE_INFRA_5G;
-
-    set |= WIFI_FEATURE_P2P;
-    set |= WIFI_FEATURE_SOFT_AP;
-    set |= WIFI_FEATURE_TDLS;
-
-#ifdef CONFIG_PNO_SUPPORT
-    set |= WIFI_FEATURE_PNO;
-#endif
-
-    set |= WIFI_FEATURE_CONTROL_ROAMING;
-
-    memcpy(pset, &set, sizeof(feature_set));
-
-    ALOGI("[WIFI HAL]wifi_get_supported_feature_set: handle=%p, feature_set=0x%x", handle, *pset);
-    return WIFI_SUCCESS;
-#endif
-}
-
-wifi_error wifi_get_concurrency_matrix(wifi_interface_handle handle, int set_size_max,
-       feature_set set[], int *set_size)
-{
-    GetFeatureSetCommand command(handle, WIFI_ATTRIBUTE_NUM_FEATURE_SET, NULL, set, set_size, set_size_max);
+    GetFeatureSetCommand command(handle, WIFI_ATTRIBUTE_FEATURE_SET, pset, NULL, NULL, 1);
     return (wifi_error)command.requestResponse();
 }
-
 
 wifi_error wifi_set_country_code(wifi_interface_handle handle, const char *country_code)
 {
@@ -1182,7 +1249,6 @@ static wifi_error wifi_stop_rssi_monitoring(wifi_request_id id, wifi_interface_h
     if (id == -1) {
         wifi_rssi_event_handler handler;
         s8 max_rssi = 0, min_rssi = 0;
-        wifi_handle handle = getWifiHandle(iface);
         memset(&handler, 0, sizeof(handler));
         SetRSSIMonitorCommand *cmd = new SetRSSIMonitorCommand(id, iface, max_rssi, min_rssi, handler);
         NULL_CHECK_RETURN(cmd, "memory allocation failure", WIFI_ERROR_OUT_OF_MEMORY);
@@ -1265,18 +1331,35 @@ wifi_error wifi_enable_firmware_roaming(wifi_interface_handle handle,
     return (wifi_error) command.requestResponse();
 }
 
+wifi_error wifi_select_tx_power_scenario(wifi_interface_handle handle,
+        wifi_power_scenario scenario)
+{
+    ALOGI("Select tx power scenario %d", scenario);
+    SelectTxPowerCommand command(handle, scenario);
+    return (wifi_error) command.requestResponse();
+}
+
+wifi_error wifi_reset_tx_power_scenario(wifi_interface_handle handle)
+{
+    ALOGI("Reset tx power scenario");
+    SelectTxPowerCommand command(handle, -1);
+    return (wifi_error) command.requestResponse();
+}
+
+wifi_error wifi_set_scanning_mac_oui(wifi_interface_handle handle, oui scan_oui)
+{
+    SetScanMacOuiCommand command(handle, scan_oui);
+    return (wifi_error) command.requestResponse();
+}
+
+wifi_error wifi_get_valid_channels(wifi_interface_handle handle,
+        int band, int max_channels, wifi_channel *channels, int *num_channels)
+{
+    GetChannelListCommand command(handle, band, max_channels, channels, num_channels);
+    return (wifi_error) command.requestResponse();
+}
+
 /////////////////////////////////////////////////////////////////////////////
-
-static wifi_error wifi_set_scanning_mac_oui_dummy(wifi_interface_handle handle, oui scan_oui)
-{
-    return WIFI_SUCCESS;
-}
-
-static wifi_error wifi_set_log_handler_dummy(wifi_request_id id, wifi_interface_handle iface,
-    wifi_ring_buffer_data_handler handler)
-{
-    return WIFI_SUCCESS;
-}
 
 static wifi_error wifi_get_wake_reason_stats_dummy(wifi_interface_handle iface,
     WLAN_DRIVER_WAKE_REASON_CNT *wifi_wake_reason_cnt)
@@ -1299,16 +1382,6 @@ static wifi_error wifi_get_packet_filter_capabilities_dummy(wifi_interface_handl
     return  WIFI_ERROR_INVALID_ARGS;
 }
 
-static wifi_error wifi_configure_nd_offload_dummy(wifi_interface_handle iface, u8 enable)
-{
-    return WIFI_SUCCESS;
-}
-
-static wifi_error wifi_start_pkt_fate_monitoring_dummy(wifi_interface_handle iface)
-{
-    return WIFI_SUCCESS;
-}
-
 static wifi_error wifi_get_tx_pkt_fates_dummy(wifi_interface_handle handle,
     wifi_tx_report *tx_report_bufs, size_t n_requested_fates, size_t *n_provided_fates)
 {
@@ -1329,44 +1402,6 @@ static wifi_error wifi_get_rx_pkt_fates_dummy(wifi_interface_handle handle,
     return WIFI_ERROR_INVALID_ARGS;
 }
 
-static wifi_error wifi_get_driver_memory_dump_dummy(wifi_interface_handle iface,
-    wifi_driver_memory_dump_callbacks callbacks)
-{
-    return WIFI_SUCCESS;
-}
-
-static wifi_error wifi_reset_log_handler_dummy(wifi_request_id id, wifi_interface_handle iface)
-{
-    return WIFI_SUCCESS;
-}
-
-static wifi_error wifi_get_firmware_version_dummy(wifi_interface_handle iface, char *buffer,
-        int buffer_size)
-{
-    if (buffer && buffer_size > 0) {
-        strncpy(buffer, "0", buffer_size);
-        return WIFI_SUCCESS;
-    }
-    return  WIFI_ERROR_INVALID_ARGS;
-}
-
-static wifi_error wifi_get_driver_version_dummy(wifi_interface_handle iface,
-    char *buffer, int buffer_size)
-{
-    if (buffer && buffer_size > 0) {
-        strncpy(buffer, "0", buffer_size);
-        return WIFI_SUCCESS;
-    }
-    return  WIFI_ERROR_INVALID_ARGS;
-}
-
-static wifi_error wifi_get_ring_data_dummy(wifi_interface_handle iface, char *ring_name)
-{
-    if (ring_name) {
-        return WIFI_SUCCESS;
-    }
-    return  WIFI_ERROR_INVALID_ARGS;
-}
 
 static wifi_error wifi_get_ring_buffers_status_dummy(wifi_interface_handle iface,
         u32 *num_rings, wifi_ring_buffer_status *status)
@@ -1389,13 +1424,3 @@ static wifi_error wifi_get_logger_supported_feature_set_dummy(wifi_interface_han
     }
     return WIFI_ERROR_INVALID_ARGS;
 }
-
-static wifi_error wifi_start_logging_dummy(wifi_interface_handle iface, u32 verbose_level,
-        u32 flags, u32 max_interval_sec, u32 min_data_size, char *ring_name)
-{
-    if (ring_name) {
-        return WIFI_SUCCESS;
-    }
-    return  WIFI_ERROR_INVALID_ARGS;
-}
-
