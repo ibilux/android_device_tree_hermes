@@ -44,6 +44,9 @@
 int mtk_bt_init(const bt_vendor_callbacks_t* p_cb, UNUSED_ATTR unsigned char *local_bdaddr)
 {
     LOG_TRC();
+
+    store_bdaddr(local_bdaddr);
+
     set_callbacks(p_cb);
     return 0;
 }
@@ -122,8 +125,8 @@ int mtk_bt_op(bt_vendor_opcode_t opcode, void *param)
 void mtk_bt_cleanup()
 {
     LOG_TRC();
-    clean_resource();
     clean_callbacks();
+    clean_resource();
     return;
 }
 

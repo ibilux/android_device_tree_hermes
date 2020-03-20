@@ -35,71 +35,35 @@
  * any receiver's applicable license agreements with MediaTek Inc.
  */
 
-#ifndef _BT_MTK_H
-#define _BT_MTK_H
 
-#include "bt_hci_bdroid.h"
-#include "bt_vendor_lib.h"
-#include "CFG_BT_File.h"
-#include "os_dep.h"
+#ifndef _CFG_BT_FILE_H
+#define _CFG_BT_FILE_H
 
 
-#define HCI_CMD_MAX_SIZE        251
-
-/********************************************************************************
-** Macros to get and put bytes to and from a stream (Little Endian format).
-*/
-#define UINT16_TO_STREAM(p, u16) {*(p)++ = (UINT8)(u16); *(p)++ = (UINT8)((u16) >> 8);}
-#define STREAM_TO_UINT16(u16, p) {u16 = ((UINT16)(*(p)) + (((UINT16)(*((p) + 1))) << 8)); (p) += 2;}
-
-
-/********************************************************************************
-** Structure Definitions
-*/
-typedef enum {
-  CMD_SUCCESS,
-  CMD_FAIL,
-  CMD_PENDING,
-  CMD_TERMINATE,
-} HCI_CMD_STATUS_T;
-
-typedef union {
-  ap_nvram_btradio_struct fields;
-  unsigned char raw[sizeof(ap_nvram_btradio_struct)];
-} BT_NVRAM_DATA_T;
-
-typedef BOOL (*HCI_CMD_FUNC_T) (HC_BT_HDR *);
-typedef struct {
-  HCI_CMD_FUNC_T command_func;
-} HCI_SEQ_T;
-
-typedef struct {
-  UINT32 chip_id;
-  BT_NVRAM_DATA_T bt_nvram;
-  HCI_SEQ_T *cur_script;
-} BT_INIT_VAR_T;
-
-/* Thread control block for Controller initialize */
-typedef struct {
-  pthread_t worker_thread;
-  pthread_mutex_t mutex;
-  pthread_mutexattr_t attr;
-  pthread_cond_t cond;
-  BOOL worker_thread_running;
-} BT_INIT_CB_T;
+/* The record structure of bt nvram file */
+typedef struct
+{
+    unsigned char addr[6];            /* BT address */
+    unsigned char Voice[2];           /* Voice setting for SCO connection */
+    unsigned char Codec[4];           /* PCM codec setting */
+    unsigned char Radio[6];           /* RF configuration */
+    unsigned char Sleep[7];           /* Sleep mode configuration */
+    unsigned char BtFTR[2];           /* Other feature setting */
+    unsigned char TxPWOffset[3];      /* TX power channel offset compensation */
+    unsigned char CoexAdjust[6];      /* BT/WIFI coexistence performance adjustment */
+    unsigned char RadioExt[2];       /* RF configuration extended parameters */
+    unsigned char TxPWOffset_ext[4];  /* Tx power channel offset compensation with new range */
+    unsigned char Reserved1[2];       /* Reserved */
+    unsigned char Reserved2[4];       /* Reserved */
+    unsigned char Reserved3[8];       /* Reserved */
+    unsigned char Reserved4[8];       /* Reserved */
+} ap_nvram_btradio_struct, ap_nvram_btradio_mt6610_struct;
 
 
-/********************************************************************************
-** Function Declaration
-*/
-void set_callbacks(const bt_vendor_callbacks_t* p_cb);
-void clean_callbacks(void);
-int init_uart(void);
-void close_uart(void);
-int mtk_fw_cfg(void);
-int mtk_prepare_off(void);
-int mtk_set_fw_assert(uint32_t reason);
-int mtk_set_psm_control(bool enable);
-void clean_resource(void);
+/* The record size and number of bt nvram file */
+#define CFG_FILE_BT_ADDR_REC_SIZE    sizeof(ap_nvram_btradio_struct)
+#define CFG_FILE_BT_ADDR_REC_TOTAL   1
 
 #endif
+
+

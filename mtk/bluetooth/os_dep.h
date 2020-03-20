@@ -35,35 +35,58 @@
  * any receiver's applicable license agreements with MediaTek Inc.
  */
 
+#ifndef _OS_DEP_H
+#define _OS_DEP_H
 
-#ifndef _CFG_BT_FILE_H
-#define _CFG_BT_FILE_H
-
-
-/* The record structure of bt nvram file */
-typedef struct
-{
-    unsigned char addr[6];            /* BT address */
-    unsigned char Voice[2];           /* Voice setting for SCO connection */
-    unsigned char Codec[4];           /* PCM codec setting */
-    unsigned char Radio[6];           /* RF configuration */
-    unsigned char Sleep[7];           /* Sleep mode configuration */
-    unsigned char BtFTR[2];           /* Other feature setting */
-    unsigned char TxPWOffset[3];      /* TX power channel offset compensation */
-    unsigned char CoexAdjust[6];      /* BT/WIFI coexistence performance adjustment */
-    unsigned char Radio_ext[2];       /* RF configuration extended parameters */
-    unsigned char TxPWOffset_ext[4];  /* Tx power channel offset compensation with new range */
-    unsigned char Reserved1[2];       /* Reserved */
-    unsigned char Reserved2[4];       /* Reserved */
-    unsigned char Reserved3[8];       /* Reserved */
-    unsigned char Reserved4[8];       /* Reserved */
-} ap_nvram_btradio_struct, ap_nvram_btradio_mt6610_struct;
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <stdbool.h>
 
 
-/* The record size and number of bt nvram file */
-#define CFG_FILE_BT_ADDR_REC_SIZE    sizeof(ap_nvram_btradio_struct)
-#define CFG_FILE_BT_ADDR_REC_TOTAL   1
-
+#ifndef FALSE
+#define FALSE    0
+#endif
+#ifndef TRUE
+#define TRUE     1
+#endif
+#ifndef BOOL
+#define BOOL     bool
 #endif
 
+typedef unsigned char BYTE;
+typedef unsigned char UCHAR;
+typedef unsigned char UINT8;
+typedef unsigned short UINT16;
+typedef unsigned int UINT32;
+typedef unsigned long long UINT64;
+typedef unsigned char* PBYTE;
+typedef unsigned char* PUCHAR;
+typedef char INT8;
+typedef short INT16;
+typedef int INT32;
+typedef long long INT64;
+typedef void VOID;
+typedef void* PVOID;
 
+#define UNUSED_ATTR __attribute__((unused))
+#define WAIT_TIME_SECONDS     2
+
+/* LOG_TAG must be defined before log.h */
+#ifdef  LOG_TAG
+#undef  LOG_TAG
+#endif
+#define LOG_TAG               "[BT]"
+#include <log/log.h>
+
+#define BT_DRIVER_DEBUG       1
+#define LOG_ERR(f, ...)       ALOGE("%s: " f, __FUNCTION__, ##__VA_ARGS__)
+#define LOG_WAN(f, ...)       ALOGW("%s: " f, __FUNCTION__, ##__VA_ARGS__)
+#if BT_DRIVER_DEBUG
+#define LOG_DBG(f, ...)       ALOGD("%s: " f,  __FUNCTION__, ##__VA_ARGS__)
+#define LOG_TRC(f)            ALOGW("%s #%d", __FUNCTION__, __LINE__)
+#else
+#define LOG_DBG(...)          ((void)0)
+#define LOG_TRC(f)            ((void)0)
+#endif
+#endif
