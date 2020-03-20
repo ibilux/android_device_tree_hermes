@@ -163,65 +163,24 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.sip.voip.xml:system/vendor/etc/permissions/android.software.sip.voip.xml \
     frameworks/native/data/etc/handheld_core_hardware.xml:system/vendor/etc/permissions/handheld_core_hardware.xml
 
-# Telephony (RIL)
-PRODUCT_COPY_FILES += \
-    $(DEVICE_PATH)/configs/telephony/ecc_list.xml:system/vendor/etc/ecc_list.xml \
-    $(DEVICE_PATH)/configs/telephony/spn-conf.xml:system/vendor/etc/spn-conf.xml
-
-
 # Camera
 PRODUCT_COPY_FILES += $(DEVICE_PATH)/configs/init/mediaserver.rc:system/etc/init/mediaserver.rc
 
 # Audio Wakelock (So Music will not stop while turn off screen)
 PRODUCT_COPY_FILES += $(DEVICE_PATH)/configs/init/audioserver.rc:system/etc/init/audioserver.rc
 
-# Wi-Fi
-PRODUCT_COPY_FILES += \
-    $(DEVICE_PATH)/configs/wifi/p2p_supplicant_overlay.conf:system/vendor/etc/wifi/p2p_supplicant_overlay.conf \
-    $(DEVICE_PATH)/configs/wifi/wpa_supplicant.conf:system/vendor/etc/wifi/wpa_supplicant.conf \
-    $(DEVICE_PATH)/configs/wifi/wpa_supplicant_overlay.conf:system/vendor/etc/wifi/wpa_supplicant_overlay.conf
-
 # Audio
 PRODUCT_COPY_FILES += \
-    $(DEVICE_PATH)/configs/audio/audio_policy_configuration.xml:system/vendor/etc/audio/audio_policy_configuration.xml \
-    $(DEVICE_PATH)/configs/audio/a2dp_audio_policy_configuration.xml:system/vendor/etc/audio/a2dp_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:system/vendor/etc/audio/audio_policy_volumes.xml \
     frameworks/av/services/audiopolicy/config/default_volume_tables.xml:system/vendor/etc/audio/default_volume_tables.xml \
     frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:system/vendor/etc/audio/r_submix_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:system/vendor/etc/audio/usb_audio_policy_configuration.xml
-
-# Audio effects
-PRODUCT_COPY_FILES += $(DEVICE_PATH)/configs/audio/audio_effects.xml:system/vendor/etc/audio_effects.xml
-
-# Codecs
-PRODUCT_COPY_FILES += \
-    $(DEVICE_PATH)/configs/codecs/media_codecs_ffmpeg.xml:system/vendor/etc/media_codecs_ffmpeg.xml \
-    $(DEVICE_PATH)/configs/codecs/media_codecs_mediatek_audio.xml:system/vendor/etc/media_codecs_mediatek_audio.xml \
-    $(DEVICE_PATH)/configs/codecs/media_codecs_mediatek_video.xml:system/vendor/etc/media_codecs_mediatek_video.xml \
-    $(DEVICE_PATH)/configs/codecs/media_codecs_performance.xml:system/vendor/etc/media_codecs_performance.xml \
-    $(DEVICE_PATH)/configs/codecs/media_codecs.xml:system/vendor/etc/media_codecs.xml \
-    $(DEVICE_PATH)/configs/codecs/media_profiles.xml:system/vendor/etc/media_profiles.xml \
-    $(DEVICE_PATH)/configs/codecs/mtk_clear_motion.cfg:system/etc/mtk_clear_motion.cfg
 
 # Google codecs
 PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/vendor/etc/media_codecs_google_audio.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/vendor/etc/media_codecs_google_telephony.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_video_le.xml:system/vendor/etc/media_codecs_google_video_le.xml
-
-# GPS
-PRODUCT_COPY_FILES += \
-    $(DEVICE_PATH)/configs/gps/slp_conf:system/vendor/etc/slp_conf \
-    $(DEVICE_PATH)/configs/gps/gps.conf:system/vendor/etc/gps.conf \
-    $(DEVICE_PATH)/configs/gps/agps_profiles_conf2.xml:system/vendor/etc/agps_profiles_conf2.xml
-
-# Bluetooth
-PRODUCT_COPY_FILES += \
-    $(DEVICE_PATH)/configs/bluetooth/auto_pair_devlist.conf:system/vendor/etc/bluetooth/auto_pair_devlist.conf \
-    $(DEVICE_PATH)/configs/bluetooth/bt_stack.conf.debug:system/vendor/etc/bluetooth/bt_stack.conf.debug \
-    $(DEVICE_PATH)/configs/bluetooth/bt_did.conf:system/vendor/etc/bluetooth/bt_did.conf \
-    $(DEVICE_PATH)/configs/bluetooth/bt_stack.conf:system/vendor/etc/bluetooth/bt_stack.conf \
-    $(DEVICE_PATH)/configs/bluetooth/bt_stack.conf.sqc:system/vendor/etc/bluetooth/bt_stack.conf.sqc
 
 # Vulkan
 PRODUCT_COPY_FILES += \
@@ -232,10 +191,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(DEVICE_PATH)/seccomp/mediacodec.policy:system/vendor/etc/seccomp_policy/mediacodec.policy \
     $(DEVICE_PATH)/seccomp/mediaextractor.policy:system/vendor/etc/seccomp_policy/mediaextractor.policy
-
-# HIDL Manifest
-PRODUCT_COPY_FILES += \
-    $(DEVICE_PATH)/configs/manifest.xml:system/vendor/manifest.xml
 
 # Filesystem management tools
 PRODUCT_PACKAGES += \
