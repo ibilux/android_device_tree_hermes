@@ -78,6 +78,9 @@ PRODUCT_PACKAGES += \
     android.hardware.light@2.0-impl \
     android.hardware.light@2.0-service
 
+# LiveDisplay
+PRODUCT_PACKAGES += vendor.lineage.livedisplay@2.0-service-mediatek
+
 # Sensors
 PRODUCT_PACKAGES += \
     android.hardware.sensors@1.0-impl \
