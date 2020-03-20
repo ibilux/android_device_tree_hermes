@@ -1,5 +1,5 @@
 LOCAL_PATH := $(call my-dir)
-#ifneq ($(filter hermes,$(TARGET_DEVICE)),)
+ifneq ($(filter $(TARGET_DEVICE),hermes),)
 include $(call all-makefiles-under,$(LOCAL_PATH))
 include $(CLEAR_VARS)
-#endif
+endif
