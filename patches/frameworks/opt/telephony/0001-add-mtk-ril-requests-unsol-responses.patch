@@ -1,6 +1,6 @@
-From 6299db8c0d799c89b3091692fbc0088d51adf90b Mon Sep 17 00:00:00 2001
+From cee1178eeeb6fb9e5c115ae45f460997c120e631 Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
-Date: Sat, 15 Feb 2020 18:43:26 +0100
+Date: Sat, 21 Mar 2020 09:46:06 +0100
 Subject: [PATCH] add mtk ril requests & unsol responses
 
 Signed-off-by: bilux <i.bilux@gmail.com>
@@ -9,10 +9,10 @@ Signed-off-by: bilux <i.bilux@gmail.com>
  1 file changed, 53 insertions(+)
 
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 3f365df..c71dee2 100644
+index 7352dc556..d8c0a627b 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
-@@ -279,6 +279,33 @@ public class RIL extends BaseCommands implements CommandsInterface {
+@@ -133,6 +133,33 @@
      static final boolean RILJ_LOGV = false; // STOPSHIP if true
      static final int RIL_HISTOGRAM_BUCKET_COUNT = 5;
  
@@ -46,10 +46,10 @@ index 3f365df..c71dee2 100644
      /**
       * Wake lock timeout should be longer than the longest timeout in
       * the vendor ril.
-@@ -4761,6 +4788,20 @@ public class RIL extends BaseCommands implements CommandsInterface {
-                 return "RIL_REQUEST_STOP_NETWORK_SCAN";
-             case RIL_REQUEST_SIM_QUERY_ATR:
-                 return "RIL_REQUEST_SIM_QUERY_ATR";
+@@ -4962,6 +4989,20 @@ static String requestToString(int request) {
+                 return "RIL_REQUEST_SET_SIGNAL_STRENGTH_REPORTING_CRITERIA";
+             case RIL_REQUEST_SET_LINK_CAPACITY_REPORTING_CRITERIA:
+                 return "RIL_REQUEST_SET_LINK_CAPACITY_REPORTING_CRITERIA";
 +            case RIL_REQUEST_RESUME_REGISTRATION:
 +                return "RIL_REQUEST_RESUME_REGISTRATION";
 +            case RIL_REQUEST_SET_CALL_INDICATION:
@@ -67,10 +67,10 @@ index 3f365df..c71dee2 100644
              default: return "<unknown request>";
          }
      }
-@@ -4865,6 +4906,18 @@ public class RIL extends BaseCommands implements CommandsInterface {
-                 return "RIL_UNSOL_CARRIER_INFO_IMSI_ENCRYPTION";
-             case RIL_UNSOL_NETWORK_SCAN_RESULT:
-                 return "RIL_UNSOL_NETWORK_SCAN_RESULT";
+@@ -5072,6 +5113,18 @@ static String responseToString(int request) {
+                 return "RIL_UNSOL_KEEPALIVE_STATUS";
+             case RIL_UNSOL_PHYSICAL_CHANNEL_CONFIG:
+                 return "RIL_UNSOL_PHYSICAL_CHANNEL_CONFIG";
 +            case RIL_UNSOL_RESPONSE_REGISTRATION_SUSPENDED:
 +                return "RIL_UNSOL_RESPONSE_REGISTRATION_SUSPENDED";
 +            case RIL_UNSOL_INCOMING_CALL_INDICATION:
@@ -86,6 +86,3 @@ index 3f365df..c71dee2 100644
              default:
                  return "<unknown response>";
          }
--- 
-2.25.1
-

@@ -1,0 +1,75 @@
+From 6367269f51866bb7f0673f3f0ef4ebfc5a756423 Mon Sep 17 00:00:00 2001
+From: RAW MAIN <rawmain@gmail.com>
+Date: Mon, 3 Feb 2020 16:06:34 +0100
+Subject: [PATCH] Hardware bitmaps support workaround
+
+By TRONX2100 and RAWMAIN
+
+Change-Id: I1d407929f53f2ad6414a9170e4e242fb6a4ef271
+---
+ core/jni/android/graphics/Bitmap.cpp        |  7 -----
+ core/jni/android/graphics/BitmapFactory.cpp | 30 +++++++++++++++++++++
+ 2 files changed, 30 insertions(+), 7 deletions(-)
+
+diff --git a/core/jni/android/graphics/Bitmap.cpp b/core/jni/android/graphics/Bitmap.cpp
+index 5a74a247..9d6b342f 100755
+--- a/core/jni/android/graphics/Bitmap.cpp
++++ b/core/jni/android/graphics/Bitmap.cpp
+@@ -791,13 +791,6 @@ static jobject Bitmap_copy(JNIEnv* env, jobject, jlong srcHandle,
+                            jint dstConfigHandle, jboolean isMutable) {
+     SkBitmap src;
+     reinterpret_cast<BitmapWrapper*>(srcHandle)->getSkBitmap(&src);
+-    if (dstConfigHandle == GraphicsJNI::hardwareLegacyBitmapConfig()) {
+-        sk_sp<Bitmap> bitmap(Bitmap::allocateHardwareBitmap(src));
+-        if (!bitmap.get()) {
+-            return NULL;
+-        }
+-        return createBitmap(env, bitmap.release(), getPremulBitmapCreateFlags(isMutable));
+-    }
+ 
+     SkColorType dstCT = GraphicsJNI::legacyBitmapConfigToColorType(dstConfigHandle);
+     SkBitmap result;
+diff --git a/core/jni/android/graphics/BitmapFactory.cpp b/core/jni/android/graphics/BitmapFactory.cpp
+index 685fcaf1..a93f3d03 100644
+--- a/core/jni/android/graphics/BitmapFactory.cpp
++++ b/core/jni/android/graphics/BitmapFactory.cpp
+@@ -317,6 +317,36 @@ static jobject doDecode(JNIEnv* env, std::unique_ptr<SkStreamRewindable> stream,
+         scaledHeight = static_cast<int>(scaledHeight * scale + 0.5f);
+     }
+ 
++    const int needsOffset = 32;
++    const int minScaleHandlesize = 16;
++    if (isHardware && scaledWidth >= minScaleHandlesize && scaledHeight >= minScaleHandlesize) {
++        int rx = scaledWidth % needsOffset;
++        int ry = scaledHeight % needsOffset;
++        bool scaleX = false;
++
++        //ALOGI("[Before scaling] scaledWidth: %d, scaledHeight: %d, rx: %d, ry: %d", scaledWidth, scaledHeight, rx, ry);
++        if (rx != 0) {
++            willScale = true;
++            if (rx >= (needsOffset / 2)){
++                scaleX = true;
++                rx = needsOffset - rx;
++                scaledWidth = scaledWidth + rx;
++            } else {
++                scaledWidth = scaledWidth - rx;
++            }
++        }
++        if (ry != 0) {
++            willScale = true;
++            if (ry >= (needsOffset / 2) || scaleX){
++                ry = needsOffset - ry;
++                scaledHeight = scaledHeight + ry;
++            } else {
++                scaledHeight = scaledHeight - ry;
++            }
++        }
++        //ALOGI("[After scaling] scaledWidth: %d, scaledHeight: %d, rx: %d, ry: %d", scaledWidth, scaledHeight, rx, ry);
++    }
++
+     android::Bitmap* reuseBitmap = nullptr;
+     unsigned int existingBufferSize = 0;
+     if (javaBitmap != NULL) {
+-- 
+2.25.0
+

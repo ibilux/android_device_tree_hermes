@@ -1,0 +1,28 @@
+From c2ad898aac9691572281d28f1fe43ee01e249aba Mon Sep 17 00:00:00 2001
+From: Dinolek <18579460+Dinolek@users.noreply.github.com>
+Date: Tue, 4 Feb 2020 13:33:10 +0100
+Subject: [PATCH] Disable vndk for omx
+
+Change-Id: Ide3edd48cb072881976a2b65b0702e876cec7d8c
+---
+ services/mediacodec/main_codecservice.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/services/mediacodec/main_codecservice.cpp b/services/mediacodec/main_codecservice.cpp
+index 51619f6..ab426ea 100644
+--- a/services/mediacodec/main_codecservice.cpp
++++ b/services/mediacodec/main_codecservice.cpp
+@@ -43,8 +43,8 @@ int main(int argc __unused, char** argv)
+     signal(SIGPIPE, SIG_IGN);
+     SetUpMinijail(kSystemSeccompPolicyPath, kVendorSeccompPolicyPath);
+ 
+-    android::ProcessState::initWithDriver("/dev/vndbinder");
+-    android::ProcessState::self()->startThreadPool();
++    //android::ProcessState::initWithDriver("/dev/vndbinder");
++    //android::ProcessState::self()->startThreadPool();
+ 
+     ::android::hardware::configureRpcThreadpool(64, false);
+ 
+-- 
+2.25.0
+

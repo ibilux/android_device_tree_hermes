@@ -1,0 +1,29 @@
+From 8f76debdd48657758a4c67864910278703b262c1 Mon Sep 17 00:00:00 2001
+From: Dinolek <18579460+Dinolek@users.noreply.github.com>
+Date: Tue, 4 Feb 2020 13:34:32 +0100
+Subject: [PATCH] Suppress compiler warnings
+
+Change-Id: I3b3d7daba1a499736fe4fbf8f42cd06d391ceb2c
+---
+ jni/fmr/Android.mk | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/jni/fmr/Android.mk b/jni/fmr/Android.mk
+index d6a6ec1..79d9a29 100644
+--- a/jni/fmr/Android.mk
++++ b/jni/fmr/Android.mk
+@@ -34,6 +34,11 @@ LOCAL_SHARED_LIBRARIES := \
+     libmedia \
+     liblog
+ 
++LOCAL_CFLAGS := \
++    -Wno-unused-function \
++    -Wno-unused-parameter \
++    -Wno-unused-variable
++
+ LOCAL_MODULE := libfmjni
+ LOCAL_MODULE_TAGS := optional
+ 
+-- 
+2.25.0
+

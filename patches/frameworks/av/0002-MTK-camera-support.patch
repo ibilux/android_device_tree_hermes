@@ -1,0 +1,195 @@
+From 3429f9d811a131f654bb8e51580162f71f94f33e Mon Sep 17 00:00:00 2001
+From: Dinolek <18579460+Dinolek@users.noreply.github.com>
+Date: Sat, 7 Mar 2020 10:43:53 +0100
+Subject: [PATCH] MTK camera support
+
+Change-Id: I743c7d29d7e3e831ae1a3cd93ffc383717c022e4
+---
+ media/libstagefright/ACodec.cpp               |  5 +-
+ .../libcameraservice/api1/CameraClient.cpp    | 97 ++++++++++++++-----
+ .../libcameraservice/api1/CameraClient.h      |  3 +
+ 3 files changed, 79 insertions(+), 26 deletions(-)
+
+diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
+index 0ecb8bd..b122811 100644
+--- a/media/libstagefright/ACodec.cpp
++++ b/media/libstagefright/ACodec.cpp
+@@ -1101,6 +1101,7 @@ status_t ACodec::setupNativeWindowSizeFormatAndUsage(
+     }
+ 
+     usage |= kVideoGrallocUsage;
++    usage |= (GRALLOC_USAGE_SW_WRITE_OFTEN | GRALLOC_USAGE_SW_READ_OFTEN);
+     *finalUsage = usage;
+ 
+     memset(&mLastNativeWindowCrop, 0, sizeof(mLastNativeWindowCrop));
+@@ -1109,8 +1110,8 @@ status_t ACodec::setupNativeWindowSizeFormatAndUsage(
+     ALOGV("gralloc usage: %#x(OMX) => %#x(ACodec)", omxUsage, usage);
+     return setNativeWindowSizeFormatAndUsage(
+             nativeWindow,
+-            def.format.video.nFrameWidth,
+-            def.format.video.nFrameHeight,
++            def.format.video.nStride,
++            def.format.video.nSliceHeight,
+             def.format.video.eColorFormat,
+             mRotationDegrees,
+             usage,
+diff --git a/services/camera/libcameraservice/api1/CameraClient.cpp b/services/camera/libcameraservice/api1/CameraClient.cpp
+index a5aa474..c09214d 100644
+--- a/services/camera/libcameraservice/api1/CameraClient.cpp
++++ b/services/camera/libcameraservice/api1/CameraClient.cpp
+@@ -31,6 +31,11 @@ namespace android {
+ #define LOG1(...) ALOGD_IF(gLogLevel >= 1, __VA_ARGS__);
+ #define LOG2(...) ALOGD_IF(gLogLevel >= 2, __VA_ARGS__);
+ 
++enum {
++    MTK_CAMERA_MSG_EXT_NOTIFY = 0x40000000,
++    MTK_CAMERA_MSG_EXT_DATA = 0x80000000
++};
++
+ static int getCallingPid() {
+     return IPCThreadState::self()->getCallingPid();
+ }
+@@ -98,7 +103,8 @@ status_t CameraClient::initialize(sp<CameraProviderManager> manager,
+ 
+     // Enable zoom, error, focus, and metadata messages by default
+     enableMsgType(CAMERA_MSG_ERROR | CAMERA_MSG_ZOOM | CAMERA_MSG_FOCUS |
+-                  CAMERA_MSG_PREVIEW_METADATA | CAMERA_MSG_FOCUS_MOVE);
++                  CAMERA_MSG_PREVIEW_METADATA | CAMERA_MSG_FOCUS_MOVE |
++                  MTK_CAMERA_MSG_EXT_NOTIFY | MTK_CAMERA_MSG_EXT_DATA);
+ 
+     LOG1("CameraClient::initialize X (pid %d, id %d)", callingPid, mCameraId);
+     return OK;
+@@ -817,29 +823,8 @@ void CameraClient::disableMsgType(int32_t msgType) {
+ 
+ #define CHECK_MESSAGE_INTERVAL 10 // 10ms
+ bool CameraClient::lockIfMessageWanted(int32_t msgType) {
+-    int sleepCount = 0;
+-    while (mMsgEnabled & msgType) {
+-        if (mLock.tryLock() == NO_ERROR) {
+-            if (sleepCount > 0) {
+-                LOG1("lockIfMessageWanted(%d): waited for %d ms",
+-                    msgType, sleepCount * CHECK_MESSAGE_INTERVAL);
+-            }
+-
+-            // If messages are no longer enabled after acquiring lock, release and drop message
+-            if ((mMsgEnabled & msgType) == 0) {
+-                mLock.unlock();
+-                break;
+-            }
+-
+-            return true;
+-        }
+-        if (sleepCount++ == 0) {
+-            LOG1("lockIfMessageWanted(%d): enter sleep", msgType);
+-        }
+-        usleep(CHECK_MESSAGE_INTERVAL * 1000);
+-    }
+-    ALOGW("lockIfMessageWanted(%d): dropped unwanted message", msgType);
+-    return false;
++    (void)msgType;
++    return true;
+ }
+ 
+ sp<CameraClient> CameraClient::getClientFromCookie(void* user) {
+@@ -881,6 +866,19 @@ void CameraClient::notifyCallback(int32_t msgType, int32_t ext1,
+             // ext1 is the dimension of the yuv picture.
+             client->handleShutter();
+             break;
++        case MTK_CAMERA_MSG_EXT_NOTIFY:
++            switch (ext1) {
++                case 0x10: // MTK_CAMERA_MSG_EXT_NOTIFY_CAPTURE_DONE
++                    client->disableMsgType(CAMERA_MSG_SHUTTER | CAMERA_MSG_COMPRESSED_IMAGE);
++                    break;
++                case 0x11: // MTK_CAMERA_MSG_EXT_NOTIFY_SHUTTER
++                    client->handleMtkShutter(ext2);
++                    break;
++                default:
++                    // bypass unhandled message for the time being
++                    ALOGE("ext1 unhandled");
++                    break;
++            }
+         default:
+             client->handleGenericNotify(msgType, ext1, ext2);
+             break;
+@@ -901,6 +899,42 @@ void CameraClient::dataCallback(int32_t msgType,
+         return;
+     }
+ 
++    if ((msgType & MTK_CAMERA_MSG_EXT_DATA) != 0) {
++        struct DataHeader {
++            uint32_t extMsgType;
++        } dataHeader;
++        ssize_t offset;
++        size_t size;
++
++        if (dataPtr != 0) {
++            sp<IMemoryHeap> heap = dataPtr->getMemory(&offset, &size);
++
++            if (heap->base())
++                ::memcpy(&dataHeader, ((uint8_t*)heap->base()) + offset, sizeof(DataHeader));
++
++            switch (dataHeader.extMsgType) {
++            case 0x2: // MTK_CAMERA_MSG_EXT_DATA_AF
++                client->handleMtkGenericData(CAMERA_MSG_FOCUS, NULL, NULL);
++                break;
++            case 0x10: { // MTK_CAMERA_MSG_EXT_DATA_COMPRESSED_IMAGE
++                sp<MemoryBase> image = new MemoryBase(heap,
++                    (offset + sizeof(DataHeader) + sizeof(uint_t)),
++                    (size - sizeof(DataHeader) - sizeof(uint_t)));
++                if (image == 0)
++                    ALOGE("fail to new MemoryBase");
++                else
++                    client->handleMtkGenericData(CAMERA_MSG_COMPRESSED_IMAGE, image, NULL);
++                }
++                break;
++            default:
++                // bypass unhandled message for the time being
++                ALOGE("extMsgType not handled**");
++                break;
++            }
++        }
++        return;
++    }
++
+     switch (msgType & ~CAMERA_MSG_PREVIEW_METADATA) {
+         case CAMERA_MSG_PREVIEW_FRAME:
+             client->handlePreviewData(msgType, dataPtr, metadata);
+@@ -981,6 +1015,21 @@ void CameraClient::handleCallbackTimestampBatch(
+     }
+ }
+ 
++// Mtk callbacks
++void CameraClient::handleMtkShutter(int32_t ext2) {
++    if (mPlayShutterSound && (ext2 == 1))
++        sCameraService->playSound(CameraService::SOUND_SHUTTER);
++
++    sp<hardware::ICameraClient> c = mRemoteCallback;
++    if (c != 0) c->notifyCallback(CAMERA_MSG_SHUTTER, 0, 0);
++}
++
++void CameraClient::handleMtkGenericData(int32_t msgType,
++    const sp<IMemory>& dataPtr, camera_frame_metadata_t *metadata) {
++    sp<hardware::ICameraClient> c = mRemoteCallback;
++    if (c != 0) c->dataCallback(msgType, dataPtr, metadata);
++}
++
+ // snapshot taken callback
+ void CameraClient::handleShutter(void) {
+     if (mPlayShutterSound) {
+diff --git a/services/camera/libcameraservice/api1/CameraClient.h b/services/camera/libcameraservice/api1/CameraClient.h
+index c4ed876..214a815 100644
+--- a/services/camera/libcameraservice/api1/CameraClient.h
++++ b/services/camera/libcameraservice/api1/CameraClient.h
+@@ -111,6 +111,9 @@ private:
+     static void             handleCallbackTimestampBatch(
+                                     int32_t msgType, const std::vector<HandleTimestampMessage>&, void* user);
+     // handlers for messages
++    void                    handleMtkShutter(int32_t ext2);
++    void                    handleMtkGenericData(int32_t msgType, const sp<IMemory>& dataPtr,
++            camera_frame_metadata_t *metadata);
+     void                    handleShutter(void);
+     void                    handlePreviewData(int32_t msgType, const sp<IMemory>& mem,
+             camera_frame_metadata_t *metadata);
+-- 
+2.25.1
+
