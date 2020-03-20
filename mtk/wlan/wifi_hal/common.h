@@ -85,6 +85,7 @@ typedef enum {
     /* skip 0x0009 for diver set_roaming_policy */
     WIFI_SUBCMD_CONFIG_ROAMING = 0x000a,              /* 0x000a */
     WIFI_SUBCMD_ENABLE_ROAMING,                       /* 0x000b */
+    WIFI_SUBCMD_SELECT_TX_POWER_SCENARIO,             /* 0x000c */
 } WIFI_SUB_COMMAND;
 
 typedef enum {
@@ -135,6 +136,8 @@ typedef enum {
     WIFI_ATTRIBUTE_ROAMING_WHITELIST_NUM,
     WIFI_ATTRIBUTE_ROAMING_WHITELIST_SSID,
     WIFI_ATTRIBUTE_ROAMING_STATE,
+
+    WIFI_ATTRIBUTE_TX_POWER_SCENARIO,
 } WIFI_ATTRIBUTE;
 
 typedef enum {
