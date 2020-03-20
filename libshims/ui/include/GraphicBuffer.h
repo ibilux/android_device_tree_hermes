@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 The LineageOS Project
+ * Copyright (C) 2007 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-#include <pthread.h>
+#ifndef ANDROID_GRAPHIC_BUFFER_H
+#define ANDROID_GRAPHIC_BUFFER_H
 
-extern "C" {
-pid_t __pthread_gettid(pthread_t t) {
-    return pthread_gettid_np(t);
-  }
-}
+#include <string>
+#include <ui/PixelFormat.h>
 
+namespace android {
+class GraphicBuffer {
+public:
+    GraphicBuffer(uint32_t inWidth, uint32_t inHeight, PixelFormat inFormat,
+            uint32_t inUsage, std::string requestorName = "<Unknown>");
+    GraphicBuffer(uint32_t inWidth, uint32_t inHeight, PixelFormat inFormat,
+            uint32_t inUsage);
+};
+};
+#endif // ANDROID_GRAPHIC_BUFFER_H

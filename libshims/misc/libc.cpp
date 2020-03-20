@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-#include <string>
-#define ANDROID_ATOMIC_INLINE
+#include <pthread.h>
+
 extern "C" {
-#include <cutils/atomic.h>
+    pid_t __pthread_gettid(pthread_t t) {
+        return pthread_gettid_np(t);
+    }
 }
