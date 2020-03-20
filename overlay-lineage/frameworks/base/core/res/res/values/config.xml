@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-**
-** Copyright 2016, The Android Open Source Project
+/*
+** Copyright 2013, The Android Open Source Project
+** Copyright 2018, The LineageOS Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -17,10 +18,7 @@
 */
 -->
 
-<resources>
-    <!-- When true enable gesture setting. -->
-    <bool name="config_gesture_settings_enabled">true</bool>
- <!-- Using this on MSIM devices leads to weird states that break telephony's
- internal state machine. All MSIM devices should probably set this to "true"-->
- <bool name="config_disablePreferredNetworkSwitch" translatable="false">true</bool>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Whether to allow process with media UID to access CameraServiceProxy -->
+    <bool name="config_allowMediaUidForCameraServiceProxy">true</bool>
 </resources>

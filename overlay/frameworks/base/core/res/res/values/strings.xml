@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 /*
-** Copyright 2014, The Android Open Source Project
+** Copyright 2017, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -17,12 +17,9 @@
 */
 -->
 
+<!-- These resources are around just to allow their values to be customized
+     for different hardware and product builds.  Do not translate. -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-
-    <!-- Threshold in micro watts below which a charger is rated as "slow"; 1.5A @ 5V -->
-    <integer name="config_chargingSlowlyThreshold">7500000</integer>
-
-    <!-- Threshold in micro watts above which a charger is rated as "fast"; 2.0A @ 5V  -->
-    <integer name="config_chargingFastThreshold">10000000</integer>
-    
+    <!-- Do not translate. Default access point SSID used for tethering -->
+    <string name="wifi_tether_configure_ssid_default" translatable="false">Redmi_Note_2</string>
 </resources>
