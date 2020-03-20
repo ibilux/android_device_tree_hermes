@@ -94,11 +94,9 @@ static BOOL GORMcmd_HCC_Set_Internal_PTA_1(HC_BT_HDR *);
 static BOOL GORMcmd_HCC_Set_Internal_PTA_2(HC_BT_HDR *);
 static BOOL GORMcmd_HCC_Set_RF_Reg_100(HC_BT_HDR *);
 static BOOL GORMcmd_HCC_RESET(HC_BT_HDR *);
-static BOOL GORMcmd_HCC_Set_FW_SysLog(HC_BT_HDR *);
 static BOOL GORMcmd_HCC_Set_SSP_Debug_Mode(HC_BT_HDR *);
 
 static VOID GORMevt_HCE_Common_Complete(VOID *);
-static VOID GetRandomValue(UCHAR *);
 static BOOL WriteBDAddrToNvram(UCHAR *);
 
 //===================================================================
@@ -125,7 +123,6 @@ HCI_SEQ_T bt_init_preload_script_6628[] =
     {  GORMcmd_HCC_Set_Internal_PTA_1      }, /*0xFCFB*/
     {  GORMcmd_HCC_Set_Internal_PTA_2      }, /*0xFCFB*/
     {  GORMcmd_HCC_Set_RF_Reg_100          }, /*0xFCB0*/
-    {  GORMcmd_HCC_Set_FW_SysLog           }, /*0xFCBE*/
     {  0  },
 };
 
@@ -138,7 +135,6 @@ HCI_SEQ_T bt_init_preload_script_6630[] =
     {  GORMcmd_HCC_Set_TX_Power_Offset     }, /*0xFC93*/
     {  GORMcmd_HCC_Set_Sleep_Timeout       }, /*0xFC7A*/
     {  GORMcmd_HCC_Coex_Performance_Adjust }, /*0xFC22*/
-    {  GORMcmd_HCC_Set_FW_SysLog           }, /*0xFCBE*/
     {  GORMcmd_HCC_Set_SSP_Debug_Mode      }, /*0x1804*/
     {  0  },
 };
@@ -152,7 +148,6 @@ HCI_SEQ_T bt_init_preload_script_6632[] =
     {  GORMcmd_HCC_Set_TX_Power_Offset     }, /*0xFC93*/
     {  GORMcmd_HCC_Set_Sleep_Timeout       }, /*0xFC7A*/
     {  GORMcmd_HCC_RESET                   }, /*0x0C03*/
-    {  GORMcmd_HCC_Set_FW_SysLog           }, /*0xFCBE*/
     {  GORMcmd_HCC_Set_SSP_Debug_Mode      }, /*0x1804*/
     {  0  },
 };
@@ -164,7 +159,17 @@ HCI_SEQ_T bt_init_preload_script_consys[] =
     {  GORMcmd_HCC_Set_TX_Power_Offset     }, /*0xFC93*/
     {  GORMcmd_HCC_Set_Sleep_Timeout       }, /*0xFC7A*/
     {  GORMcmd_HCC_RESET                   }, /*0x0C03*/
-    {  GORMcmd_HCC_Set_FW_SysLog           }, /*0xFCBE*/
+    {  GORMcmd_HCC_Set_SSP_Debug_Mode      }, /*0x1804*/
+    {  0  },
+};
+
+HCI_SEQ_T bt_init_preload_script_connac[] =
+{
+    {  GORMcmd_HCC_Set_Local_BD_Addr       }, /*0xFC1A*/
+    {  GORMcmd_HCC_Set_Radio               }, /*0xFC79*/
+    {  GORMcmd_HCC_Set_TX_Power_Offset     }, /*0xFC93*/
+    {  GORMcmd_HCC_Set_Sleep_Timeout       }, /*0xFC7A*/
+    {  GORMcmd_HCC_RESET                   }, /*0x0C03*/
     {  GORMcmd_HCC_Set_SSP_Debug_Mode      }, /*0x1804*/
     {  0  },
 };
@@ -262,10 +267,6 @@ static BOOL GORMcmd_HCC_Set_Local_BD_Addr(HC_BT_HDR *p_cmd)
         else {
             LOG_WAN("NVRAM BD address default value\n");
         }
-
-        #ifdef BD_ADDR_AUTOGEN
-        GetRandomValue(btinit->bt_nvram.fields.addr);
-        #endif
 
         /* Save BD address to NVRAM */
         WriteBDAddrToNvram(btinit->bt_nvram.fields.addr);
@@ -501,18 +502,7 @@ static BOOL GORMcmd_HCC_Set_Radio(HC_BT_HDR *p_cmd)
     p = (uint8_t *)(p_cmd + 1);
     UINT16_TO_STREAM(p, wOpCode);
 
-    if (btinit->chip_id != 0x6632) {
-        p_cmd->len = 9;
-        *p++ = 6;
-
-        /* HCI cmd params */
-        *p++ = btinit->bt_nvram.fields.Radio[0];
-        *p++ = btinit->bt_nvram.fields.Radio[1];
-        *p++ = btinit->bt_nvram.fields.Radio[2];
-        *p++ = btinit->bt_nvram.fields.Radio[3];
-        *p++ = btinit->bt_nvram.fields.Radio[4];
-        *p++ = btinit->bt_nvram.fields.Radio[5];
-    } else {
+    if (btinit->chip_id == 0x6632 || btinit->chip_type == BT_CONNAC) {
         p_cmd->len = 11;
         *p++ = 8;
 
@@ -523,8 +513,19 @@ static BOOL GORMcmd_HCC_Set_Radio(HC_BT_HDR *p_cmd)
         *p++ = btinit->bt_nvram.fields.Radio[3];
         *p++ = btinit->bt_nvram.fields.Radio[4];
         *p++ = btinit->bt_nvram.fields.Radio[5];
-        *p++ = btinit->bt_nvram.fields.Radio_ext[0];
-        *p++ = btinit->bt_nvram.fields.Radio_ext[1];
+        *p++ = btinit->bt_nvram.fields.RadioExt[0];
+        *p++ = btinit->bt_nvram.fields.RadioExt[1];
+    } else {
+        p_cmd->len = 9;
+        *p++ = 6;
+
+        /* HCI cmd params */
+        *p++ = btinit->bt_nvram.fields.Radio[0];
+        *p++ = btinit->bt_nvram.fields.Radio[1];
+        *p++ = btinit->bt_nvram.fields.Radio[2];
+        *p++ = btinit->bt_nvram.fields.Radio[3];
+        *p++ = btinit->bt_nvram.fields.Radio[4];
+        *p++ = btinit->bt_nvram.fields.Radio[5];
     }
 
     LOG_DBG("GORMcmd_HCC_Set_Radio\n");
@@ -548,15 +549,7 @@ static BOOL GORMcmd_HCC_Set_TX_Power_Offset(HC_BT_HDR *p_cmd)
     p = (uint8_t *)(p_cmd + 1);
     UINT16_TO_STREAM(p, wOpCode);
 
-    if (btinit->chip_id != 0x6632) {
-        p_cmd->len = 6;
-        *p++ = 3;
-
-        /* HCI cmd params */
-        *p++ = btinit->bt_nvram.fields.TxPWOffset[0];
-        *p++ = btinit->bt_nvram.fields.TxPWOffset[1];
-        *p++ = btinit->bt_nvram.fields.TxPWOffset[2];
-    } else {
+    if (btinit->chip_id == 0x6632) {
         p_cmd->len = 9;
         *p++ = 6;
 
@@ -567,9 +560,17 @@ static BOOL GORMcmd_HCC_Set_TX_Power_Offset(HC_BT_HDR *p_cmd)
         *p++ = btinit->bt_nvram.fields.TxPWOffset_ext[0];
         *p++ = btinit->bt_nvram.fields.TxPWOffset_ext[1];
         *p++ = btinit->bt_nvram.fields.TxPWOffset_ext[2];
+    } else{
+        p_cmd->len = 6;
+        *p++ = 3;
+
+        /* HCI cmd params */
+        *p++ = btinit->bt_nvram.fields.TxPWOffset[0];
+        *p++ = btinit->bt_nvram.fields.TxPWOffset[1];
+        *p++ = btinit->bt_nvram.fields.TxPWOffset[2];
     }
 
-    LOG_DBG("GORMcmd_HCC_Set_TX_Power_Offset\n");
+    LOG_DBG("GORMcmd_HCC_Set_TX_Power_Offset, cmd len %d\n", p_cmd->len);
 
     if (bt_vnd_cbacks) {
         ret = bt_vnd_cbacks->xmit_cb(wOpCode, p_cmd, GORMevt_HCE_Common_Complete);
@@ -929,30 +930,6 @@ static BOOL GORMcmd_HCC_RESET(HC_BT_HDR *p_cmd)
     return ret;
 }
 
-static BOOL GORMcmd_HCC_Set_FW_SysLog(HC_BT_HDR *p_cmd)
-{
-    uint8_t *p, ret;
-    wOpCode = 0xFCBE;
-
-    p_cmd->len = 4;
-    p = (uint8_t *)(p_cmd + 1);
-    UINT16_TO_STREAM(p, wOpCode);
-    *p++ = 1;
-
-    /* HCI cmd params */
-    *p++ = 0x05;
-    LOG_DBG("GORMcmd_HCC_Set_FW_SysLog enable\n");
-
-    if (bt_vnd_cbacks) {
-        ret = bt_vnd_cbacks->xmit_cb(wOpCode, p_cmd, GORMevt_HCE_Common_Complete);
-    } else {
-        LOG_ERR("No HCI packet transmit callback\n");
-        ret = FALSE;
-    }
-
-    return ret;
-}
-
 /*
  * Simple Pairing Debug Mode:
  *
@@ -1047,31 +1024,29 @@ VOID notify_thread_exit(VOID)
 VOID *GORM_FW_Init_Thread(UNUSED_ATTR VOID *ptr)
 {
     INT32 i = 0;
-    BOOL fgConsys = FALSE;
     HC_BT_HDR  *p_buf = NULL;
     bt_vendor_op_result_t ret = BT_VND_OP_RESULT_FAIL;
-    char bt_syslog_val[PROPERTY_VALUE_MAX];
     char bt_ssp_debug_val[PROPERTY_VALUE_MAX];
+    int rc = 0;
+    struct timespec ts;
 
     LOG_DBG("FW init thread starts\n");
-
-    pthread_mutexattr_init(&btinit_ctrl.attr);
-    pthread_mutexattr_settype(&btinit_ctrl.attr, PTHREAD_MUTEX_ERRORCHECK);
-    pthread_mutex_init(&btinit_ctrl.mutex, &btinit_ctrl.attr);
-    pthread_cond_init(&btinit_ctrl.cond, NULL);
 
     /* preload init script */
     switch (btinit->chip_id) {
       case 0x6628:
         btinit->cur_script = bt_init_preload_script_6628;
+        btinit->chip_type = BT_COMBO;
         memcpy(ucDefaultAddr, stBtDefault_6628.addr, 6);
         break;
       case 0x6630:
         btinit->cur_script = bt_init_preload_script_6630;
+        btinit->chip_type = BT_COMBO;
         memcpy(ucDefaultAddr, stBtDefault_6630.addr, 6);
         break;
       case 0x6632:
         btinit->cur_script = bt_init_preload_script_6632;
+        btinit->chip_type = BT_COMBO;
         memcpy(ucDefaultAddr, stBtDefault_6632.addr, 6);
         break;
       case 0x8163:
@@ -1085,6 +1060,7 @@ VOID *GORM_FW_Init_Thread(UNUSED_ATTR VOID *ptr)
       case 0x0337:
       case 0x6580:
       case 0x6570:
+      case 0x6735:
       case 0x6755:
       case 0x6797:
       case 0x6757:
@@ -1094,11 +1070,20 @@ VOID *GORM_FW_Init_Thread(UNUSED_ATTR VOID *ptr)
       case 0x6739:
       case 0x6771:
       case 0x6775:
-        fgConsys = TRUE;
         LOG_WAN("A-D die chip id: %04x\n", btinit->chip_id);
         btinit->cur_script = bt_init_preload_script_consys;
+        btinit->chip_type = BT_CONSYS;
         memcpy(ucDefaultAddr, stBtDefault_consys.addr, 6);
         break;
+      case 0x6765:
+      case 0x3967:
+      case 0x6761:
+        LOG_WAN("CONNAC chip id: %04x\n", btinit->chip_id);
+        btinit->cur_script = bt_init_preload_script_connac;
+        btinit->chip_type = BT_CONNAC;
+        memcpy(ucDefaultAddr, stBtDefault_connac.addr, 6);
+        break;
+
       default:
         LOG_ERR("Unknown combo chip id: %04x\n", btinit->chip_id);
         break;
@@ -1110,7 +1095,13 @@ VOID *GORM_FW_Init_Thread(UNUSED_ATTR VOID *ptr)
         goto exit;
     }
 
-    if (!fgConsys) {
+    /* BT chip_type was not initialized, simply skip */
+    if (btinit->chip_type == BT_UNKNOWN) {
+        LOG_ERR("chip_type was not initialized!\n");
+        goto exit;
+    }
+
+    if (btinit->chip_type == BT_COMBO) {
         if ((0 == memcmp(btinit->bt_nvram.fields.addr, ucDefaultAddr, 6)) ||
             (0 == memcmp(btinit->bt_nvram.fields.addr, ucZeroAddr, 6))) {
             /* NVRAM BD address default value */
@@ -1126,14 +1117,8 @@ VOID *GORM_FW_Init_Thread(UNUSED_ATTR VOID *ptr)
 
     while (btinit->cur_script[i].command_func && cmd_status != CMD_TERMINATE) {
         /* Some debug commands are executed by request */
-        if (btinit->cur_script[i].command_func == GORMcmd_HCC_Set_FW_SysLog) {
-            if (!property_get("persist.bt.syslog.enable", bt_syslog_val, NULL) ||
-                0 != strcmp(bt_syslog_val, "1")) {
-                i++;
-                continue;
-            }
-        } else if (btinit->cur_script[i].command_func == GORMcmd_HCC_Set_SSP_Debug_Mode) {
-            if (!property_get("persist.bt.sspdebug.enable", bt_ssp_debug_val, NULL) ||
+        if (btinit->cur_script[i].command_func == GORMcmd_HCC_Set_SSP_Debug_Mode) {
+            if (!property_get("persist.vendor.bt.sspdebug.enable", bt_ssp_debug_val, NULL) ||
                 0 != strcmp(bt_ssp_debug_val, "1")) {
                 i++;
                 continue;
@@ -1177,10 +1162,19 @@ VOID *GORM_FW_Init_Thread(UNUSED_ATTR VOID *ptr)
             break;
         }
 
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        ts.tv_sec += WAIT_TIME_SECONDS;
+
         /* Wait for event returned */
         pthread_mutex_lock(&btinit_ctrl.mutex);
         while (cmd_status == CMD_PENDING) {
-            pthread_cond_wait(&btinit_ctrl.cond, &btinit_ctrl.mutex);
+            rc = pthread_cond_timedwait(&btinit_ctrl.cond, &btinit_ctrl.mutex, &ts);
+            if (rc == ETIMEDOUT) {
+                LOG_DBG("The event of command %d timedout, trigger assert\n", i);
+                mtk_set_fw_assert(((UINT32)wOpCode << 16) | 31);
+                cmd_status = CMD_FAIL;
+                break;
+            }
         }
 
         if (cmd_status == CMD_SUCCESS) {
@@ -1206,54 +1200,14 @@ VOID *GORM_FW_Init_Thread(UNUSED_ATTR VOID *ptr)
         ret = BT_VND_OP_RESULT_SUCCESS;
 
 exit:
-    pthread_mutexattr_destroy(&btinit_ctrl.attr);
-    pthread_mutex_destroy(&btinit_ctrl.mutex);
-    pthread_cond_destroy(&btinit_ctrl.cond);
-
+    pthread_mutex_lock(&btinit_ctrl.mutex);
     if (bt_vnd_cbacks) {
         bt_vnd_cbacks->fwcfg_cb(ret);
     }
+    pthread_mutex_unlock(&btinit_ctrl.mutex);
 
     btinit_ctrl.worker_thread_running = FALSE;
     return NULL;
-}
-
-static VOID GetRandomValue(UCHAR string[6])
-{
-    INT32 iRandom = 0;
-    INT32 fd = 0;
-    UINT32 seed;
-
-    LOG_WAN("Enable random generation\n");
-
-    /* Initialize random seed */
-    srand(time(NULL));
-    iRandom = rand();
-    LOG_WAN("iRandom = [%d]", iRandom);
-    string[0] = (((iRandom>>24|iRandom>>16) & (0xFE)) | (0x02)); /* Must use private bit(1) and no BCMC bit(0) */
-
-    /* second seed */
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    srand(tv.tv_usec);
-    iRandom = rand();
-    LOG_WAN("iRandom = [%d]", iRandom);
-    string[1] = ((iRandom>>8) & 0xFF);
-
-    /* third seed */
-    fd = open("/dev/urandom", O_RDONLY);
-    if (fd >= 0) {
-        if (read(fd, &seed, sizeof(UINT32)) > 0) {
-            srand(seed);
-            iRandom = rand();
-        }
-        close(fd);
-    }
-
-    LOG_WAN("iRandom = [%d]", iRandom);
-    string[5] = (iRandom & 0xFF);
-
-    return;
 }
 
 static BOOL WriteBDAddrToNvram(UCHAR *pucBDAddr)
