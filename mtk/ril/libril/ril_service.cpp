@@ -1555,7 +1555,6 @@ Return<void> RadioImpl::writeSmsToSim(int32_t serial, const SmsWriteArgs& smsWri
     RIL_SMS_WriteArgs args;
     args.status = (int) smsWriteArgs.status;
 
-    int len;
     if (!copyHidlStringToRil(&args.pdu, smsWriteArgs.pdu, pRI)) {
 	return Void();
     }
@@ -1569,7 +1568,7 @@ Return<void> RadioImpl::writeSmsToSim(int32_t serial, const SmsWriteArgs& smsWri
 			android::FMT_WrSMSSIM, pRI);
 
     //memsetAndFreeStrings(2, args.smsc, args.pdu);
-    
+
     return Void();
 }
 
@@ -2474,7 +2473,6 @@ Return<void> RadioImpl::requestIccSimAuthentication(int32_t serial, int32_t auth
 
     pf.authContext = authContext;
 
-    int len;
     if (!copyHidlStringToRil(&pf.authData, authData, pRI)) {
 	return Void();
     }
@@ -3915,14 +3913,14 @@ int radio::getOperatorResponse(int slotId,
 //	    numeric = convertCharPtrToHidlString(resp[2]);
 	    char *p = (char*)getname(atoi(resp[0]));
 	    if (p == NULL) {
-		longName == numeric;
-		shortName = numeric;
+			longName = numeric;
+			shortName = numeric;
 	    } else {
-		longName = convertCharPtrToHidlString(p);
-	        if (strlen(p) > 24)
-		    shortName == numeric;
-		else
-		    shortName == longName;
+			longName = convertCharPtrToHidlString(p);
+		    if (strlen(p) > 24)
+			    shortName = numeric;
+			else
+			    shortName = longName;
 	    }
 #else
 	    longName = convertCharPtrToHidlString(resp[0]);
@@ -4467,7 +4465,6 @@ int radio::getNetworkSelectionModeResponse(int slotId,
 	RadioResponseInfo responseInfo = {};
 	populateResponseInfo(responseInfo, serial, responseType, e);
 	bool manual = false;
-	int serviceClass;
 	if (response == NULL || responseLen % sizeof(int) != 0) {
 	    RLOGE("getNetworkSelectionModeResponse Invalid response: NULL");
 	    if (e == RIL_E_SUCCESS) responseInfo.error = RadioError::INVALID_RESPONSE;
@@ -4719,7 +4716,6 @@ int radio::getMuteResponse(int slotId,
 	RadioResponseInfo responseInfo = {};
 	populateResponseInfo(responseInfo, serial, responseType, e);
 	bool enable = false;
-	int serviceClass;
 	if (response == NULL || responseLen % sizeof(int) != 0) {
 	    RLOGE("getMuteResponse Invalid response: NULL");
 	    if (e == RIL_E_SUCCESS) responseInfo.error = RadioError::INVALID_RESPONSE;
@@ -6844,9 +6840,12 @@ int radio::newSmsInd(int slotId, int indicationType,
 	    RLOGE("newSmsInd: invalid response");
 	    return 0;
 	}
+
+	int pdu_len;
+
 #ifdef MTK_HARDWARE
 	char *st = (char*)response;
-	int pdu_len = strlen(st);
+	pdu_len = strlen(st);
 	uint8_t *bytes = convertHexStringToBytes(response, pdu_len);
 #else
 	uint8_t *bytes = convertHexStringToBytes(response, responseLen);

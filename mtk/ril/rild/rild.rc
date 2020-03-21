@@ -1,0 +1,6 @@
+service ril-daemon-mtk /vendor/bin/hw/rild
+    class core
+    user root
+    group radio cache inet misc audio log readproc wakelock system
+    disabled
+    oneshot
