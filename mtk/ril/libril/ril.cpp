@@ -1306,13 +1306,15 @@ RIL_onRequestComplete(RIL_Token t, RIL_Errno s_e, void *s_response, size_t s_res
     }
 
 // *** handle unsupported but necessary requests
-    if (pRI->pCI->requestNumber == RIL_REQUEST_DEVICE_IDENTITY) {
-	RLOGD("Overriding RIL_REQUEST_DEVICE_IDENTITY");
-	    int i = (int)socket_id;
-	    RLOGD("SOCKET_ID_IDENTITY= %d", i);
-	    response = &(Device_ID[i]);
-	    responselen = 4 * sizeof(char*);
-	    e = RIL_E_SUCCESS;
+    if(e == RIL_E_REQUEST_NOT_SUPPORTED) {
+	    if (pRI->pCI->requestNumber == RIL_REQUEST_DEVICE_IDENTITY) {
+		RLOGD("Overriding RIL_REQUEST_DEVICE_IDENTITY");
+		    int i = (int)socket_id;
+		    RLOGD("SOCKET_ID_IDENTITY= %d", i);
+		    response = &(Device_ID[i]);
+		    responselen = 4 * sizeof(char*);
+		    e = RIL_E_SUCCESS;
+		}
     }
 
     appendPrintBuf("[%04d]< %s",
