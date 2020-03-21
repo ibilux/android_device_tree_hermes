@@ -8,7 +8,8 @@
 # 2017/7/29: Initial Oero port for MT6752	- by:daniel_hk
 #
 
-ifeq ($(BOARD_PROVIDES_RILD),true)
+ifdef ENABLE_VENDOR_RIL_SERVICE
+
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
@@ -34,32 +35,37 @@ include $(BUILD_PREBUILT)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:= \
-	rild.c
+    rild.c
 
 LOCAL_SHARED_LIBRARIES := \
-	libcutils \
-	libdl \
-	liblog \
-	libril
+    libcutils \
+    libdl \
+    liblog \
+    libril
 
 LOCAL_STATIC_LIBRARIES := \
-	rild-prop-md1
+    rild-prop-md1
+
+LOCAL_CFLAGS += -Wno-unused-parameter
 
 ifeq ($(SIM_COUNT), 2)
     LOCAL_CFLAGS += -DANDROID_MULTI_SIM
     LOCAL_CFLAGS += -DANDROID_SIM_COUNT_2
 endif
 
-# temporary hack for broken vendor rils
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../include
+
+# Temporary hack for broken vendor RILs
 LOCAL_WHOLE_STATIC_LIBRARIES := \
-	librilutils_static
+    librilutils_static
 
 LOCAL_CFLAGS := -DRIL_SHLIB
 
 LOCAL_MODULE_RELATIVE_PATH := hw
 LOCAL_PROPRIETARY_MODULE := true
-LOCAL_MODULE:= rild
+LOCAL_MODULE := rild
+#LOCAL_INIT_RC := rild.rc
 
 include $(BUILD_EXECUTABLE)
-endif
 
+endif # ENABLE_VENDOR_RIL_SERVICE

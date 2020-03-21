@@ -35,7 +35,7 @@
 #include <sys/time.h>
 #endif /* !FEATURE_UNIT_TEST */
 
-#include <utils/Log.h>
+#include <log/log.h>
 
 #ifdef __cplusplus
 extern "C" {
