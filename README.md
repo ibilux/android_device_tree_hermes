@@ -5,13 +5,35 @@ This branch is device tree for building LineageOS 16.0 Rom for Xiaomi Redmi Note
 ---
 
 ### Working:
-  - ?
+  - Adjustable brightness
+  - Audio
+  - Auto brightness
+  - RIL (calls & mobile data & ussd)
+  - Video
+  - Gallery
+  - Mic
+  - Wi-Fi
+  - FM-Radio
+  - Bluetooth
+  - Internet
+  - SD Card
+  - Online/Offline charging
+  - IR Blaster
+  - Vibration
+  - Rotation sensor
+  - MTP and Mass Storage modes
+  - USSD
+  - Lights
+  - Camera (Photos & Video recording)
 
 ### NOT working:
-  - ?
+  - GPS
+  - Hotspot
+  - USB tethering
 
 ### Bugs:
-  - ?
+  - Camera video recording dark
+  - Auto brightness slow respons
 
 ### Credits:
   - Dinolek
