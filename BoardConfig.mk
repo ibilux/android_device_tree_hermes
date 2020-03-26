@@ -40,6 +40,8 @@ BOARD_MKBOOTIMG_ARGS := \
 TARGET_KERNEL_SOURCE := kernel/xiaomi/hermes
 TARGET_KERNEL_CONFIG := hermes_defconfig
 BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
+TARGET_KERNEL_ARCH := arm64
+TARGET_KERNEL_HEADER_ARCH := arm64
 
 # Partitons
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 12737560576
@@ -60,7 +62,15 @@ BOARD_USES_MTK_HARDWARE := true
 TARGET_ENABLE_MEDIADRM_64 := true
 
 # Display
+USE_OPENGL_RENDERER := true
+BOARD_EGL_CFG := vendor/xiaomi/hermes/proprietary/vendor/lib/egl/egl.cfg
+BOARD_EGL_NEEDS_HANDLE_VALUE := true
+VSYNC_EVENT_PHASE_OFFSET_NS := -8000000
+SF_VSYNC_EVENT_PHASE_OFFSET_NS := -8000000
+PRESENT_TIME_OFFSET_FROM_VSYNC_NS := 0
 NUM_FRAMEBUFFER_SURFACE_BUFFERS := 5
+TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS := true
+TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
 
 # Audio
 USE_XML_AUDIO_POLICY_CONF := 1
@@ -79,6 +89,19 @@ BOARD_PROVIDES_LIBRIL := true
 
 # Camera
 TARGET_HAS_LEGACY_CAMERA_HAL1 := true
+
+# Low-ram
+MALLOC_SVELTE := true
+
+# Shim libs
+TARGET_LD_SHIM_LIBS := \
+        /vendor/xbin/mnld|mtklog.so \
+        /system/lib/libc.so|mtkc.so \
+        /system/lib64/libc.so|mtkc.so \
+        /system/lib/liblog.so|mtklog.so \
+        /system/lib64/liblog.so|mtklog.so \
+        /system/lib/libui.so|mtkui.so \
+        /system/lib64/libui.so|mtkui.so
 
 # Wi-Fi
 BOARD_WLAN_DEVICE := MediaTek
@@ -100,6 +123,7 @@ TARGET_RECOVERY_FSTAB := vendor/xiaomi/hermes/proprietary/vendor/etc/fstab.$(TAR
 
 # Sepolicy
 #BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy
+#SELINUX_IGNORE_NEVERALLOWS := true
 
 # Disable dex pre-opt
 ifeq ($(HOST_OS),linux)
