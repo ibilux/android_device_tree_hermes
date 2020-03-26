@@ -10,7 +10,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.call_recording.src=4
 # ADB
 ifneq ($(TARGET_BUILD_VARIANT),user)
-PRODUCT_PROPERTY_OVERRIDES += persist.sys.usb.config=adb
+PRODUCT_PROPERTY_OVERRIDES += persist.sys.usb.config=adb \
+    ro.adb.secure=0 \
+    ro.secure=0 \
+    ro.debuggable=1
 endif
 
 # Bluetooth
