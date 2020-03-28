@@ -1,0 +1,34 @@
+From 4600c0ce6ff346a58841b5e4a2e56cf6fed473dd Mon Sep 17 00:00:00 2001
+From: Naina Nalluri <nainanalluri@google.com>
+Date: Wed, 24 Jan 2018 13:08:24 -0800
+Subject: [PATCH] Add flag to disable rild compilation
+
+This change adds a flag to disable rild
+compilation. Vendors implementing their
+own version should enable this flag in their
+device specific make files.
+
+Bug: 71513817
+Test: Compile and check the out folder for rild
+Change-Id: Ifce51b803adb97e03c9d27b9415dc3fa5714e71e
+---
+ rild/Android.mk | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/rild/Android.mk b/rild/Android.mk
+index 7ac505c..57a9d48 100644
+--- a/rild/Android.mk
++++ b/rild/Android.mk
+@@ -1,5 +1,7 @@
+ # Copyright 2006 The Android Open Source Project
+ 
++ifndef ENABLE_VENDOR_RIL_SERVICE
++
+ LOCAL_PATH:= $(call my-dir)
+ include $(CLEAR_VARS)
+ 
+@@ -31,3 +33,4 @@ LOCAL_INIT_RC := rild.rc
+ 
+ include $(BUILD_EXECUTABLE)
+ 
++endif

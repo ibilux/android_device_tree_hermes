@@ -1,4 +1,4 @@
-From f22b8b69cfef0ff4f666a31877263b5e08115c4b Mon Sep 17 00:00:00 2001
+From cd5bd037ee0f8a14f657e5e2e62c5587b563d7bf Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Thu, 30 Jan 2020 18:14:58 +0100
 Subject: [PATCH] libmedia:Add MTK media profiles
@@ -152,5 +152,5 @@ index 6975581..601b529 100644
  
  enum video_decoder {
 -- 
-2.25.0
+2.25.1
 
