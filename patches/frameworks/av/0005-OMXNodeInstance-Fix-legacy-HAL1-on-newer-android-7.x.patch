@@ -1,4 +1,4 @@
-From 25702dc878a99a8b5125832488d65f9e74492d09 Mon Sep 17 00:00:00 2001
+From 5bedeee0c072ea0f6f1c47f09a003b29dd8fbed1 Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Tue, 17 Mar 2020 11:33:48 +0100
 Subject: [PATCH] OMXNodeInstance: Fix legacy HAL1 on newer android-7.x.x

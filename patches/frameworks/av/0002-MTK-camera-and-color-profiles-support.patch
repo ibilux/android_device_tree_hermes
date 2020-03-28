@@ -1,4 +1,4 @@
-From 7a1271a8a5bcebe651fcc50d95eb24ec2d943152 Mon Sep 17 00:00:00 2001
+From cc5e4d08106e1639d937e9ecc9c9141328739dcd Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Sun, 23 Feb 2020 21:13:01 +0100
 Subject: [PATCH] MTK camera and color profiles support
@@ -1920,7 +1920,7 @@ index 0000000..42f0a3f
 +
 +#endif
 diff --git a/media/libmedia/Android.bp b/media/libmedia/Android.bp
-index 0422ad0..9655784 100644
+index a462f3a..82603e6 100644
 --- a/media/libmedia/Android.bp
 +++ b/media/libmedia/Android.bp
 @@ -23,6 +23,7 @@ cc_library {
@@ -1940,8 +1940,8 @@ index 0422ad0..9655784 100644
      ],
  
      sanitize: {
-@@ -175,6 +178,10 @@ cc_library_shared {
-         "mtkaudio_stubs.cpp",
+@@ -174,6 +177,10 @@ cc_library_shared {
+         "StringArray.cpp",
      ],
  
 +    include_dirs: [
@@ -1951,7 +1951,7 @@ index 0422ad0..9655784 100644
      shared_libs: [
          "libui",
          "liblog",
-@@ -227,6 +234,8 @@ cc_library_shared {
+@@ -226,6 +233,8 @@ cc_library_shared {
          "-Werror",
          "-Wno-error=deprecated-declarations",
          "-Wall",
@@ -2094,7 +2094,7 @@ index 071e7a1..3e8d6b7 100644
  
  /*
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 74bfc76..b22891e 100644
+index def8ada..02810d7 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
 @@ -62,6 +62,10 @@
@@ -2105,10 +2105,10 @@ index 74bfc76..b22891e 100644
 +#define MTK_HARDWARE
 +#endif
 +
- #define USE_LEGACY_RESCALING 1
- 
  namespace android {
-@@ -3196,7 +3200,12 @@ status_t ACodec::setSupportedOutputFormat(bool getLegacyFlexibleFormat) {
+ 
+ using binder::Status;
+@@ -3190,7 +3194,12 @@ status_t ACodec::setSupportedOutputFormat(bool getLegacyFlexibleFormat) {
                  || format.eColorFormat == OMX_COLOR_FormatYUV420PackedPlanar
                  || format.eColorFormat == OMX_COLOR_FormatYUV420SemiPlanar
                  || format.eColorFormat == OMX_COLOR_FormatYUV420PackedSemiPlanar
@@ -2122,7 +2122,7 @@ index 74bfc76..b22891e 100644
              break;
          }
          // find best legacy non-standard format
-@@ -4847,6 +4856,17 @@ status_t ACodec::getPortFormat(OMX_U32 portIndex, sp<AMessage> &notify) {
+@@ -4841,6 +4850,17 @@ status_t ACodec::getPortFormat(OMX_U32 portIndex, sp<AMessage> &notify) {
                              rect.nHeight = videoDef->nFrameHeight;
                          }
  

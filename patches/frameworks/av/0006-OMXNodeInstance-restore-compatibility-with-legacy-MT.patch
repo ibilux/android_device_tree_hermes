@@ -1,4 +1,4 @@
-From 596cbc3bb0bee181333ad3e61f4990042b856bbf Mon Sep 17 00:00:00 2001
+From ec9fbb3b81b4eda6db5260a9669ad9c161e9718d Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Tue, 17 Mar 2020 19:55:08 +0100
 Subject: [PATCH] OMXNodeInstance: restore compatibility with legacy MTK av
