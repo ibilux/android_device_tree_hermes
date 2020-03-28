@@ -78,10 +78,6 @@
             <instance>default</instance>
             <instance>widevine</instance>
         </interface>
-        <fqname>@1.1::ICryptoFactory/clearkey</fqname>
-        <fqname>@1.1::IDrmFactory/clearkey</fqname>
-        <fqname>@1.1::ICryptoFactory/widevine</fqname>
-        <fqname>@1.1::IDrmFactory/widevine</fqname>
     </hal>
     <hal format="hidl">
         <name>android.hardware.contexthub</name>
@@ -92,7 +88,7 @@
             <instance>default</instance>
         </interface>
     </hal>
-    <!-- <hal format="hidl">
+    <hal format="hidl">
         <name>android.hardware.gatekeeper</name>
         <transport>hwbinder</transport>
         <version>1.0</version>
@@ -100,7 +96,7 @@
             <name>IGatekeeper</name>
             <instance>default</instance>
         </interface>
-    </hal> -->
+    </hal>
     <hal format="hidl">
         <name>android.hardware.gnss</name>
         <transport arch="32+64">passthrough</transport>
@@ -157,7 +153,7 @@
     </hal>
     <hal format="hidl">
         <name>android.hardware.keymaster</name>
-        <transport arch="32+64">passthrough</transport>
+        <transport>hwbinder</transport>
         <version>3.0</version>
         <interface>
             <name>IKeymasterDevice</name>
@@ -197,7 +193,7 @@
     </hal>
     <hal format="hidl">
         <name>android.hardware.power</name>
-        <transport arch="32+64">passthrough</transport>
+        <transport>hwbinder</transport>
         <version>1.0</version>
         <interface>
             <name>IPower</name>
@@ -231,8 +227,12 @@
     </hal>
     <hal format="hidl">
         <name>android.hardware.renderscript</name>
-        <transport arch="32">passthrough</transport>
+        <transport arch="32+64">passthrough</transport>
         <version>1.0</version>
+        <interface>
+            <name>IDevice</name>
+            <instance>default</instance>
+        </interface>
     </hal>
     <hal format="hidl">
         <name>android.hardware.sensors</name>
@@ -243,6 +243,24 @@
             <instance>default</instance>
         </interface>
     </hal>
+    <!-- <hal format="hidl">
+        <name>android.hardware.soundtrigger</name>
+        <transport>hwbinder</transport>
+        <version>2.1</version>
+        <interface>
+            <name>ISoundTriggerHw</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>android.hardware.thermal</name>
+        <transport>hwbinder</transport>
+        <version>1.1</version>
+        <interface>
+            <name>IThermal</name>
+            <instance>default</instance>
+        </interface>
+    </hal> -->
     <hal format="hidl">
         <name>android.hardware.usb</name>
         <transport>hwbinder</transport>
@@ -267,15 +285,6 @@
         <version>1.0</version>
         <interface>
             <name>IWifi</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-    <hal format="hidl">
-        <name>android.hardware.wifi.offload</name>
-        <transport>hwbinder</transport>
-        <version>1.0</version>
-        <interface>
-            <name>IOffload</name>
             <instance>default</instance>
         </interface>
     </hal>
