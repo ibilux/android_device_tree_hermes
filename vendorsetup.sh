@@ -1,1 +1,1 @@
-add_lunch_combo lineage_hermes-userdebug
+add_lunch_combo carbon_hermes-userdebug
