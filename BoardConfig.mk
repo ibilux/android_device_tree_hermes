@@ -101,13 +101,7 @@ MALLOC_SVELTE := true
 
 # Shim libs
 TARGET_LD_SHIM_LIBS := \
-        /vendor/xbin/mnld|mtklog.so \
-        /system/lib/libc.so|mtkc.so \
-        /system/lib64/libc.so|mtkc.so \
-        /system/lib/liblog.so|mtklog.so \
-        /system/lib64/liblog.so|mtklog.so \
-        /system/lib/libui.so|mtkui.so \
-        /system/lib64/libui.so|mtkui.so
+        /vendor/xbin/mnld|mtklog.so
 
 # Wi-Fi
 BOARD_WLAN_DEVICE := MediaTek
