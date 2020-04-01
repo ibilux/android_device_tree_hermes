@@ -143,3 +143,6 @@ TARGET_COPY_OUT_VENDOR := system/vendor
 # Vendor
 VENDOR_SECURITY_PATCH := 2016-12-01
 COMPILE_MTK_PROPRIETARY := true
+
+# Legacy blob support
+TARGET_PROCESS_SDK_VERSION_OVERRIDE := /vendor/xbin/mnld=27
