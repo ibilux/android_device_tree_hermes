@@ -93,6 +93,9 @@ TARGET_HAS_LEGACY_CAMERA_HAL1 := true
 # Low-ram
 MALLOC_SVELTE := true
 
+# Device specific props
+TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
+
 # Shim libs
 TARGET_LD_SHIM_LIBS := \
         /vendor/xbin/mnld|mtklog.so
