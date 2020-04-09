@@ -121,7 +121,7 @@ WIFI_DRIVER_STATE_ON := 1
 WIFI_DRIVER_STATE_OFF := 0
 
 # Recovery
-TARGET_RECOVERY_FSTAB := vendor/xiaomi/hermes/proprietary/vendor/etc/fstab.$(TARGET_BOARD_PLATFORM)
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/fstab.mt6795
 
 # Sepolicy
 BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy
