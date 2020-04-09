@@ -104,7 +104,9 @@ TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 
 # Shim libs
 TARGET_LD_SHIM_LIBS := \
-        /vendor/xbin/mnld|mtklog.so
+        /vendor/xbin/mnld|mtklog.so \
+        /vendor/lib/libmmsdkservice.feature.so|libshim_mmsdk.so \
+        /vendor/lib64/libmmsdkservice.feature.so|libshim_mmsdk.so
 
 # Wi-Fi
 BOARD_WLAN_DEVICE := MediaTek

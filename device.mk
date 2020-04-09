@@ -35,7 +35,8 @@ PRODUCT_PACKAGES += Snap
 PRODUCT_PACKAGES += \
     mtkc \
     mtklog \
-    mtkui
+    mtkui \
+    libshim_mmsdk
 
 # Power HAL
 PRODUCT_PACKAGES += power.mt6795
