@@ -58,6 +58,9 @@ TARGET_USERIMAGES_USE_EXT4 := true
 # Hardware
 BOARD_USES_MTK_HARDWARE := true
 
+# DRM
+TARGET_ENABLE_MEDIADRM_64 := true
+
 # Display
 USE_OPENGL_RENDERER := true
 BOARD_EGL_CFG := vendor/xiaomi/hermes/proprietary/vendor/lib/egl/egl.cfg
