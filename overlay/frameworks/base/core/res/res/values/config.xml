@@ -161,8 +161,8 @@
 
          Must be overridden in platform specific overlays -->
     <integer-array name="config_autoBrightnessLevels">
-        <item>5</item>
-        <item>6</item>
+        <item>1</item>
+        <item>4</item>
         <item>7</item>
         <item>10</item>
         <item>20</item>
@@ -197,10 +197,10 @@
          The brightness values must be between 0 and 255 and be non-decreasing.
          This must be overridden in platform specific overlays -->
     <integer-array name="config_autoBrightnessLcdBacklightValues">
-        <item>2</item>
-        <item>7</item>
-        <item>10</item>
+        <item>16</item>
+        <item>17</item>
         <item>18</item>
+        <item>19</item>
         <item>28</item>
         <item>38</item>
         <item>42</item>
