@@ -87,6 +87,10 @@
             <instance>default</instance>
             <instance>widevine</instance>
         </interface>
+        <fqname>@1.1::ICryptoFactory/clearkey</fqname>
+        <fqname>@1.1::IDrmFactory/clearkey</fqname>
+        <fqname>@1.1::ICryptoFactory/widevine</fqname>
+        <fqname>@1.1::IDrmFactory/widevine</fqname>
     </hal>
     <hal format="hidl">
         <name>android.hardware.gatekeeper</name>
@@ -97,7 +101,7 @@
             <instance>default</instance>
         </interface>
     </hal>
-    <hal format="hidl">
+    <!-- <hal format="hidl">
         <name>android.hardware.gnss</name>
         <transport arch="32+64">passthrough</transport>
         <version>1.0</version>
@@ -105,10 +109,10 @@
             <name>IGnss</name>
             <instance>default</instance>
         </interface>
-    </hal>
+    </hal> -->
     <hal format="hidl">
         <name>android.hardware.graphics.allocator</name>
-        <transport>hwbinder</transport>
+        <transport arch="32+64">passthrough</transport>
         <version>2.0</version>
         <interface>
             <name>IAllocator</name>
@@ -245,14 +249,32 @@
     </hal>
     <!-- <hal format="hidl">
         <name>android.hardware.soundtrigger</name>
-        <transport>hwbinder</transport>
+        <transport arch="32+64">passthrough</transport>
         <version>2.1</version>
         <interface>
             <name>ISoundTriggerHw</name>
             <instance>default</instance>
         </interface>
-    </hal>
-    <hal format="hidl">
+    </hal> -->
+    <!-- <hal format="hidl">
+        <name>android.hardware.tetheroffload.config</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IOffloadConfig</name>
+            <instance>default</instance>
+        </interface>
+    </hal> -->
+    <!-- <hal format="hidl">
+        <name>android.hardware.tetheroffload.control</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IOffloadControl</name>
+            <instance>default</instance>
+        </interface>
+    </hal> -->
+    <!-- <hal format="hidl">
         <name>android.hardware.thermal</name>
         <transport>hwbinder</transport>
         <version>1.1</version>
@@ -297,6 +319,15 @@
             <instance>default</instance>
         </interface>
     </hal>
+    <!-- <hal format="hidl">
+        <name>android.hardware.wifi.offload</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IOffload</name>
+            <instance>default</instance>
+        </interface>
+    </hal> -->
     <hal format="hidl">
         <name>android.hardware.wifi.supplicant</name>
         <transport>hwbinder</transport>
