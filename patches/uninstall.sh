@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rootdirectory="$PWD"
-dirs="frameworks/av frameworks/base frameworks/native frameworks/opt/telephony packages/apps/FMRadio system/core"
+dirs="frameworks/av frameworks/base frameworks/native frameworks/opt/telephony packages/apps/FMRadio system/core system/netd"
 
 for dir in $dirs ; do
 	cd $rootdirectory
