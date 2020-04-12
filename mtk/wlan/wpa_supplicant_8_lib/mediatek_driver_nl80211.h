@@ -19,6 +19,7 @@
 #ifndef _MTK_DRIVER_NL80211_H_
 #define _MTK_DRIVER_NL80211_H_
 
+#include <linux/wireless.h>
 
 #ifndef BITS
 /* Eddie */
@@ -29,6 +30,9 @@
 #define BITS(m,n)                       (~(BIT(m)-1) & ((BIT(n) - 1) | BIT(n)))
 #endif /* BIT */
 
+#define OUI_MTK 0x000CE7
+
+extern void nl80211_vendor_event_mtk(struct wpa_driver_nl80211_data *, u32, u8 *, size_t);
 
 enum nl80211_testmode_sta_link_statistics_attr{
     __NL80211_TESTMODE_STA_STATISTICS_INVALID = 0,
@@ -271,33 +275,6 @@ struct wpa_driver_hotspot_set_config_params {
     u32 value;
 };
 
-#ifdef CONFIG_MTK_LTE_COEX
-enum nl80211_testmode_available_chan_attr{
-    __NL80211_TESTMODE_AVAILABLE_CHAN_ATTR_INVALID,
-    NL80211_TESTMODE_AVAILABLE_CHAN_ATTR_2G_BASE_1,
-    NL80211_TESTMODE_AVAILABLE_CHAN_ATTR_5G_BASE_36,
-    NL80211_TESTMODE_AVAILABLE_CHAN_ATTR_5G_BASE_52,
-    NL80211_TESTMODE_AVAILABLE_CHAN_ATTR_5G_BASE_100,
-    NL80211_TESTMODE_AVAILABLE_CHAN_ATTR_5G_BASE_149,
-
-    __NL80211_TESTMODE_AVAILABLE_CHAN_ATTR_AFTER_LAST,
-    NL80211_TESTMODE_AVAILABLE_CHAN_ATTR_MAX = __NL80211_TESTMODE_AVAILABLE_CHAN_ATTR_AFTER_LAST - 1
-};
-
-struct wpa_driver_available_chan_s {
-    u32 ch_2g_base1;
-    u32 ch_5g_base36;
-    u32 ch_5g_base52;
-    u32 ch_5g_base100;
-    u32 ch_5g_base149;
-};
-
-struct wpa_driver_get_available_channel_params {
-    struct wpa_driver_test_mode_info hdr;
-    u8  *buf;
-};
-#endif
-
 /* SW CMD */
 struct wpa_driver_sw_cmd_params {
     struct wpa_driver_test_mode_info hdr;
@@ -402,6 +379,18 @@ enum nl80211_testmode_params {
     NL80211_TESTMODE_SUSPEND = 101,
     NL80211_TESTMODE_STR_CMD = 102,
     NL80211_TESTMODE_RXFILTER = 103
+};
+
+enum mtk_nl80211_vendor_subcmds {
+    WIFI_EVENT_DRIVER_ERROR = 8,
+};
+
+enum mtk_wlan_vendor_attr_driver_error {
+    MTK_WALN_VENDOR_ATTR_DRIVER_ERROR_DATA_STALL_NOTICE = 0,
+    /* keep last */
+    MTK_WALN_VENDOR_ATTR_DRIVER_ERROR_AFTER_LAST,
+    MTK_WALN_VENDOR_ATTR_DRIVER_ERROR_MAX =
+    MTK_WALN_VENDOR_ATTR_DRIVER_ERROR_AFTER_LAST - 1
 };
 
 #endif
