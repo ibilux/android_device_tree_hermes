@@ -1,3 +1,10 @@
+# Display
+PRODUCT_PROPERTY_OVERRIDES += debug.hwui.use_buffer_age=false
+
+# Disable dirty region for Mali
+PRODUCT_PROPERTY_OVERRIDES += \
+    debug.hwui.render_dirty_regions=false
+
 # ADB
 ifneq ($(TARGET_BUILD_VARIANT),user)
 PRODUCT_PROPERTY_OVERRIDES += persist.sys.usb.config=adb \
