@@ -44,10 +44,6 @@ PRODUCT_PACKAGES += power.mt6795
 PRODUCT_PACKAGES += \
     libccci_util
 
-# Modem controller
-PRODUCT_PACKAGES += \
-    md_ctrl
-
 # Wifi tools
 PRODUCT_PACKAGES += \
     libwpa_client \
@@ -63,10 +59,7 @@ PRODUCT_PACKAGES += \
 
 # GPS
 PRODUCT_PACKAGES += \
-    gps.mt6795 \
-    libcurl \
-    libnl_2 \
-    mtk_agpsd
+    libcurl
 
 # Bluetooth
 PRODUCT_PACKAGES += \
