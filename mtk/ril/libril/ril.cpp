@@ -1270,35 +1270,35 @@ RIL_onRequestComplete(RIL_Token t, RIL_Errno s_e, void *s_response, size_t s_res
 #endif
 
     if (pRI->local > 0) {
-	// Locally issued command...void only!
-	// response does not go back up the command socket
-	RLOGD("C[locl]< %s", requestToString(pRI->pCI->requestNumber));
-	if (pRI->pCI->requestNumber == RIL_REQUEST_GET_IMEI) {
-	    int i = (int)socket_id;
-	    RLOGD("SOCKET_ID_IMEI= %d", i);
-            Device_ID[i].imei = (char*) response;
-	    RLOGD("IMEI=%s", Device_ID[i].imei);
-	}
-	else if (pRI->pCI->requestNumber == RIL_REQUEST_GET_IMEISV) {
-	    int i = (int)socket_id;
-	    RLOGD("SOCKET_ID_IMEI_SV= %d", i);
-            Device_ID[i].imeisv = (char*) response;
-	    RLOGD("IMEISV=%s", Device_ID[i].imeisv);
-	}
-	goto done;
+		// Locally issued command...void only!
+		// response does not go back up the command socket
+		RLOGD("C[locl]< %s", requestToString(pRI->pCI->requestNumber));
+		if (pRI->pCI->requestNumber == RIL_REQUEST_GET_IMEI) {
+		    int i = (int)socket_id;
+		    RLOGD("SOCKET_ID_IMEI= %d", i);
+	        Device_ID[i].imei = (char*) response;
+		    RLOGD("IMEI=%s", Device_ID[i].imei);
+		}
+		else if (pRI->pCI->requestNumber == RIL_REQUEST_GET_IMEISV) {
+		    int i = (int)socket_id;
+		    RLOGD("SOCKET_ID_IMEI_SV= %d", i);
+	        Device_ID[i].imeisv = (char*) response;
+		    RLOGD("IMEISV=%s", Device_ID[i].imeisv);
+		}
+		goto done;
     }
 
 // *** handle unsupported but necessary requests
-    if(e == RIL_E_REQUEST_NOT_SUPPORTED) {
-	    if (pRI->pCI->requestNumber == RIL_REQUEST_DEVICE_IDENTITY) {
+    if (pRI->pCI->requestNumber == RIL_REQUEST_DEVICE_IDENTITY) {
 		RLOGD("Overriding RIL_REQUEST_DEVICE_IDENTITY");
-		    int i = (int)socket_id;
-		    RLOGD("SOCKET_ID_IDENTITY= %d", i);
-		    response = &(Device_ID[i]);
-		    responselen = 4 * sizeof(char*);
-		    e = RIL_E_SUCCESS;
-		}
-    }
+	    int i = (int)socket_id;
+	    RLOGD("SOCKET_ID_IDENTITY= %d", i);
+	    RLOGD("IMEI=%s", Device_ID[i].imei);
+	    RLOGD("IMEISV=%s", Device_ID[i].imeisv);
+	    response = &(Device_ID[i]);
+	    responselen = 4 * sizeof(char*);
+	    e = RIL_E_SUCCESS;
+	}
 
     appendPrintBuf("[%04d]< %s",
 	pRI->token, requestToString(pRI->pCI->requestNumber));
