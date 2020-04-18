@@ -33,11 +33,7 @@ static SPN spn[] = {
 };
 
 namespace radio {
-#ifdef MTK_HARDWARE
 void registerService(RIL_RadioFunctionsSocket *callbacks, android::CommandInfo *commands);
-#else
-void registerService(RIL_RadioFunctions *callbacks, android::CommandInfo *commands);
-#endif
 int getIccCardStatusResponse(int slotId, int responseType,
                             int token, RIL_Errno e, void *response, size_t responselen);
 

@@ -85,11 +85,7 @@ using android::sp;
 #define ATOI_NULL_HANDLED(x) (x ? atoi(x) : -1)
 #define ATOI_NULL_HANDLED_DEF(x, defaultVal) (x ? atoi(x) : defaultVal)
 
-#ifdef MTK_HARDWARE
 RIL_RadioFunctionsSocket *s_vendorFunctions = NULL;
-#else
-RIL_RadioFunctions *s_vendorFunctions = NULL;
-#endif
 static CommandInfo *s_commands;
 // setup data call
 static int dataCallCids[5] = {-1, -1, -1, -1, -1};
@@ -1058,16 +1054,12 @@ Return<void> RadioImpl::getSignalStrength(int32_t serial) {
 #if VDBG
     RLOGD("getSignalStrength: serial %d", serial);
 #endif
-#ifdef MTK_HARDWARE
     // treated as NOT_SUPPORTED
     RequestInfo *pRI = android::addRequestToList(serial, mSlotId,
 		RIL_REQUEST_SIGNAL_STRENGTH);
     if (pRI != NULL) {
-	sendErrorResponse(pRI, RIL_E_REQUEST_NOT_SUPPORTED);
+		sendErrorResponse(pRI, RIL_E_REQUEST_NOT_SUPPORTED);
     }
-#else
-    dispatchVoid(serial, mSlotId, RIL_REQUEST_SIGNAL_STRENGTH);
-#endif
     return Void();
 }
 
@@ -1165,7 +1157,6 @@ Return<void> RadioImpl::setupDataCall(int32_t serial, RadioTechnology radioTechn
     if (s_vendorFunctions->version >= 4 && s_vendorFunctions->version <= 14) {
 	const hidl_string &protocol =
 		(isRoaming ? dataProfileInfo.roamingProtocol : dataProfileInfo.protocol);
-#ifdef MTK_HARDWARE
 	int i=0;
 	while ((i<4) && (dataCallCids[i] != -1))
 	    i++;
@@ -1187,16 +1178,6 @@ Return<void> RadioImpl::setupDataCall(int32_t serial, RadioTechnology radioTechn
 	    std::to_string((int) dataProfileInfo.authType).c_str(),
 	    protocol.c_str(),
 	    std::to_string(i).c_str());
-#else
-	dispatchStrings(serial, mSlotId, RIL_REQUEST_SETUP_DATA_CALL, 7,
-	    std::to_string((int) radioTechnology + 2).c_str(),
-	    std::to_string((int) dataProfileInfo.profileId).c_str(),
-	    dataProfileInfo.apn.c_str(),
-	    dataProfileInfo.user.c_str(),
-	    dataProfileInfo.password.c_str(),
-	    std::to_string((int) dataProfileInfo.authType).c_str(),
-	    protocol.c_str());
-#endif
     } else if (s_vendorFunctions->version >= 15) {
 	char *mvnoTypeStr = NULL;
 	if (!convertMvnoTypeToString(dataProfileInfo.mvnoType, mvnoTypeStr)) {
@@ -1252,11 +1233,7 @@ Return<void> RadioImpl::iccIOForApp(int32_t serial, const IccIo& iccIo) {
 
     rilIccIo.p1 = iccIo.p1;
     rilIccIo.p2 = iccIo.p2;
-#ifdef MTK_HARDWARE
     rilIccIo.p3 = (iccIo.command == 0xc0 && iccIo.p3 == 0)? 15 : iccIo.p3;
-#else
-    rilIccIo.p3 = iccIo.p3;
-#endif
     if (!copyHidlStringToRil(&rilIccIo.data, iccIo.data, pRI)) {
 	memsetAndFreeStrings(1, rilIccIo.path);
 	return Void();
@@ -1369,14 +1346,12 @@ Return<void> RadioImpl::deactivateDataCall(int32_t serial,
 #if VDBG
     RLOGD("deactivateDataCall: serial %d", serial);
 #endif
-#ifdef MTK_HARDWARE
     // clear local Interface id's
     int i=0;
     while ((i<4) && (dataCallCids[i] != cid))
 	i++;
     if (i < 4)
 	dataCallCids[i] = -1;
-#endif
     dispatchStrings(serial, mSlotId, RIL_REQUEST_DEACTIVATE_DATA_CALL,
 	    2, (std::to_string(cid)).c_str(), reasonRadioShutDown ? "1" : "0");
     return Void();
@@ -1700,15 +1675,11 @@ Return<void> RadioImpl::getTTYMode(int32_t serial) {
 #if VDBG
     RLOGD("getTTYMode: serial %d", serial);
 #endif
-#ifdef MTK_HARDWARE
     RequestInfo *pRI = android::addRequestToList(serial, mSlotId,
 		RIL_REQUEST_QUERY_TTY_MODE);
     if (pRI != NULL) {
 	sendErrorResponse(pRI, RIL_E_REQUEST_NOT_SUPPORTED);
     }
-#else
-    dispatchVoid(serial, mSlotId, RIL_REQUEST_QUERY_TTY_MODE);
-#endif
     return Void();
 }
 
@@ -1947,10 +1918,8 @@ Return<void> RadioImpl::getDeviceIdentity(int32_t serial) {
 #if VDBG
     RLOGD("getDeviceIdentity: serial %d", serial);
 #endif
-#ifdef MTK_HARDWARE
     dispatchVoid(-1, mSlotId, RIL_REQUEST_GET_IMEI);	// ** prepare for
     dispatchVoid(-1, mSlotId, RIL_REQUEST_GET_IMEISV);	// not supported
-#endif
     dispatchVoid(serial, mSlotId, RIL_REQUEST_DEVICE_IDENTITY);
     return Void();
 }
@@ -2096,13 +2065,10 @@ Return<void> RadioImpl::setInitialAttachApn(int32_t serial, const DataProfileInf
 	    memsetAndFreeStrings(3, iaa.apn, iaa.protocol, iaa.username);
 	    return Void();
 	}
-#ifdef MTK_HARDWARE
 	if (iaa.apn == NULL)
 	    iaa.apn = (char *) calloc(1, sizeof(char));
 	if (iaa.protocol == NULL)
 	    iaa.protocol = (char *) calloc(1, sizeof(char));
-//	if (iaa.authtype ==0)
-//		iaa.authtype = -1;
 	if (iaa.username == NULL)
 	    iaa.username = (char *) calloc(1, sizeof(char));
 	if (iaa.password == NULL)
@@ -2122,15 +2088,9 @@ Return<void> RadioImpl::setInitialAttachApn(int32_t serial, const DataProfileInf
 	strncpy(iaa.operatorNumeric, p, 8);
 	iaa.canHandleIms = 0;
 	iaa.dualApnPlmnList = NULL;
-#endif
 	android::my_enqueue(RIL_REQUEST_SET_INITIAL_ATTACH_APN, &iaa,
 		sizeof(iaa)-sizeof(iaa.dualApnPlmnList), android::FMT_AttchAPN, pRI);
 
-/*	memsetAndFreeStrings(4, iaa.apn, iaa.protocol, iaa.username, iaa.password);
-#ifdef MTK_HARDWARE
-	free (iaa.operatorNumeric);
-#endif
-*/
     } else {
 	RIL_InitialAttachApn_v15 iaa = {};
 
@@ -3840,10 +3800,8 @@ int radio::getDataRegistrationStateResponse(int slotId,
 		char **resp = (char **) response;
 		dataRegResponse.regState = (RegState) ATOI_NULL_HANDLED_DEF(resp[0], 4);
 		dataRegResponse.rat =  ATOI_NULL_HANDLED_DEF(resp[3], 0);
-#ifdef MTK_HARDWARE
 		if (dataRegResponse.rat >= 128)	// extended value
 		    dataRegResponse.rat = 15;	// RIL_RADIO_TECHNOLOGY_MTK (128) --> HSPAP (15)
-#endif
 		dataRegResponse.reasonDataDenied = (numStrings > 4) ?
 			ATOI_NULL_HANDLED(resp[4]) : -1;
 		dataRegResponse.maxDataCalls = (numStrings > 4) ?
@@ -3908,9 +3866,6 @@ int radio::getOperatorResponse(int slotId,
 	} else {
 	    char **resp = (char **) response;
     RLOGD("getOperatorResponse: numStrings=%d", numStrings);
-#ifdef MTK_HARDWARE
-//	    longName = convertCharPtrToHidlString(resp[0]);
-//	    numeric = convertCharPtrToHidlString(resp[2]);
 	    char *p = (char*)getname(atoi(resp[0]));
 	    if (p == NULL) {
 			longName = numeric;
@@ -3922,11 +3877,6 @@ int radio::getOperatorResponse(int slotId,
 			else
 			    shortName = longName;
 	    }
-#else
-	    longName = convertCharPtrToHidlString(resp[0]);
-	    shortName = (numStrings > 1) ? convertCharPtrToHidlString(resp[1]) : longName;
-	    numeric = (numStrings > 2) ? convertCharPtrToHidlString(resp[2]) : shortName;
-#endif
 	}
 	Return<void> retStatus = radioService[slotId]->mRadioResponse->getOperatorResponse(
 		responseInfo, longName, shortName, numeric);
@@ -4065,12 +4015,10 @@ int radio::setupDataCallResponse(int slotId,
 	    result.pcscf = hidl_string();
 	} else {
 	    convertRilDataCallToHal((RIL_Data_Call_Response_v11 *) response, result);
-#ifdef MTK_HARDWARE
 	    int i=0;
 	    while ((i<4) && (dataCallCids[i] != -1))
 		i++;
 	    dataCallCids[i] = result.cid;
-#endif
 	}
 
 	Return<void> retStatus = radioService[slotId]->mRadioResponse->setupDataCallResponse(
@@ -6454,7 +6402,6 @@ int radio::getModemActivityInfoResponse(int slotId,
 	populateResponseInfo(responseInfo, serial, responseType, e);
 	ActivityStatsInfo info;
 	if (response == NULL || responseLen != sizeof(RIL_ActivityStatsInfo)) {
-#ifdef MTK_HARDWARE
 	// mtk not treated as error
 	    RLOGW("getModemActivityInfoResponse Invalid response: responseLen=%d,expectd=%d",
 		(int)responseLen, (int)sizeof(RIL_ActivityStatsInfo));
@@ -6464,11 +6411,6 @@ int radio::getModemActivityInfoResponse(int slotId,
 		info.txmModetimeMs[i] = 0;
 	    }
 	    info.rxModeTimeMs = 0;
-#else
-	    RLOGE("getModemActivityInfoResponse Invalid response: responseLen=%d",
-		(int)responseLen);
-	    if (e == RIL_E_SUCCESS) responseInfo.error = RadioError::INVALID_RESPONSE;
-#endif
 	} else {
 	    RIL_ActivityStatsInfo *resp = (RIL_ActivityStatsInfo *)response;
 	    info.sleepModeTimeMs = resp->sleep_mode_time_ms;
@@ -6843,13 +6785,9 @@ int radio::newSmsInd(int slotId, int indicationType,
 
 	int pdu_len;
 
-#ifdef MTK_HARDWARE
 	char *st = (char*)response;
 	pdu_len = strlen(st);
 	uint8_t *bytes = convertHexStringToBytes(response, pdu_len);
-#else
-	uint8_t *bytes = convertHexStringToBytes(response, responseLen);
-#endif
 	if (bytes == NULL) {
 	    RLOGE("newSmsInd: convertHexStringToBytes failed");
 	    return 0;
@@ -7843,16 +7781,10 @@ void convertRilCellInfoListToHal(void *response, size_t responseLen, hidl_vec<Ce
     RLOGD("convertRilCellInfoListToHal: responseLen=%d, num=%d", (int)responseLen, num);
 #endif
 
-#ifdef MTK_HARDWARE
     // response is an array of RIL_CellInfo*
     RIL_CellInfo **rilCellInfohd = (RIL_CellInfo **) response;
-#else
-    RIL_CellInfo_v12 *rilCellInfo = (RIL_CellInfo_v12 *) response;
-#endif
     for (int i = 0; i < num; i++) {
-#ifdef MTK_HARDWARE
 	RIL_CellInfo *rilCellInfo = rilCellInfohd[i];
-#endif
 	records[i].cellInfoType = (CellInfoType) rilCellInfo->cellInfoType;
 #if VDBG
     RLOGD("rilCellInfo->cellInfoType=%d records[%d].cellInfoType=%d",
@@ -7880,14 +7812,6 @@ void convertRilCellInfoListToHal(void *response, size_t responseLen, hidl_vec<Ce
 			rilCellInfo->CellInfo.gsm.cellIdentityGsm.lac;
 		cellInfoGsm->cellIdentityGsm.cid =
 			rilCellInfo->CellInfo.gsm.cellIdentityGsm.cid;
-#ifndef MTK_HARDWARE
-		cellInfoGsm->cellIdentityGsm.arfcn =
-			rilCellInfo->CellInfo.gsm.cellIdentityGsm.arfcn;
-		cellInfoGsm->cellIdentityGsm.bsic =
-			rilCellInfo->CellInfo.gsm.cellIdentityGsm.bsic;
-		cellInfoGsm->signalStrengthGsm.timingAdvance =
-			rilCellInfo->CellInfo.gsm.signalStrengthGsm.timingAdvance;
-#endif
 		cellInfoGsm->signalStrengthGsm.signalStrength =
 			rilCellInfo->CellInfo.gsm.signalStrengthGsm.signalStrength;
 		cellInfoGsm->signalStrengthGsm.bitErrorRate =
@@ -7908,10 +7832,6 @@ void convertRilCellInfoListToHal(void *response, size_t responseLen, hidl_vec<Ce
 			rilCellInfo->CellInfo.wcdma.cellIdentityWcdma.cid;
 		cellInfoWcdma->cellIdentityWcdma.psc =
 			rilCellInfo->CellInfo.wcdma.cellIdentityWcdma.psc;
-#ifndef MTK_HARDWARE
-		cellInfoWcdma->cellIdentityWcdma.uarfcn =
-			rilCellInfo->CellInfo.wcdma.cellIdentityWcdma.uarfcn;
-#endif
 		cellInfoWcdma->signalStrengthWcdma.signalStrength =
 			rilCellInfo->CellInfo.wcdma.signalStrengthWcdma.signalStrength;
 		cellInfoWcdma->signalStrengthWcdma.bitErrorRate =
@@ -7958,12 +7878,6 @@ void convertRilCellInfoListToHal(void *response, size_t responseLen, hidl_vec<Ce
 			rilCellInfo->CellInfo.lte.cellIdentityLte.pci;
 		cellInfoLte->cellIdentityLte.tac =
 			rilCellInfo->CellInfo.lte.cellIdentityLte.tac;
-#ifndef MTK_HARDWARE
-		cellInfoLte->cellIdentityLte.earfcn =
-			rilCellInfo->CellInfo.lte.cellIdentityLte.earfcn;
-		cellInfoLte->signalStrengthLte.timingAdvance =
-			rilCellInfo->CellInfo.lte.signalStrengthLte.timingAdvance;
-#endif
 		cellInfoLte->signalStrengthLte.signalStrength =
 			rilCellInfo->CellInfo.lte.signalStrengthLte.signalStrength;
 		cellInfoLte->signalStrengthLte.rsrp =
@@ -7998,9 +7912,6 @@ void convertRilCellInfoListToHal(void *response, size_t responseLen, hidl_vec<Ce
 		break;
 	    }
 	}
-#ifndef MTK_HARDWARE
-	rilCellInfo += 1;
-#endif
     }
 }
 
@@ -8446,11 +8357,7 @@ int radio::oemHookRawInd(int slotId,
     return 0;
 }
 
-#ifdef MTK_HARDWARE
 void radio::registerService(RIL_RadioFunctionsSocket *callbacks, CommandInfo *commands) {
-#else
-void radio::registerService(RIL_RadioFunctions *callbacks, CommandInfo *commands) {
-#endif
     using namespace android::hardware;
     int simCount = 1;
     const char *serviceNames[] = {
