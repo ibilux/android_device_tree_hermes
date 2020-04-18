@@ -50,12 +50,7 @@ ril_inc := external/nanopb-c \
 ril_cflags := -Wno-unused-parameter
 
 ifeq ($(SIM_COUNT), 2)
-    ril_cflags += -DANDROID_SIM_COUNT_2
-    ril_cflags += -DANDROID_MULTI_SIM
-endif
-
-ifeq ($(BOARD_USES_MTK_HARDWARE),true)
-  ril_cflags += -DMTK_HARDWARE
+    ril_cflags += -DANDROID_SIM_COUNT_2 -DANDROID_MULTI_SIM
 endif
 
 # something wrong, cause channel occupied after oNewCommandConnect
