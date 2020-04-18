@@ -3,3 +3,6 @@
 rild.libpath=/vendor/lib64/mtk-ril.so
 rild.libargs=-d /dev/ttyC0
 
+# SDK version override
+persist.sys.phh.sdk_override=/vendor/xbin/mnld=27
+

@@ -1,0 +1,33 @@
+From d8f15b7f372b305237f8f0bcdf31ed912f1df1bb Mon Sep 17 00:00:00 2001
+From: Bilux <i.bilux@gmail.com>
+Date: Sat, 18 Apr 2020 16:48:12 +0100
+Subject: [PATCH] Read SDK version override from property
+
+---
+ linker/linker.cpp | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/linker/linker.cpp b/linker/linker.cpp
+index 951351c320..c49081a360 100644
+--- a/linker/linker.cpp
++++ b/linker/linker.cpp
+@@ -3923,7 +3923,9 @@ std::vector<android_namespace_t*> init_default_namespaces(const char* executable
+   }
+ 
+   uint32_t target_sdk = config->target_sdk_version();
+-#ifdef SDK_VERSION_OVERRIDES
++//#ifdef SDK_VERSION_OVERRIDES
++  std::string sdkVersionOverrides = android::base::GetProperty("persist.sys.phh.sdk_override", "");
++  static const char *SDK_VERSION_OVERRIDES = sdkVersionOverrides.c_str();
+   for (const auto& entry : android::base::Split(SDK_VERSION_OVERRIDES, " ")) {
+     auto splitted = android::base::Split(entry, "=");
+     if (splitted.size() == 2 && splitted[0] == executable_path) {
+@@ -3932,7 +3934,7 @@ std::vector<android_namespace_t*> init_default_namespaces(const char* executable
+     }
+   }
+   DEBUG("Target SDK for %s = %d", executable_path, target_sdk);
+-#endif
++//#endif
+   set_application_target_sdk_version(target_sdk);
+ 
+   std::vector<android_namespace_t*> created_namespaces;
