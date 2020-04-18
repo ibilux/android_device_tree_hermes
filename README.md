@@ -16,8 +16,11 @@ This branch is device tree for building LineageOS 16.0 Rom for Xiaomi Redmi Note
   - FM-Radio
   - Bluetooth
   - Internet
+  - Hotspot
   - SD Card
   - Online/Offline charging
+  - Built-in Signature Spoofing (for MicroG)
+  - USB tethering
   - IR Blaster
   - Vibration
   - Rotation sensor
@@ -27,13 +30,12 @@ This branch is device tree for building LineageOS 16.0 Rom for Xiaomi Redmi Note
   - Camera (Photos & Video recording)
 
 ### NOT working:
-  - GPS
-  - Hotspot
-  - USB tethering
+  - ?
 
 ### Bugs:
+  - GPS (crashes after first use)
   - Camera video recording dark
-  - Auto brightness slow respons
+  - 60fps videos lag/stutter on youtube
 
 ### Credits:
   - Dinolek
