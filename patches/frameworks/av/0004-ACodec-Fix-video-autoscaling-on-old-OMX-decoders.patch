@@ -1,29 +1,32 @@
-From ee9aa25aa48fe777d7054b022e43684e5fd117b5 Mon Sep 17 00:00:00 2001
+From 3a447122a8f36bb5dba01625ed25a9662ddab9e6 Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
-Date: Thu, 30 Jan 2020 18:23:15 +0100
-Subject: [PATCH] libstagefright: fix Autoscale Omx
+Date: Mon, 23 Mar 2020 11:27:33 +0100
+Subject: [PATCH] ACodec: Fix video autoscaling on old OMX decoders
 
-add USE_LEGACY_RESCALING flag to support Omx autoscale
+On Android N video autoscaling will cause the video to zoom in, being mostly outside of the frame of the video.
+This is because android no longer tries to match output ports before putting the new resolution in effect.
+Exynos OMX decoders send a message to get the new output crop, but it's lost along the way.
+Similarly to how Android M handles it, send the format change right before transitioning to ExecutingState.
 
 Signed-off-by: bilux <i.bilux@gmail.com>
 ---
- media/libstagefright/ACodec.cpp | 38 +++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ media/libstagefright/ACodec.cpp | 39 +++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 770e6d4..ba0104c 100644
+index 7fa534f..e1b6edd 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
 @@ -66,6 +66,8 @@
  #define MTK_HARDWARE
  #endif
  
-+#define USE_LEGACY_RESCALING 1
++#define USE_LEGACY_RESCALING
 +
  namespace android {
  
  using binder::Status;
-@@ -7916,6 +7918,15 @@ bool ACodec::OutputPortSettingsChangedState::onOMXEvent(
+@@ -7905,6 +7907,15 @@ bool ACodec::OutputPortSettingsChangedState::onOMXEvent(
                      return false;
                  }
  
@@ -39,7 +42,7 @@ index 770e6d4..ba0104c 100644
                  ALOGV("[%s] Output port now reenabled.", mCodec->mComponentName.c_str());
  
                  if (mCodec->mExecutingState->active()) {
-@@ -7930,6 +7941,14 @@ bool ACodec::OutputPortSettingsChangedState::onOMXEvent(
+@@ -7919,6 +7930,15 @@ bool ACodec::OutputPortSettingsChangedState::onOMXEvent(
              return false;
          }
  
@@ -51,10 +54,11 @@ index 770e6d4..ba0104c 100644
 +            return true;
 +        break;
 +#endif
++
          default:
              return BaseState::onOMXEvent(event, data1, data2);
      }
-@@ -8491,6 +8510,25 @@ status_t ACodec::getOMXChannelMapping(size_t numChannels, OMX_AUDIO_CHANNELTYPE
+@@ -8480,6 +8500,25 @@ status_t ACodec::getOMXChannelMapping(size_t numChannels, OMX_AUDIO_CHANNELTYPE
      return OK;
  }
  
@@ -81,5 +85,5 @@ index 770e6d4..ba0104c 100644
      mTrebleFlag = trebleFlag;
  }
 -- 
-2.25.1
+2.26.1
 

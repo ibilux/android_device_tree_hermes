@@ -1,29 +1,52 @@
-From cd5bd037ee0f8a14f657e5e2e62c5587b563d7bf Mon Sep 17 00:00:00 2001
+From 4f233b529f367721112d4be908ca6f0d1003a476 Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
-Date: Thu, 30 Jan 2020 18:14:58 +0100
-Subject: [PATCH] libmedia:Add MTK media profiles
+Date: Tue, 21 Apr 2020 21:33:58 +0100
+Subject: [PATCH] MTK profiles support
 
 Signed-off-by: bilux <i.bilux@gmail.com>
 ---
- media/libmedia/MediaProfiles.cpp             | 47 +++++++++++++++++++
- media/libmedia/include/media/MediaProfiles.h | 49 ++++++++++++++++++++
- 2 files changed, 96 insertions(+)
+ media/libmedia/MediaProfiles.cpp             | 56 ++++++++++++++++++++
+ media/libmedia/include/media/MediaProfiles.h | 52 ++++++++++++++++++
+ media/libmedia/include/media/mediarecorder.h | 16 ++++++
+ 3 files changed, 124 insertions(+)
 
 diff --git a/media/libmedia/MediaProfiles.cpp b/media/libmedia/MediaProfiles.cpp
-index aade69a..0137195 100644
+index aade69a..e7de83f 100644
 --- a/media/libmedia/MediaProfiles.cpp
 +++ b/media/libmedia/MediaProfiles.cpp
-@@ -48,6 +48,9 @@ const MediaProfiles::NameToTagMap MediaProfiles::sAudioEncoderNameMap[] = {
+@@ -29,6 +29,10 @@
+ #include <OMX_Video.h>
+ #include <sys/stat.h>
+ 
++#ifndef MTK_HARDWARE
++#define MTK_HARDWARE
++#endif
++
+ namespace android {
+ 
+ constexpr char const * const MediaProfiles::xmlFiles[];
+@@ -40,6 +44,9 @@ const MediaProfiles::NameToTagMap MediaProfiles::sVideoEncoderNameMap[] = {
+     {"h263", VIDEO_ENCODER_H263},
+     {"h264", VIDEO_ENCODER_H264},
+     {"m4v",  VIDEO_ENCODER_MPEG_4_SP},
++#ifdef MTK_HARDWARE
++    {"h265", VIDEO_ENCODER_H265},
++#endif
+     {"hevc", VIDEO_ENCODER_HEVC}
+ };
+ 
+@@ -48,6 +55,10 @@ const MediaProfiles::NameToTagMap MediaProfiles::sAudioEncoderNameMap[] = {
      {"amrwb",  AUDIO_ENCODER_AMR_WB},
      {"aac",    AUDIO_ENCODER_AAC},
      {"heaac",  AUDIO_ENCODER_HE_AAC},
 +#ifdef MTK_HARDWARE
 +    {"vorbis", AUDIO_ENCODER_VORBIS},
++    {"lpcm",  AUDIO_ENCODER_LPCM},
 +#endif
      {"aaceld", AUDIO_ENCODER_AAC_ELD}
  };
  
-@@ -91,6 +94,50 @@ const MediaProfiles::NameToTagMap MediaProfiles::sCamcorderQualityNameMap[] = {
+@@ -91,6 +102,51 @@ const MediaProfiles::NameToTagMap MediaProfiles::sCamcorderQualityNameMap[] = {
      {"highspeed720p", CAMCORDER_QUALITY_HIGH_SPEED_720P},
      {"highspeed1080p", CAMCORDER_QUALITY_HIGH_SPEED_1080P},
      {"highspeed2160p", CAMCORDER_QUALITY_HIGH_SPEED_2160P},
@@ -71,14 +94,26 @@ index aade69a..0137195 100644
 +    {"mtk1080p60", CAMCORDER_QUALITY_MTK_1080P_60},
 +    {"mtk1080p120", CAMCORDER_QUALITY_MTK_1080P_120},
 +#endif // (MTK_HARDWARE)
++
  };
  
  #if LOG_NDEBUG
 diff --git a/media/libmedia/include/media/MediaProfiles.h b/media/libmedia/include/media/MediaProfiles.h
-index 6975581..601b529 100644
+index 6975581..806efb5 100644
 --- a/media/libmedia/include/media/MediaProfiles.h
 +++ b/media/libmedia/include/media/MediaProfiles.h
-@@ -34,7 +34,23 @@ enum camcorder_quality {
+@@ -21,6 +21,10 @@
+ #include <utils/threads.h>
+ #include <media/mediarecorder.h>
+ 
++#ifndef MTK_HARDWARE
++#define MTK_HARDWARE
++#endif
++
+ namespace android {
+ 
+ enum camcorder_quality {
+@@ -34,7 +38,23 @@ enum camcorder_quality {
      CAMCORDER_QUALITY_1080P = 6,
      CAMCORDER_QUALITY_QVGA = 7,
      CAMCORDER_QUALITY_2160P = 8,
@@ -98,11 +133,11 @@ index 6975581..601b529 100644
 +    CAMCORDER_QUALITY_LIST_END             = 123,
 +#else
      CAMCORDER_QUALITY_LIST_END = 8,
-+#endif// MTK_HARDWARE
++#endif
  
      CAMCORDER_QUALITY_TIME_LAPSE_LIST_START = 1000,
      CAMCORDER_QUALITY_TIME_LAPSE_LOW  = 1000,
-@@ -46,7 +62,23 @@ enum camcorder_quality {
+@@ -46,7 +66,23 @@ enum camcorder_quality {
      CAMCORDER_QUALITY_TIME_LAPSE_1080P = 1006,
      CAMCORDER_QUALITY_TIME_LAPSE_QVGA = 1007,
      CAMCORDER_QUALITY_TIME_LAPSE_2160P = 1008,
@@ -122,11 +157,11 @@ index 6975581..601b529 100644
 +    CAMCORDER_QUALITY_TIME_LAPSE_LIST_END             = 1123,
 +#else
      CAMCORDER_QUALITY_TIME_LAPSE_LIST_END = 1008,
-+#endif// MTK_HARDWARE
++#endif
  
      CAMCORDER_QUALITY_HIGH_SPEED_LIST_START = 2000,
      CAMCORDER_QUALITY_HIGH_SPEED_LOW  = 2000,
-@@ -55,7 +87,24 @@ enum camcorder_quality {
+@@ -55,7 +91,23 @@ enum camcorder_quality {
      CAMCORDER_QUALITY_HIGH_SPEED_720P = 2003,
      CAMCORDER_QUALITY_HIGH_SPEED_1080P = 2004,
      CAMCORDER_QUALITY_HIGH_SPEED_2160P = 2005,
@@ -136,7 +171,6 @@ index 6975581..601b529 100644
 +    CAMCORDER_QUALITY_MTK_SLOW_MOTION_MEDIUM        = 2220,
 +    CAMCORDER_QUALITY_MTK_SLOW_MOTION_HIGH          = 2221,
 +    CAMCORDER_QUALITY_MTK_SLOW_MOTION_FINE          = 2222,
-+
 +    CAMCORDER_QUALITY_MTK_VGA_120                   = 2231,
 +    CAMCORDER_QUALITY_MTK_720P_60                   = 2240,
 +    CAMCORDER_QUALITY_MTK_720P_120                  = 2241,
@@ -147,10 +181,52 @@ index 6975581..601b529 100644
 +    CAMCORDER_QUALITY_HIGH_SPEED_LIST_END           = 2251,
 +#else
      CAMCORDER_QUALITY_HIGH_SPEED_LIST_END = 2005,
-+#endif// MTK_HARDWARE
++#endif
  };
  
  enum video_decoder {
+diff --git a/media/libmedia/include/media/mediarecorder.h b/media/libmedia/include/media/mediarecorder.h
+index 071e7a1..a7d0182 100644
+--- a/media/libmedia/include/media/mediarecorder.h
++++ b/media/libmedia/include/media/mediarecorder.h
+@@ -25,6 +25,10 @@
+ #include <media/IMediaRecorderClient.h>
+ #include <media/IMediaDeathNotifier.h>
+ 
++#ifndef MTK_HARDWARE
++#define MTK_HARDWARE
++#endif
++
+ namespace android {
+ 
+ class Surface;
+@@ -89,6 +93,11 @@ enum audio_encoder {
+     AUDIO_ENCODER_AAC_ELD = 5,
+     AUDIO_ENCODER_VORBIS = 6,
+ 
++#ifdef MTK_HARDWARE
++    AUDIO_ENCODER_EVRC = 10,
++    AUDIO_ENCODER_QCELP = 11,
++    AUDIO_ENCODER_LPCM = 12,
++#endif
+     AUDIO_ENCODER_LIST_END // must be the last - used to validate the audio encoder type
+ };
+ 
+@@ -100,7 +109,14 @@ enum video_encoder {
+     VIDEO_ENCODER_VP8 = 4,
+     VIDEO_ENCODER_HEVC = 5,
+ 
++#ifdef MTK_HARDWARE
++    VIDEO_ENCODER_LIST_END, // must be the last - used to validate the video encoder type
++    VIDEO_ENCODER_LIST_VENDOR_START = 1000,
++    VIDEO_ENCODER_H265 = 1001,
++    VIDEO_ENCODER_LIST_VENDOR_END
++#else
+     VIDEO_ENCODER_LIST_END // must be the last - used to validate the video encoder type
++#endif
+ };
+ 
+ /*
 -- 
-2.25.1
+2.26.1
 
