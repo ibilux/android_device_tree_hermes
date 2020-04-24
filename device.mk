@@ -35,7 +35,8 @@ PRODUCT_PACKAGES += Snap
 PRODUCT_PACKAGES += \
     mtkc \
     mtklog \
-    mtkui
+    mtkui \
+    libshim_mutexdestroy
 
 # Power HAL
 PRODUCT_PACKAGES += power.mt6795
