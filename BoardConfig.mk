@@ -98,9 +98,9 @@ MALLOC_SVELTE := true
 TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 
 # Shim libs
-TARGET_LD_SHIM_LIBS := \
-        /vendor/xbin/mnld|mtklog.so \
-        /vendor/xbin/mnld|libshim_mutexdestroy.so
+#TARGET_LD_SHIM_LIBS := \
+#        /vendor/xbin/mnld|mtklog.so \
+#        /vendor/xbin/mnld|libshim_mutexdestroy.so
 
 # Wi-Fi
 BOARD_WLAN_DEVICE := MediaTek
