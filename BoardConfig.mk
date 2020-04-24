@@ -63,7 +63,7 @@ BOARD_USES_MTK_HARDWARE := true
 TARGET_ENABLE_MEDIADRM_64 := true
 
 # Display
-USE_OPENGL_RENDERER := true
+#USE_OPENGL_RENDERER := true
 #BOARD_EGL_CFG := vendor/xiaomi/hermes/proprietary/vendor/lib/egl/egl.cfg
 BOARD_EGL_NEEDS_HANDLE_VALUE := true
 #VSYNC_EVENT_PHASE_OFFSET_NS := -8000000
