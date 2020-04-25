@@ -25,87 +25,84 @@
     -->
 
     <!-- This is the battery capacity in mAh -->
-    <item name="battery.capacity">3000</item>
+    <item name="battery.capacity">3060</item>
 
     <!-- Number of cores each CPU cluster contains -->
     <array name="cpu.clusters.cores">
-        <value>4</value> <!-- Cluster 0 has 4 cores (cpu0, cpu1, cpu2, cpu3) -->
-        <value>4</value> <!-- Cluster 1 has 4 cores (cpu4, cpu5, cpu5, cpu7) -->
+        <value>8</value> <!-- Cluster 0 has 4 cores (cpu0, cpu1, cpu2, cpu3, cpu4, cpu5, cpu6, cpu7) -->
     </array>
 
     <!-- Power consumption when CPU is suspended -->
-    <item name="cpu.suspend">5</item>
+    <item name="cpu.suspend">10</item>
     <!-- Additional power consumption when CPU is in a kernel idle loop -->
-    <item name="cpu.idle">1.11</item>
+    <item name="cpu.idle">3.5</item>
     <!-- Additional power consumption by CPU excluding cluster and core when  running -->
-    <item name="cpu.active">2.55</item>
+    <item name="cpu.active">100</item>
 
     <!-- Additional power consumption by CPU cluster0 itself when running excluding cores in it -->
-    <item name="cpu.cluster_power.cluster0">2.11</item>
-    <!-- Additional power consumption by CPU cluster1 itself when running excluding cores in it -->
-    <item name="cpu.cluster_power.cluster1">2.22</item>
+    <item name="cpu.cluster_power.cluster0">100</item>
 
     <!-- Different CPU speeds as reported in
          /sys/devices/system/cpu/cpu0/cpufreq/stats/scaling_available_frequencies -->
     <array name="cpu.core_speeds.cluster0">
-        <value>300000</value> <!-- 300 MHz CPU speed -->
-        <value>1000000</value> <!-- 1000 MHz CPU speed -->
-        <value>2000000</value> <!-- 2000 MHz CPU speed -->
-    </array>
-    <!-- Different CPU speeds as reported in
-         /sys/devices/system/cpu/cpu4/cpufreq/stats/scaling_available_frequencies -->
-    <array name="cpu.core_speeds.cluster1">
-        <value>300000</value> <!-- 300 MHz CPU speed -->
-        <value>1000000</value> <!-- 1000 MHz CPU speed -->
-        <value>2500000</value> <!-- 2500 MHz CPU speed -->
-        <value>3000000</value> <!-- 3000 MHz CPU speed -->
+        <value>1950000</value>  <!-- 2.0 GHz -->
+        <value>1885000</value>
+        <value>1781000</value>  <!-- 1.8 GHz -->
+        <value>1664000</value>
+        <value>1625000</value>  <!-- 1.6 GHz -->
+        <value>1482000</value>
+        <value>1469000</value>  <!-- 1.5 GHz -->
+        <value>1326000</value>  <!-- 1.3 GHz -->
+        <value>1183000</value>  <!-- 1.2 GHz -->
+        <value>806000</value>   <!-- 0.8 GHz -->
+        <value>403000</value>   <!-- 0.4 GHz -->
     </array>
 
     <!-- Additional power used by a CPU from cluster 0 when running at different
          speeds. Currently this measurement also includes cluster cost. -->
     <array name="cpu.core_power.cluster0">
-        <value>10</value> <!-- 300 MHz CPU speed -->
-        <value>20</value> <!-- 1000 MHz CPU speed -->
-        <value>30</value> <!-- 1900 MHz CPU speed -->
-    </array>
-    <!-- Additional power used by a CPU from cluster 1 when running at different
-         speeds. Currently this measurement also includes cluster cost. -->
-    <array name="cpu.core_power.cluster1">
-        <value>25</value> <!-- 300 MHz CPU speed -->
-        <value>35</value> <!-- 1000 MHz CPU speed -->
-        <value>50</value> <!-- 2500 MHz CPU speed -->
-        <value>60</value> <!-- 3000 MHz CPU speed -->
+        <value>240.1</value>  <!-- 2.0 GHz -->
+        <value>222.5</value>
+        <value>217.2</value>  <!-- 1.8 GHz -->
+        <value>196.2</value>
+        <value>191.6</value>  <!-- 1.6 GHz -->
+        <value>162.2</value>
+        <value>158.4</value>  <!-- 1.5 GHz -->
+        <value>138.7</value>  <!-- 1.3 GHz -->
+        <value>121.6</value>  <!-- 1.2 GHz -->
+        <value>112.2</value>  <!-- 0.8 GHz -->
+        <value>89.2</value>  <!-- 0.4 GHz -->
     </array>
 
     <!-- Power used by display unit in ambient display mode, including back lighting-->
     <item name="ambient.on">0.5</item>
     <!-- Additional power used when screen is turned on at minimum brightness -->
-    <item name="screen.on">100</item>
+    <item name="screen.on">200</item>
     <!-- Additional power used when screen is at maximum brightness, compared to
          screen at minimum brightness -->
-    <item name="screen.full">800</item>
+    <item name="screen.full">300</item>
 
     <!-- Average power used by the camera flash module when on -->
-    <item name="camera.flashlight">500</item>
+    <item name="camera.flashlight">160</item>
     <!-- Average power use by the camera subsystem for a typical camera
          application. Intended as a rough estimate for an application running a
          preview and capturing approximately 10 full-resolution pictures per
          minute. -->
-    <item name="camera.avg">600</item>
+    <item name="camera.avg">550</item>
 
     <!-- Additional power used by the audio hardware, probably due to DSP -->
     <item name="audio">100.0</item>
 
     <!-- Additional power used by the video hardware, probably due to DSP -->
-    <item name="video">150.0</item> <!-- ~50mA -->
+    <item name="video">100.0</item> <!-- ~50mA -->
 
     <!-- Additional power used when GPS is acquiring a signal -->
-    <item name="gps.on">10</item>
+    <item name="gps.on">30</item>
 
     <!-- Additional power used when cellular radio is transmitting/receiving -->
-    <item name="radio.active">60</item>
+    <item name="radio.active">300</item>
     <!-- Additional power used when cellular radio is paging the tower -->
-    <item name="radio.scanning">3</item>
+    <item name="radio.scanning">10</item>
     <!-- Additional power used when the cellular radio is on. Multi-value entry,
          one per signal strength (no signal, weak, moderate, strong) -->
     <array name="radio.on"> <!-- Strength 0 to BINS-1 -->
