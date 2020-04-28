@@ -62,7 +62,7 @@
     {RIL_UNSOL_DC_RT_INFO_CHANGED, NULL, WAKE_PARTIAL},
     {RIL_UNSOL_RADIO_CAPABILITY, radio::radioCapabilityIndicationInd, WAKE_PARTIAL},
     {RIL_UNSOL_ON_SS, radio::onSupplementaryServiceIndicationInd, WAKE_PARTIAL},
-    {RIL_UNSOL_STK_CC_ALPHA_NOTIFY, radio::stkCallControlAlphaNotifyInd, WAKE_PARTIAL},
+//    {RIL_UNSOL_STK_CC_ALPHA_NOTIFY, radio::stkCallControlAlphaNotifyInd, WAKE_PARTIAL},
     {RIL_UNSOL_LCEDATA_RECV, radio::lceDataInd, WAKE_PARTIAL},
     {RIL_UNSOL_PCO_DATA, radio::pcoDataInd, WAKE_PARTIAL},
     {RIL_UNSOL_MODEM_RESTART, radio::modemResetInd, WAKE_PARTIAL},
