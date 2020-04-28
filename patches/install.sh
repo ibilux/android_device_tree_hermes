@@ -4,7 +4,7 @@ echo $1
 rootdirectory="$PWD"
 # ---------------------------------
 
-dirs="frameworks/av frameworks/base frameworks/native frameworks/opt/telephony packages/apps/FMRadio system/core system/netd"
+dirs="frameworks/av frameworks/base frameworks/native frameworks/opt/telephony hardware/interfaces packages/apps/FMRadio system/core system/netd"
 
 # red + nocolor
 RED='\033[0;31m'

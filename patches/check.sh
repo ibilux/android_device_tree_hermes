@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rootdirectory="$PWD"
-dirs="frameworks/av frameworks/base frameworks/native frameworks/opt/telephony packages/apps/FMRadio system/core system/netd"
+dirs="frameworks/av frameworks/base frameworks/native frameworks/opt/telephony hardware/interfaces packages/apps/FMRadio system/core system/netd"
 
 RED='\033[0;31m'
 NC='\033[0m'

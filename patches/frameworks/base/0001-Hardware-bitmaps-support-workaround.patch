@@ -9,6 +9,7 @@ By TRONX2100 and RAWMAIN
 
 Revert: Support Bitmap.copy for hardware bitmaps
 https://github.com/LineageOS/android_frameworks_base/commit/05126d151eb3caa85bd3a039cffb6e37940c3fa4
+Signed-off-by: bilux <i.bilux@gmail.com>
 ---
  core/jni/android/graphics/Bitmap.cpp        |  4 +--
  core/jni/android/graphics/BitmapFactory.cpp | 35 +++++++++++++++++++++

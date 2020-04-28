@@ -3,6 +3,7 @@ From: Bilux <i.bilux@gmail.com>
 Date: Thu, 26 Mar 2020 11:35:41 +0100
 Subject: [PATCH] zygote: Add ged to whitelisted paths
 
+Signed-off-by: bilux <i.bilux@gmail.com>
 ---
  core/jni/fd_utils.cpp | 1 +
  1 file changed, 1 insertion(+)

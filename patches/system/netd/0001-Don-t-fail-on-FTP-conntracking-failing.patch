@@ -9,6 +9,7 @@ See phhusson/treble_experimentations#425
 Thanks @zamrih for pin-pointing the issue and validating fix
 
 Change-Id: I3d9c865eb5a4b421f9983210c2ceae62b4906234
+Signed-off-by: bilux <i.bilux@gmail.com>
 ---
  server/TetherController.cpp | 14 ++++++++++----
  1 file changed, 10 insertions(+), 4 deletions(-)

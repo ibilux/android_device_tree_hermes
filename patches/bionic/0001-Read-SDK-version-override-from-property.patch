@@ -3,6 +3,7 @@ From: Bilux <i.bilux@gmail.com>
 Date: Sat, 18 Apr 2020 16:48:12 +0100
 Subject: [PATCH] Read SDK version override from property
 
+Signed-off-by: bilux <i.bilux@gmail.com>
 ---
  linker/linker.cpp | 6 ++++--
  1 file changed, 4 insertions(+), 2 deletions(-)
