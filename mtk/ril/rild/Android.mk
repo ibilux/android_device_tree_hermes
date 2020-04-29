@@ -53,7 +53,7 @@ ifeq ($(SIM_COUNT), 2)
     LOCAL_CFLAGS += -DANDROID_SIM_COUNT_2
 endif
 
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/../include
+LOCAL_C_INCLUDES += $(DEVICE_PATH)/include/telephony
 
 # Temporary hack for broken vendor RILs
 LOCAL_WHOLE_STATIC_LIBRARIES := \

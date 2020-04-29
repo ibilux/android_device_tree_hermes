@@ -45,7 +45,7 @@ ril_shared_libs := \
 #endif
 
 ril_inc := external/nanopb-c \
-           $(LOCAL_PATH)/../include
+           $(DEVICE_PATH)/include/telephony
 
 ril_cflags := -Wno-unused-parameter
 
@@ -85,7 +85,7 @@ LOCAL_STATIC_LIBRARIES := \
 LOCAL_CFLAGS := $(ril_cflags)
 LOCAL_C_INCLUDES += $(ril_inc)
 
-LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)/../include
+LOCAL_EXPORT_C_INCLUDE_DIRS := $(DEVICE_PATH)/include/telephony
 
 LOCAL_MODULE:= libril
 
