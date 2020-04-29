@@ -1,6 +1,9 @@
 # Path
 DEVICE_PATH := device/xiaomi/hermes
 
+# Include
+TARGET_SPECIFIC_HEADER_PATH := $(DEVICE_PATH)/include
+
 # Board
 TARGET_BOOTLOADER_BOARD_NAME := mt6795
 TARGET_BOARD_PLATFORM := mt6795
