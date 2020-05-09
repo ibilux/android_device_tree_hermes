@@ -30,7 +30,7 @@ on init
     mkdir /mnt/media_rw/usbotg 0700 media_rw media_rw
     mkdir /storage/usbotg 0700 root root
 
-# RIL
+# change lk_env permission
     chown root system /proc/lk_env
     chmod 0660 /proc/lk_env
 
@@ -64,9 +64,15 @@ on post-fs
     symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/otp /dev/block/platform/mtk-msdc.0/by-name/otp
 
 on post-fs-data
-# Create nvram folder for modem
+# Create nvram folder
     mkdir /data/nvram 0771 root system
-    mkdir /data/nvram/media 0771 media audio
+    mkdir /data/nvram/media 0771 media camera
+
+# WPA
+    mkdir /data/misc/wifi 0770 wifi wifi
+    mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    mkdir /data/misc/wpa_supplicant 0770 wifi wifi
+    chown wifi wifi /data/misc/wifi
 
 # Create for muxd pts device node to operate without root
     mkdir /dev/radio 0770 radio radio
@@ -74,6 +80,8 @@ on post-fs-data
 # GPS
     mkdir /data/gps_mnl 0771 gps system
     mkdir /data/misc/gps 0770 gps system
+    mkdir /data/agps_supl 0771 gps system
+    mkdir /data/vendor/gps 0770 gps system
     chown gps gps /sys/class/gpsdrv/gps/pwrctl
     chown gps gps /sys/class/gpsdrv/gps/suspend
     chown gps gps /sys/class/gpsdrv/gps/state
@@ -94,10 +102,12 @@ on post-fs-data
     chmod 0660 /dev/gyroscope
     chmod 0660 /dev/gsensor
     chmod 0660 /dev/als_ps
+    chmod 0660 /dev/aal_als
     chown system system /dev/gyroscope
     chown system system /dev/hwmsensor
     chown system system /dev/gsensor
     chown system system /dev/als_ps
+    chown system system /dev/aal_als
 
     chmod 0660 /sys/class/misc/m_acc_misc/accenablenodata
     chmod 0660 /sys/class/misc/m_acc_misc/accactive
@@ -178,7 +188,7 @@ on post-fs-data
     chown system media /dev/MJC
 
 # Boot mode
-    chmod 0664 /sys/class/BOOT/BOOT/boot/boot_mode
+    chmod 0666 /sys/class/BOOT/BOOT/boot/boot_mode
     chown system system /sys/class/BOOT/BOOT/boot/boot_mode
 
 # Graphic
@@ -205,24 +215,6 @@ on post-fs-data
     chmod 0666 /dev/devmap
     chown root system /dev/devmap
 
-# Camera
-    chmod 0660 /dev/camera-fdvt
-    chmod 0660 /dev/camera-isp
-    chmod 0660 /dev/kd_camera_flashlight
-    chmod 0660 /dev/kd_camera_hw
-    chmod 0660 /dev/kd_camera_hw_bus2
-    chmod 0660 /dev/CAM_CAL_DRV
-    chmod 0660 /dev/DW9761BAF
-
-
-    chown system camera /dev/camera-fdvt
-    chown system camera /dev/camera-isp
-    chown system camera /dev/kd_camera_flashlight
-    chown system camera /dev/kd_camera_hw
-    chown system camera /dev/kd_camera_hw_bus2
-    chown system camera /dev/CAM_CAL_DRV
-    chown system camera /dev/DW9761BAF
-
 # SMI
     chmod 0666 /dev/MTK_SMI
     chown system media /dev/MTK_SMI
@@ -235,17 +227,15 @@ on post-fs-data
     chown system media /dev/mtk_sched
 
 # AGPS
-    mkdir /data/agps_supl 0771 gps system
-    #restorecon_recursive /data/misc/gps
+    restorecon_recursive /data/misc/gps
 
-# BT/FM/GPS
+# /dev/ttyMT2 for Connectivity BT/FM/GPS usage
     chmod 0660 /dev/ttyMT2
     chown system system /dev/ttyMT2
 
-# Wi-Fi
-    mkdir /data/misc/wifi 0770 wifi wifi
-    mkdir /data/misc/wifi/sockets 0770 wifi wifi
-    chown wifi wifi /data/misc/wifi
+#/dev/ttyMT1 for GPS 3337 usage
+    chmod 0660 /dev/ttyMT1
+    chown system system /dev/ttyMT1
 
 # Thermal
     mkdir /data/.tp 0775 system system
@@ -273,13 +263,13 @@ on post-fs-data
 # Clear the sim switch flag
     setprop persist.radio.simswitch ""
 
-on charger
-    write /proc/hps/input_boost_enabled 0
-    write /proc/hps/num_limit_low_battery 1
-    write /proc/gpufreq/gpufreq_opp_max_freq 253500
-    write /proc/cpufreq/cpufreq_limited_max_freq_by_user 403000
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "powersave"
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 403000
+#on charger
+    #write /proc/hps/input_boost_enabled 0
+    #write /proc/hps/num_limit_low_battery 1
+    #write /proc/gpufreq/gpufreq_opp_max_freq 253500
+    #write /proc/cpufreq/cpufreq_limited_max_freq_by_user 403000
+    #write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "powersave"
+    #write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 403000
 
 on boot
 # default is root radio 0440
@@ -362,17 +352,19 @@ on boot
     chown shell system /proc/driver/wmt_aee
     chown shell system /proc/driver/wmt_dbg
 
+# Init services
+
 # Graphic
 #service guiext-server /vendor/bin/guiext-server
 #    class main
 #    user system
 #    group system graphics
 
-service pq /vendor/bin/pq
-    class main
-    user system
-    group system graphics
-    oneshot
+#service pq /vendor/bin/pq
+#    class main
+#    user system
+#    group system graphics
+#    oneshot
 
 service pvrsrvctl /vendor/bin/pvrsrvctl --no-module --start
     class main
@@ -402,9 +394,9 @@ service wpa_supplicant /system/bin/wpa_supplicant \
     oneshot
 
 # Modem
-service conn_launcher /vendor/bin/6620_launcher -m 4 -p /vendor/etc/firmware/
+service wmt_launcher /vendor/bin/6620_launcher -m 4 -p /vendor/etc/firmware/
     class core
-    user system
+    user root
     group system
 
 service autokd /vendor/bin/autokd
@@ -414,14 +406,13 @@ service autokd /vendor/bin/autokd
 
 service ccci_fsd /vendor/bin/ccci_fsd 0
     class core
-    user radio
+    user root
     group radio system
-
     oneshot
 
 service ccci_mdinit /vendor/bin/ccci_mdinit 0
     class core
-    user system
+    user root
     group radio system
     oneshot
 
@@ -467,12 +458,12 @@ service ril-daemon-mtk /vendor/bin/mtkrild
     disabled
     oneshot
 
-service start_modem /vendor/bin/md_ctrl 1
+service stop_modem /vendor/bin/md_ctrl 0
     class main
     disabled
     oneshot
 
-service stop_modem /vendor/bin/md_ctrl 0
+service start_modem /vendor/bin/md_ctrl 1
     class main
     disabled
     oneshot
@@ -487,6 +478,7 @@ service wmt_loader /vendor/bin/wmt_loader
 service thermal_manager /vendor/bin/thermal_manager
     class main
     user root
+    group system
     oneshot
 
 # Charging
@@ -496,15 +488,9 @@ service charger /charger
     seclabel u:r:healthd:s0
 
 service fuelgauged /vendor/bin/fuelgauged
-    class main
-    user system
-    group system
-
-service sbchk /vendor/bin/sbchk
     class core
     user system
     group system
-    oneshot
 
 # Accelerometer and gyroscope
 service bmi160d /vendor/bin/bmi160d
@@ -512,20 +498,14 @@ service bmi160d /vendor/bin/bmi160d
     user system
     group system
 
-service lsm6ds3d /vendor/bin/lsm6ds3d
-    class main
-    user system
-    group system
-    oneshot
-
 # GPS
 service agpsd /vendor/bin/mtk_agpsd
     class main
-    socket agpsd stream 660 gps system
-    socket agpsd2 stream 660 system inet
-    socket agpsd3 stream 660 system inet
     user gps
-    group gps inet sdcard_r sdcard_rw misc radio
+    group gps inet sdcard_r sdcard_rw misc radio system
+    socket agpsd stream 660 gps system
+    socket agpsd2 stream 660 gps inet
+    socket agpsd3 stream 660 gps inet
 
 service wifi2agps /vendor/bin/wifi2agps
     class main
@@ -535,7 +515,7 @@ service wifi2agps /vendor/bin/wifi2agps
 service mnld /vendor/bin/mnld
     class main
     user gps
-    group gps inet misc sdcard_rw sdcard_r media_rw system
+    group gps inet misc sdcard_rw sdcard_r media_rw system radio
     socket mnld stream 660 gps system
 
 # Properties
@@ -546,14 +526,19 @@ on property:vold.decrypt=trigger_restart_min_framework
     start start_modem
 
 on property:vold.decrypt=trigger_restart_framework
-    start nvram_daemon
     start start_modem
 
 on property:vold.decrypt=trigger_shutdown_framework
     start stop_modem
 
+on property:vold.decrypt=trigger_restart_framework
+    start nvram_daemon
+
 on property:ril.muxreport=1
     start muxreport-daemon
+
+on property:ril.mtk=1
+    start ril-daemon-mtk
 
 on property:sys.boot_completed=1
 # end boot time tune
@@ -568,9 +553,11 @@ on property:sys.boot_completed=1
     write /sys/block/mmcblk0/queue/nr_requests 128
     write /sys/block/mmcblk0/queue/iostats 1
 
-####### JUST SOME ADD ON FROM OLD NOUGAT TREE #######
-####### CHECK THIS FOR ANY BUGS #####################
+####### JUST SOME ADD ON FROM OLD TREE ##############
+#######     CHECK THIS FOR ANY BUGS    ##############
+
 # Boot info
+    chmod 0664 /proc/bootprof
     chown system system /proc/bootprof
 
 # BATTERY proc
@@ -581,33 +568,9 @@ on property:sys.boot_completed=1
     chmod 0664 /proc/mtk_battery_cmd/discharging_cmd
     chmod 0664 /proc/mtk_battery_cmd/battery_cmd
 
-# BT
-    chmod 0660 /dev/stpbt
-    chown bluetooth radio /dev/stpbt
-
-# BT relayer
+# BT relayer mode used VCOM
     chmod 0660 /dev/ttyGS2
-    chown bluetooth radio /dev/ttyGS2
-
-# ION device
-    chmod 0666 /dev/ion
-
-# Selinux
-    #restorecon /dev/wmtWifi
-    #restorecon /dev/stpwmt
-    #restorecon /dev/stpbt
-    #restorecon /dev/stpgps
-
-# Wi-Fi
-    chmod 0660 /dev/wmtWifi
-    chown system system /dev/wmtWifi
-
-    chmod 0660 /dev/stpwmt
-    chown system system /dev/stpwmt
-
-    chmod 0660 /dev/wmtdetect
-    chown system system /dev/wmtdetect
-
+    chown bluetooth bluetooth /dev/ttyGS2
 
 #Charging Battery
     chown radio radio /sys/devices/platform/battery/Charging_CallState
@@ -619,24 +582,6 @@ on property:sys.boot_completed=1
     chown root radio /sys/devices/platform/mt-pmic/pmic_access
     chmod 0664 /sys/devices/platform/mt-pmic/pmic_access
 
-# EM CPU Speed Stress
-    chown root radio /proc/cpu_ss/cpu_ss_debug_mode
-    chown root radio /proc/cpu_ss/cpu_ss_mode
-    chown root radio /proc/cpu_ss/cpu_ss_period
-    chown root radio /proc/cpu_ss/cpu_ss_period_mode
-    chmod 0664 /proc/cpu_ss/cpu_ss_debug_mode
-    chmod 0664 /proc/cpu_ss/cpu_ss_mode
-    chmod 0664 /proc/cpu_ss/cpu_ss_period
-    chmod 0664 /proc/cpu_ss/cpu_ss_period_mode
-
-# EM baseband file
-    chown root diag /system/bin/baseband_regdump
-    chmod 4750 /system/bin/baseband_regdump
-
-# FM Radio
-    chmod 0660 /dev/fm
-    chown system media /dev/fm
-
 # GPS
     chmod 0660 /dev/gps
     chown system gps /dev/gps
@@ -644,9 +589,9 @@ on property:sys.boot_completed=1
     chmod 0660 /dev/stpgps
     chown gps gps /dev/stpgps
 
-# Graphic
-    #chmod 0660 /dev/graphics/fb0
-    #chown system graphics /dev/graphics/fb0
+# Display
+    chmod 0660 /dev/graphics/fb0
+    chown system graphics /dev/graphics/fb0
 
 # Perfservice
     chown system system /sys/devices/system/cpu/cpufreq/hotplug/cpu_num_base
@@ -667,15 +612,3 @@ on property:sys.boot_completed=1
     chmod 0666 /d/ged/hal/custom_boost_gpu_freq
     chown system system /d/ged/hal/custom_upbound_gpu_freq
     chmod 0666 /d/ged/hal/custom_upbound_gpu_freq
-
-# Modem related nodes
-    #chown media audio /dev/ccci_aud
-    #chown radio radio /dev/ccci_fs
-    #chown radio radio /dev/ccci_ioctl0
-    #chown radio radio /dev/ccci_ioctl1
-    #chown radio radio /dev/ccci_ipc_1220_0
-    #chown radio radio /dev/ccci_monitor
-
-# Boot mode
-    #chmod 666 /sys/devices/virtual/BOOT/BOOT/boot/boot_mode
-    #chown system system /sys/devices/virtual/BOOT/BOOT/boot/boot_mode

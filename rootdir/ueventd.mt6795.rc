@@ -1,25 +1,26 @@
 #change partition permission
-/dev/block/mmcblk0                    0660  root       system
-/dev/block/mmcblk0boot0               0660  root       system
-/dev/block/mmcblk0boot1               0660  root       system
-/dev/misc-sd                          0660  root       system
-/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/recovery  0660  root  system
-/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/proinfo   0660  root  system
-/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/seccfg    0660  root  system
+/dev/block/mmcblk0                                              0660  root  system
+/dev/block/mmcblk0boot0                                         0660  root  system
+/dev/block/mmcblk0rpmb                                          0660  root  system
+/dev/misc-sd                                                    0660  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/boot      0640  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/logo      0660  root  system
 /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/nvram     0660  root  system
-/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/secro     0660  root  system
-/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/boot      0660  root  system
 /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/para      0660  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/proinfo   0660  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/recovery  0640  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/seccfg    0660  root  system
+/dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/secro     0640  root  system
 
 # Connectivity
 /dev/stpwmt                           0660  system     system
 /dev/wmtdetect                        0660  system     system
 
 # BT
-/dev/stpbt                            0660  bluetooth  radio
+/dev/stpbt                            0660  bluetooth  bluetooth
 
 # WIFI
-/dev/wmtWifi                          0660  system     system
+/dev/wmtWifi                          0660  wifi       wifi
 
 # FMRadio
 /dev/fm                               0660  system     media
@@ -28,23 +29,55 @@
 /dev/gps                              0660  gps        system
 /dev/stpgps                           0660  gps        gps
 
+# Camera
+/dev/CAM_CAL_DRV                      0660  system     camera
+/dev/DW9761BAF                        0660  system     camera
+/dev/camera-fdvt                      0660  system     camera
+/dev/camera-isp                       0660  system     camera
+/dev/kd_camera_flashlight             0660  system     camera
+/dev/kd_camera_hw                     0660  system     camera
+/dev/kd_camera_hw_bus2                0660  system     camera
+
+# ConsumerIR
+/dev/consumerir                       0660  system     system
+
+# GPIO IOCTL
+/dev/mtgpio                           0600  radio      root
+
 # SGX device node
 /dev/pvrsrvkm                         0666  root       root
 /dev/pvr_sync                         0666  root       root
 
+# rt_monitor
+/dev/RT_Monitor                       0600  system     system
+
+# MTK BTIF driver
+/dev/btif                             0600  system     system
+
+# touch
+/dev/touch                            0660  root       system
+
 # Change ION driver permission
 /dev/ion                              0666  system     graphics
 
+# tty
+/dev/ttyC*                            0660  radio      radio
+/dev/ttyRB*                           0660  radio      radio
+/dev/ttySDIO*                         0660  radio      sdcard_rw
+/dev/ttySDIO2                         0660  radio      media_rw
+
 # ccci
 /dev/ccci*                            0660  radio      radio
-/dev/ttyC*                            0660  radio      radio
-/dev/ccci_aud                         0660  media      media
+/dev/ccci_aud                         0660  audio      audio
 /sys/kernel/ccci         modem_info   0644  radio      radio
 /sys/kernel/ccci         md1_postfix  0644  radio      radio
 /sys/kernel/ccci         md2_postfix  0644  radio      radio
 
 # OTP
 /dev/otp                              0660  root       system
+
+# usb
+/dev/bus/usb/*                        0660  root       usb
 
 # leds
 /sys/devices/platform/leds-mt65xx/leds/green   delay_on   0664  system  system
