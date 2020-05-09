@@ -49,6 +49,7 @@
                 <item>Speaker</item>
                 <item>Earpiece</item>
                 <item>Built-In Mic</item>
+                <item>Built-In Back Mic</item>
                 <item>FM Tuner In</item>
                 <item>Voice Call In</item>
             </attachedDevices>
@@ -74,7 +75,7 @@
                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
                              samplingRates="44100,48000" channelMasks="AUDIO_CHANNEL_OUT_MONO"/>
                 </devicePort>
-                <devicePort tagName="Speaker" role="sink" type="AUDIO_DEVICE_OUT_SPEAKER" address="">
+                <devicePort tagName="Speaker" role="sink" type="AUDIO_DEVICE_OUT_SPEAKER">
                     <profile name="" format="AUDIO_FORMAT_PCM_32_BIT"
                              samplingRates="44100,48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
