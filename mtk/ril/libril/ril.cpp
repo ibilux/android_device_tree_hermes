@@ -43,6 +43,7 @@
 ** 2017/9/23: use custom spn list to match plmn		by: daniel_hk
 ** 2020/01/05: handle ril identity in a better way		by: bilux (i.bilux@gmail.com)
 ** 2021/01/02: getIaCache is replaced in mtk-ril		by: bilux (i.bilux@gmail.com)
+** 2021/01/02: don't wait until init callbacks finished	by: bilux (i.bilux@gmail.com)
 */
 
 #define LOG_TAG "RILC"
@@ -596,15 +597,16 @@ static void resendLastNITZTimeData(RIL_SOCKET_ID socket_id) {
 void onNewCommandConnect(RIL_SOCKET_ID socket_id) {
     // Inform we are connected and the ril version
     int rilVer = s_callbacksSocket.version;
-    char prop[PROPERTY_VALUE_MAX];
+    //char prop[PROPERTY_VALUE_MAX];
     RLOGD("**onNewCommandConnect,socket=%d,pthread=%lu",socket_id, pthread_self());
 
-#define GSM_RIL_INIT	"gsm.ril.init"
+/*#define GSM_RIL_INIT	"gsm.ril.init"
     do {
 		sleep(1);  // sleep 1s
 		// wait until init callbacks finished, OR haven't started
 		property_get(GSM_RIL_INIT, prop, "1");
     } while (strcmp(prop, "1"));
+*/
     RIL_UNSOL_RESPONSE(RIL_UNSOL_RIL_CONNECTED, &rilVer, sizeof(rilVer), socket_id);
 
     // implicit radio state changed
