@@ -44,6 +44,7 @@
  * 2020/01/05: use strlcpy instead of strncpy			by: bilux (i.bilux@gmail.com)
  * 2020/01/05: change rild initial sequence				by: bilux (i.bilux@gmail.com)
  * 2020/01/07: hack single dialog USSDs					by: bilux (i.bilux@gmail.com)
+ * 2021/01/02: patch getOperatorResponse				by: bilux (i.bilux@gmail.com)
  */
 
 #define LOG_TAG "RILC"
@@ -3862,21 +3863,12 @@ int radio::getOperatorResponse(int slotId,
 	int numStrings = responseLen / sizeof(char *);
 	if (response == NULL || numStrings == 0) {
 	    if (e == RIL_E_SUCCESS) responseInfo.error = RadioError::INVALID_RESPONSE;
-
 	} else {
 	    char **resp = (char **) response;
-    RLOGD("getOperatorResponse: numStrings=%d", numStrings);
-	    char *p = (char*)getname(atoi(resp[0]));
-	    if (p == NULL) {
-			longName = numeric;
-			shortName = numeric;
-	    } else {
-			longName = convertCharPtrToHidlString(p);
-		    if (strlen(p) > 24)
-			    shortName = numeric;
-			else
-			    shortName = longName;
-	    }
+		RLOGD("getOperatorResponse: numStrings=%d", numStrings);
+ 	    longName = convertCharPtrToHidlString(resp[0]);
+	    shortName = (numStrings > 1) ? convertCharPtrToHidlString(resp[1]) : longName;
+	    numeric = (numStrings > 2) ? convertCharPtrToHidlString(resp[2]) : shortName;
 	}
 	Return<void> retStatus = radioService[slotId]->mRadioResponse->getOperatorResponse(
 		responseInfo, longName, shortName, numeric);
