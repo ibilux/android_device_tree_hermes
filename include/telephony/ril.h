@@ -557,11 +557,7 @@ typedef struct {
 				   e.g., "192.0.1.3" or "192.0.1.11 2001:db8::1".
 				   May be empty in which case the addresses represent point
 				   to point connections. */
-    //VoLTE
-    char*			   pcscf;
-    int			     concatenateNum;
-    RIL_Dedicate_Data_Call_Struct*  concatenate;
-    RIL_Dedicate_Data_Call_Struct   defaultBearer;
+
 } RIL_Data_Call_Response_v6;
 
 typedef struct {
