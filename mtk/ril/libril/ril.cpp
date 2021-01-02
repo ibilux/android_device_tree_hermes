@@ -42,6 +42,7 @@
 ** 2017/9/23: handle only mtk unsol commands now	by: daniel_hk
 ** 2017/9/23: use custom spn list to match plmn		by: daniel_hk
 ** 2020/01/05: handle ril identity in a better way		by: bilux (i.bilux@gmail.com)
+** 2021/01/02: getIaCache is replaced in mtk-ril		by: bilux (i.bilux@gmail.com)
 */
 
 #define LOG_TAG "RILC"
@@ -175,7 +176,7 @@ extern "C" int RIL_queryMyProxyIdByThread();
 extern "C" int isRequestTokFromMal(RIL_Token t);
 extern void RIL_startRILProxys();
 // replaced in mtk-ril
-extern "C" void getIaCache(char* cache);
+//extern "C" void getIaCache(char* cache);
 // see what it is doing
 extern void enqueue(RequestInfo* pRI, void *buffer, size_t buflen,
 		    UserCallbackInfo* pUCI, RIL_SOCKET_ID socket_id);
@@ -433,7 +434,7 @@ int isInitialAttachAPN(const char *requestedApn, const char * protocol,
 		int authType, const char *username, const char* password, RILChannelCtx *pChannel)
 {
     char iaProperty[PROPERTY_VALUE_MAX * 2] = { 0 };
-    getIaCache(iaProperty);
+    //getIaCache(iaProperty);
     RLOGD("[RILData_GSM_IRAT]: isInitialAttachApn IaCache=%s", iaProperty);
     if (strlen(iaProperty) == 0) {
 	// No initial attach APN, return false.
