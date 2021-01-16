@@ -45,7 +45,6 @@
 ** 2021/01/02: getIaCache is replaced in mtk-ril		by: bilux (i.bilux@gmail.com)
 ** 2021/01/02: don't wait until init callbacks finished	by: bilux (i.bilux@gmail.com)
 ** 2021/01/02: don't set MTK modem property				by: bilux (i.bilux@gmail.com)
-** 2021/01/02: revert to internalRequestTimedCallback	by: bilux (i.bilux@gmail.com)
 */
 
 #define LOG_TAG "RILC"
@@ -368,9 +367,9 @@ extern "C" void RIL_myProxyTimedCallback (RIL_TimedCallback callback, void *para
     RLOGD("RIL_requestProxyTimedCallback:***proxyId=%d,pthread_self()=%lu",
 					proxyId, pthread_self());
 #endif
-//    RIL_requestProxyTimedCallback(callback, param, relativeTime, proxyId);
+    RIL_requestProxyTimedCallback(callback, param, relativeTime, proxyId);
 // replaced
-	internalRequestTimedCallback(callback, param, relativeTime, proxyId);
+//	internalRequestTimedCallback(callback, param, relativeTime, proxyId);
     if (proxyId > -1) {
 	RLOGD("internalRequestTimedCallback, ***pthread_self()=%lu cid=%d",
 				pthread_self(), proxyId);
