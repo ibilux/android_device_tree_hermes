@@ -44,7 +44,6 @@
 ** 2020/01/05: handle ril identity in a better way		by: bilux (i.bilux@gmail.com)
 ** 2021/01/02: getIaCache is replaced in mtk-ril		by: bilux (i.bilux@gmail.com)
 ** 2021/01/02: don't wait until init callbacks finished	by: bilux (i.bilux@gmail.com)
-** 2021/01/02: don't set MTK modem property				by: bilux (i.bilux@gmail.com)
 */
 
 #define LOG_TAG "RILC"
@@ -636,7 +635,6 @@ void onNewCommandConnect(RIL_SOCKET_ID socket_id) {
 	property_set(PROPERTY_RIL_IMPL, "unavailable");
     }
 
-/*
 //    RIL_UNSOL_RESPONSE(RIL_UNSOL_SET_ATTACH_APN, NULL, 0, socket_id); // reset apn??
 // MTK modem stuff
 #define RIL_MUXREP_CASE	"ril.mux.report.case"
@@ -649,7 +647,6 @@ void onNewCommandConnect(RIL_SOCKET_ID socket_id) {
 		property_set("ctl.start", "muxreport-daemon");	// activate
 		property_set(RIL_MUXREPORT, "0");		// clear
     }
-*/
 }
 
 //static 
