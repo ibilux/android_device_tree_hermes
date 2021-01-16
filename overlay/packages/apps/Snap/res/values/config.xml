@@ -44,7 +44,4 @@
          Example: 1920x1080 -->
     <string name="preview_size_for_photo">1920x1080</string>
 
-    <!-- Enable support for image stabilization -->
-    <bool name="support_dis">false</bool>
-
 </resources>
