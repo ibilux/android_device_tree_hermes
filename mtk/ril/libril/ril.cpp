@@ -600,7 +600,7 @@ void onNewCommandConnect(RIL_SOCKET_ID socket_id) {
 
 #define GSM_RIL_INIT	"gsm.ril.init"
     do {
-		sleep(1);  // sleep 1s
+		usleep(100000);  // sleep for 0.1s
 		// wait until init callbacks finished, OR haven't started
 		property_get(GSM_RIL_INIT, prop, "1");
     } while (strcmp(prop, "1"));
