@@ -1,0 +1,42 @@
+From 80f09c92fa803acad772fa08ed79c2b78873540b Mon Sep 17 00:00:00 2001
+From: Bilux <i.bilux@gmail.com>
+Date: Wed, 27 Jan 2021 17:57:43 +0100
+Subject: [PATCH] Enable fallback to old ro.sf.hwrotation property
+
+---
+ services/surfaceflinger/SurfaceFlinger.cpp | 19 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
+index f513b9fd7f..ca54cb78e9 100644
+--- a/services/surfaceflinger/SurfaceFlinger.cpp
++++ b/services/surfaceflinger/SurfaceFlinger.cpp
+@@ -316,6 +316,24 @@ SurfaceFlinger::SurfaceFlinger() : SurfaceFlinger(SkipInitialization) {
+             mPrimaryDisplayOrientation = DisplayState::eOrientationDefault;
+             break;
+     }
++
++    if(primaryDisplayOrientation == V1_1::DisplayOrientation::ORIENTATION_0) {
++        int sfRotation = property_get_int32("ro.sf.hwrotation", -1);
++        switch(sfRotation) {
++            case 0:
++                mPrimaryDisplayOrientation = DisplayState::eOrientationDefault;
++                break;
++            case 90:
++                mPrimaryDisplayOrientation = DisplayState::eOrientation90;
++                break;
++            case 180:
++                mPrimaryDisplayOrientation = DisplayState::eOrientation180;
++                break;
++            case 270:
++                mPrimaryDisplayOrientation = DisplayState::eOrientation270;
++                break;
++        }
++    }
++
+     ALOGV("Primary Display Orientation is set to %2d.", mPrimaryDisplayOrientation);
+ 
+     mPrimaryDispSync.init(SurfaceFlinger::hasSyncFramework, SurfaceFlinger::dispSyncPresentTimeOffset);
+-- 
+2.17.1
+
