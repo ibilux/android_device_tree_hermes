@@ -1,8 +1,21 @@
 service ril-daemon-mtk /vendor/bin/hw/rild
     class main
     user radio
-    group radio cache inet misc audio log readproc wakelock system
+    group radio cache inet misc audio sdcard_r sdcard_rw log readproc wakelock system
     capabilities BLOCK_SUSPEND NET_ADMIN NET_RAW
+    disabled
+    oneshot
+
+service ril-daemon /vendor/bin/hw/rild
+    class main
+    user radio
+    group radio cache inet misc audio log sdcard_r sdcard_rw readproc wakelock system
+    capabilities BLOCK_SUSPEND NET_ADMIN NET_RAW
+    disabled
+    oneshot
 
 on property:ril.mtk=1
     start ril-daemon-mtk
+
+on property:persist.radio.airplane_mode_on=1
+    restart ril-daemon-mtk
