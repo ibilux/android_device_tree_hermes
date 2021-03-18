@@ -61,8 +61,7 @@ PRODUCT_PACKAGES += \
 # GPS
 PRODUCT_PACKAGES += \
     libcurl \
-    libnl_2 \
-    mtk_agpsd
+    libnl_2
 
 # Bluetooth
 PRODUCT_PACKAGES += \
