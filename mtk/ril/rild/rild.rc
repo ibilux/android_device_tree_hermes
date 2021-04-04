@@ -1,4 +1,6 @@
 service ril-daemon-mtk /vendor/bin/hw/rild
+    interface android.hardware.radio@1.0::IRadio slot1
+    interface android.hardware.radio@1.0::IRadio slot2
     class main
     user radio
     group radio cache inet misc audio sdcard_r sdcard_rw log readproc wakelock system
@@ -7,6 +9,8 @@ service ril-daemon-mtk /vendor/bin/hw/rild
     oneshot
 
 service ril-daemon /vendor/bin/hw/rild
+    interface android.hardware.radio@1.0::IRadio slot1
+    interface android.hardware.radio@1.0::IRadio slot2
     class main
     user radio
     group radio cache inet misc audio log sdcard_r sdcard_rw readproc wakelock system
