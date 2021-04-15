@@ -29,7 +29,8 @@ PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 
 # Apps
-PRODUCT_PACKAGES += Snap
+PRODUCT_PACKAGES += \
+    FootejCamera2
 
 # Shim symbols
 PRODUCT_PACKAGES += \
