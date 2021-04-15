@@ -28,6 +28,12 @@ TARGET_OTA_ASSERT_DEVICE := hermes
 # Compile apps
 PRODUCT_PACKAGES += Snap
 
+# Apps
+# PRODUCT_PACKAGES += \
+    SpectrumSuper \
+    init.spectrum \
+    privapp-permissions-com.hq.spectrumsuper
+
 # Shim symbols
 PRODUCT_PACKAGES += \
     mtkc \
