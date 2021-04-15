@@ -30,7 +30,10 @@ PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 
 # Apps
 PRODUCT_PACKAGES += \
-    FootejCamera2
+    FootejCamera2 \
+    SpectrumSuper \
+    init.spectrum \
+    privapp-permissions-com.hq.spectrumsuper
 
 # Shim symbols
 PRODUCT_PACKAGES += \

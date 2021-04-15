@@ -1,0 +1,261 @@
+### SPECTRUM KERNEL MANAGER ###
+# Ramdisk file for profile based kernel management
+# Implimentation inspired by Franco's fku profiles
+#############
+# Implimentation for Hermes (Xiaomi Redmi Note 2) by ibilux
+# CPU Examples: 403000, 806000, 1183000, 1326000, 1469000, 1625000, 1781000, 1950000, 2150000
+# GPU Examples: 253500, 299000, 390000, 442000, 546000
+#############
+
+
+### Boot much faster ###
+on property:init.svc.bootanim=running
+# Switch to NOOP and performance mode while booting
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "ondemand"
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2150000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 403000
+    write /proc/cpufreq/cpufreq_limited_max_freq_by_user 2150000
+    write /sys/block/mmcblk0/queue/scheduler noop
+    write /proc/hps/num_limit_thermal 8
+    
+### Initialization ###
+on property:sys.boot_completed=1
+# Switch back to cfq
+    write /sys/block/mmcblk0/queue/scheduler cfq
+# Enable Spectrum support
+    setprop spectrum.support 1
+# Add kernel name
+    setprop persist.spectrum.kernel Hermes
+# Switch back to default profile mode after boot
+    exec u:r:init:s0 root root -- /system/bin/init.spectrum.sh
+    exec u:r:su:s0 root root -- /system/bin/init.spectrum.sh
+
+### Disabled (hermes factory default profile) ###
+on property:persist.spectrum.profile=-1
+    # cpu0 (Assume SMP uses shared cpufreq policy for all CPUs)
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chown system.system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chown system system /proc/cpufreq/cpufreq_limited_max_freq_by_user
+    chmod 0664 /proc/cpufreq/cpufreq_limited_max_freq_by_user
+
+    # Set CPU max freqs
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2150000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 403000
+    write /proc/cpufreq/cpufreq_limited_max_freq_by_user 2150000
+
+    # Set GPU max freq
+    write /proc/gpufreq/gpufreq_opp_max_freq 0
+
+    # Configure governor settings for cluster
+    write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/boost 0
+    write /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 99
+    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 1183000
+    write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/target_loads 90
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_slack 80000
+
+    # Set CPU thermal limit
+    write /proc/hps/num_limit_thermal 4
+
+    # thermal performance mode switch
+    start thermal_normalmode
+    
+### Battery (default profile) ###
+on property:persist.spectrum.profile=1
+    # cpu0 (Assume SMP uses shared cpufreq policy for all CPUs)
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chown system.system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chown system system /proc/cpufreq/cpufreq_limited_max_freq_by_user
+    chmod 0664 /proc/cpufreq/cpufreq_limited_max_freq_by_user
+
+    # Set CPU max freqs
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1183000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 403000
+    write /proc/cpufreq/cpufreq_limited_max_freq_by_user 1183000
+
+    # Set GPU max freq
+    write /proc/gpufreq/gpufreq_opp_max_freq 0
+
+    # Configure governor settings for cluster
+    write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay "38000 1183000:18000 1469000:98000"
+    write /sys/devices/system/cpu/cpufreq/interactive/boost 0
+    write /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 97
+    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 806000
+    write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/target_loads "80 403000:70 806000:80 1183000:90 1326000:97 1469000:99"
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_slack 180000
+
+    # Set CPU thermal limit
+    write /proc/hps/num_limit_thermal 4
+
+    # thermal performance mode switch
+    start thermal_normalmode
+
+### Super Battery ###
+on property:persist.spectrum.profile=2
+    # cpu0 (Assume SMP uses shared cpufreq policy for all CPUs)
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chown system.system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chown system system /proc/cpufreq/cpufreq_limited_max_freq_by_user
+    chmod 0664 /proc/cpufreq/cpufreq_limited_max_freq_by_user
+
+    # Set CPU max freqs
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1183000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 403000
+    write /proc/cpufreq/cpufreq_limited_max_freq_by_user 1183000
+
+    # Set GPU max freq
+    write /proc/gpufreq/gpufreq_opp_max_freq 390000
+
+    # Configure governor settings for cluster
+
+    write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay 10000
+    write /sys/devices/system/cpu/cpufreq/interactive/boost 0
+    write /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration 10000
+    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 99
+    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 1183000
+    write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/target_loads 95
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 25000
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_slack 40000
+
+    # Set CPU thermal limit
+    write /proc/hps/num_limit_thermal 4
+
+    # thermal performance mode switch
+    start thermal_normalmode
+
+### Balance (hermes factory default profile) ###
+on property:persist.spectrum.profile=3
+    # cpu0 (Assume SMP uses shared cpufreq policy for all CPUs)
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chown system.system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chown system system /proc/cpufreq/cpufreq_limited_max_freq_by_user
+    chmod 0664 /proc/cpufreq/cpufreq_limited_max_freq_by_user
+
+    # Set CPU max freqs
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2150000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 403000
+    write /proc/cpufreq/cpufreq_limited_max_freq_by_user 2150000
+
+    # Set GPU max freq
+    write /proc/gpufreq/gpufreq_opp_max_freq 0
+
+    # Configure governor settings for cluster
+    write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/boost 0
+    write /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 99
+    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 1183000
+    write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/target_loads 90
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_slack 80000
+
+    # Set CPU thermal limit
+    write /proc/hps/num_limit_thermal 8
+
+    # thermal performance mode switch
+    start thermal_normalmode
+
+### Performance ### 
+on property:persist.spectrum.profile=4
+    # cpu0 (Assume SMP uses shared cpufreq policy for all CPUs)
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chown system.system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chown system system /proc/cpufreq/cpufreq_limited_max_freq_by_user
+    chmod 0664 /proc/cpufreq/cpufreq_limited_max_freq_by_user
+
+    # Set CPU max freqs
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2150000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 403000
+    write /proc/cpufreq/cpufreq_limited_max_freq_by_user 2150000
+
+    # Set GPU max freq
+    write /proc/gpufreq/gpufreq_opp_max_freq 0
+
+    # Configure governor settings for cluster
+
+    write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay "10000 1183000:10000 1326000:30000 1469000:20000"
+    write /sys/devices/system/cpu/cpufreq/interactive/boost 0
+    write /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 99
+    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 806000
+    write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 10000
+    write /sys/devices/system/cpu/cpufreq/interactive/target_loads "90 806000:92 1183000:95 1326000:96 1469000:98"
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 10000
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_slack 400000
+
+    # Set CPU thermal limit
+    write /proc/hps/num_limit_thermal 8
+
+    # thermal performance mode switch
+    start thermal_normalmode
+
+### Gaming (OverClock) ### 
+on property:persist.spectrum.profile=5
+    # cpu0 (Assume SMP uses shared cpufreq policy for all CPUs)
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    chown system.system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    chown system system /proc/cpufreq/cpufreq_limited_max_freq_by_user
+    chmod 0664 /proc/cpufreq/cpufreq_limited_max_freq_by_user
+    
+    # Set CPU max freqs
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2150000
+        write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 403000
+        write /proc/cpufreq/cpufreq_limited_max_freq_by_user 2150000
+
+    # Set GPU max freq
+    write /proc/gpufreq/gpufreq_opp_max_freq 546000
+
+    # Configure governor settings for cluster
+    write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay "5000 1183000:3000 1326000:4000 1469000:5000"
+    write /sys/devices/system/cpu/cpufreq/interactive/boost 0
+    write /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration 20000
+    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 99
+    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 806000
+    write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 1000
+    write /sys/devices/system/cpu/cpufreq/interactive/target_loads "90 806000:99 1183000:98 1326000:98 1469000:99"
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 1000
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_slack 200000
+
+    # Set CPU thermal limit
+    write /proc/hps/num_limit_thermal 8
+
+    # thermal performance mode switch
+    start thermal_perfmode
