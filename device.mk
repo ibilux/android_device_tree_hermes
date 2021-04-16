@@ -47,7 +47,8 @@ PRODUCT_PACKAGES += power.mt6795
 
 # RIL
 PRODUCT_PACKAGES += \
-    libccci_util
+    libccci_util \
+    reset-modem
 
 # Wifi tools
 PRODUCT_PACKAGES += \
