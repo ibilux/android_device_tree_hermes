@@ -21,5 +21,6 @@ service ril-daemon /vendor/bin/hw/rild
 on property:ril.mtk=1
     start ril-daemon-mtk
 
-#on property:persist.radio.airplane_mode_on=1
+on property:persist.radio.airplane_mode_on=1
 #    restart ril-daemon-mtk
+    exec u:r:init:s0 root root -- /system/bin/reset-modem.sh
