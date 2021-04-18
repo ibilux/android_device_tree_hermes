@@ -14,7 +14,21 @@
      limitations under the License.
 -->
 
+<!-- Camera app resources that may need to be customized
+     for different hardware or product builds. -->
 <resources>
+    <!-- This value may be tweaked to save memory on low RAM devices. The value
+         is the percentage of camera preview height/width to scale to. -->
+    <integer name="panorama_frame_size_reduction">100</integer>
+
+    <!-- Enable support for camera api v2 -->
+    <bool name="support_camera_api_v2">false</bool>
+
+    <!-- Opens back camera using openLegacy() and forces api v1 -->
+    <bool name="back_camera_open_legacy">true</bool>
+
+    <!-- Opens front camera using openLegacy() and forces api v1 -->
+    <bool name="front_camera_open_legacy">true</bool>
 
     <!-- Restart preview for back camera onPictureTaken -->
     <bool name="back_camera_restart_preview_onPictureTaken">true</bool>
@@ -22,7 +36,13 @@
     <!-- Restart preview for front camera onPictureTaken -->
     <bool name="front_camera_restart_preview_onPictureTaken">true</bool>
 
-    <!-- ISO values use numbers -->
+    <!-- Restart preview for additional camera onPictureTaken -->
+    <bool name="additional_camera_restart_preview_onPictureTaken">true</bool>
+
+    <!-- ISO values use numbers.
+         Example: 50 instead of ISO50 -->
     <bool name="iso_values_use_numbers">true</bool>
 
+    <!-- Enable support for image stabilization -->
+    <bool name="support_dis">false</bool>
 </resources>
