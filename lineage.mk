@@ -20,13 +20,13 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_l.mk)
 
 # Inherit some common LOS stuff.
-$(call inherit-product, vendor/cm/config/common_full_phone.mk)
+$(call inherit-product, vendor/rr/config/common_full_phone.mk)
 
 # Inherit from hermes device
 $(call inherit-product, device/xiaomi/hermes/device.mk)
 
 PRODUCT_DEVICE := hermes
-PRODUCT_NAME := lineage_hermes
+PRODUCT_NAME := rr_hermes
 PRODUCT_BRAND := Xiaomi
 PRODUCT_MODEL := Redmi Note 2
 PRODUCT_MANUFACTURER := Xiaomi
