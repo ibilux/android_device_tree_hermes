@@ -30,10 +30,9 @@ PRODUCT_PACKAGES += Snap
 
 # Shim symbols
 PRODUCT_PACKAGES += \
-    libshim_c \
-    libshim_ui \
-    libshim_xlog \
-    libshim_netutils
+    mtkc \
+    mtklog \
+    mtkui
 
 # Power HAL
 PRODUCT_PACKAGES += power.mt6795

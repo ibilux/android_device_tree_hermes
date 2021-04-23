@@ -7,17 +7,6 @@ on early-init
     write /sys/class/leds/lcd-backlight/trigger "backlight"
 
 on init
-# Shim libs
-    export LD_SHIM_LIBS \
-        "/system/lib/libc.so|libshim_c.so: \
-        /system/lib64/libc.so|libshim_c.so: \
-        /system/lib/libui.so|libshim_ui.so: \
-        /system/lib64/libui.so|libshim_ui.so: \
-        /system/lib/liblog.so|libshim_xlog.so: \
-        /system/lib64/liblog.so|libshim_xlog.so: \
-        /system/lib/libnetutils.so|libshim_netutils.so: \
-        /system/lib64/libnetutils.so|libshim_netutils.so"
-
 # Protect
     mkdir /protect_f 0771 system system
     mkdir /protect_s 0771 system system
