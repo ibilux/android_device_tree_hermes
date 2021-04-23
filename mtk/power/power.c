@@ -84,7 +84,16 @@ static void power_hint(struct power_module *module, power_hint_t hint,
     }
 }
 
-void set_feature(struct power_module *module, feature_t feature, int state) {
+void set_feature(struct power_module *module, feature_t feature, int state)
+{
+#ifdef TAP_TO_WAKE_NODE
+    char tmp_str[64];
+    if (feature == POWER_FEATURE_DOUBLE_TAP_TO_WAKE) {
+        snprintf(tmp_str, 64, "%d", state);
+        power_fwrite(TAP_TO_WAKE_NODE, tmp_str);
+        return;
+    }
+#endif
 }
 
 static struct hw_module_methods_t power_module_methods = {
