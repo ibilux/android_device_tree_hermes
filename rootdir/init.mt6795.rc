@@ -355,16 +355,28 @@ on boot
 # Init services
 
 # Graphic
-#service guiext-server /vendor/bin/guiext-server
-#    class main
-#    user system
-#    group system graphics
+service guiext-server /vendor/bin/guiext-server
+    class main
+    user system
+    group system graphics
 
 #service pq /vendor/bin/pq
 #    class main
 #    user system
 #    group system graphics
 #    oneshot
+
+service gas_srv /vendor/bin/gas_srv
+    class core
+    user system
+    group system
+    disabled
+
+service ged_srv /vendor/bin/ged_srv
+    class core
+    user system
+    group system
+    disabled
 
 service pvrsrvctl /vendor/bin/pvrsrvctl --no-module --start
     class main
@@ -553,6 +565,9 @@ on property:ril.mtk=1
     start ril-daemon-mtk
 
 on property:sys.boot_completed=1
+    start gas_srv
+    start ged_srv
+
 # end boot time tune
     write /dev/cpuset/top-app/cpus 0-7
     write /dev/cpuset/foreground/cpus 0-5
