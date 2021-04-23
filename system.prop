@@ -51,3 +51,6 @@ ro.camera.sound.forced=0
 
 # FM Radio
 fmradio.driver.enable=1
+
+# GPS
+persist.force.gps.mode=gnss
