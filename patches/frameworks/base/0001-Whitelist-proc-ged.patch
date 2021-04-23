@@ -1,0 +1,25 @@
+From abe1ad4368edd814ce792f04d9bf452b2b257c30 Mon Sep 17 00:00:00 2001
+From: Bilux <i.bilux@gmail.com>
+Date: Thu, 26 Mar 2020 11:35:41 +0100
+Subject: [PATCH] zygote: Add ged to whitelisted paths
+
+Change-Id: Ief6763ca1b523c0fb4a1db12434152ff5b340f56
+---
+ core/jni/fd_utils-inl.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/core/jni/fd_utils-inl.h b/core/jni/fd_utils-inl.h
+index a68a60274ac..f87e0468719 100644
+--- a/core/jni/fd_utils-inl.h
++++ b/core/jni/fd_utils-inl.h
+@@ -59,6 +59,7 @@ static const char* kPathWhitelist[] = {
+   "/dev/ion",
+   "/dev/dri/renderD129", // Fixes b/31172436
+   "/system/framework/org.cyanogenmod.platform-res.apk",
++  "/proc/ged",
+ #ifdef PATH_WHITELIST_EXTRA_H
+ PATH_WHITELIST_EXTRA_H
+ #endif
+-- 
+2.13.0
+

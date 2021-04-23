@@ -1,99 +1,24 @@
-From e65bdb5ad8e4bdb42cada4c534010fed9a62a2a0 Mon Sep 17 00:00:00 2001
-From: Smosia <0stas0@mail.ru>
-Date: Fri, 11 Jan 2019 18:02:24 +0300
-Subject: [PATCH] Add mtk camera profiles
+From 53fc60b048713a20220bf7c1eb9a48a00db374d3 Mon Sep 17 00:00:00 2001
+From: bilux <i.bilux@gmail.com>
+Date: Fri, 23 Apr 2021 16:41:12 +0100
+Subject: [PATCH] MTK camera profiles support
 
-Support mt6795 lolipop blobs
-
-Change-Id: Ib93dbffc363e09066440238b79755fd9356ed058
+Signed-off-by: bilux <i.bilux@gmail.com>
 ---
- include/media/MediaProfiles.h      |   93 ++++
- include/media/val_types_public.h   |  572 ++++++++++++++++++++
- include/media/venc_drv_if_public.h |  895 ++++++++++++++++++++++++++++++++
+ include/media/MediaProfiles.h      |   45 ++
+ include/media/val_types_public.h   |  572 ++++++++++++++++
+ include/media/venc_drv_if_public.h |  895 +++++++++++++++++++++++++
  media/libmedia/Android.mk          |    4 +
- media/libmedia/MediaProfiles.cpp   | 1006 ++++++++++++++++++++++++++++++++++++
- 5 files changed, 2570 insertions(+)
+ media/libmedia/MediaProfiles.cpp   | 1006 ++++++++++++++++++++++++++++
+ 5 files changed, 2522 insertions(+)
  create mode 100644 include/media/val_types_public.h
  create mode 100644 include/media/venc_drv_if_public.h
 
 diff --git a/include/media/MediaProfiles.h b/include/media/MediaProfiles.h
-index b1c7c15..bf0f90b 100644
+index b9e7564..3a8c91e 100644
 --- a/include/media/MediaProfiles.h
 +++ b/include/media/MediaProfiles.h
-@@ -34,7 +34,23 @@ enum camcorder_quality {
-     CAMCORDER_QUALITY_1080P = 6,
-     CAMCORDER_QUALITY_QVGA = 7,
-     CAMCORDER_QUALITY_2160P = 8,
-+#ifdef MTK_HARDWARE
-+    CAMCORDER_QUALITY_MTK_LOW              = 108,
-+    CAMCORDER_QUALITY_MTK_MEDIUM           = 109,
-+    CAMCORDER_QUALITY_MTK_HIGH             = 110,
-+    CAMCORDER_QUALITY_MTK_FINE             = 111,
-+    CAMCORDER_QUALITY_MTK_NIGHT_LOW        = 112,
-+    CAMCORDER_QUALITY_MTK_NIGHT_MEDIUM     = 113,
-+    CAMCORDER_QUALITY_MTK_NIGHT_HIGH       = 114,
-+    CAMCORDER_QUALITY_MTK_NIGHT_FINE       = 115,
-+    CAMCORDER_QUALITY_MTK_LIVE_EFFECT      = 116,
-+    CAMCORDER_QUALITY_MTK_H264_HIGH        = 117,
-+    CAMCORDER_QUALITY_MTK_MPEG4_1080P      = 118,
-+    CAMCORDER_QUALITY_MTK_FINE_4K2K        = 123,
-+    CAMCORDER_QUALITY_LIST_END             = 123,
-+#else//not MTK_HARDWARE
-     CAMCORDER_QUALITY_LIST_END = 8,
-+#endif//MTK_HARDWARE
- 
-     CAMCORDER_QUALITY_TIME_LAPSE_LIST_START = 1000,
-     CAMCORDER_QUALITY_TIME_LAPSE_LOW  = 1000,
-@@ -46,7 +62,23 @@ enum camcorder_quality {
-     CAMCORDER_QUALITY_TIME_LAPSE_1080P = 1006,
-     CAMCORDER_QUALITY_TIME_LAPSE_QVGA = 1007,
-     CAMCORDER_QUALITY_TIME_LAPSE_2160P = 1008,
-+#ifdef MTK_HARDWARE
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_LOW              = 1108,
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_MEDIUM           = 1109,
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_HIGH             = 1110,
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE             = 1111,
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_LOW        = 1112,
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_MEDIUM     = 1113,
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_HIGH       = 1114,
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_FINE       = 1115,
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_LIVE_EFFECT      = 1116,
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_H264_HIGH        = 1117,
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_MPEG4_1080P      = 1118,
-+    CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE_4K2K        = 1123,
-+    CAMCORDER_QUALITY_TIME_LAPSE_LIST_END             = 1123,
-+#else//not MTK_HARDWARE
-     CAMCORDER_QUALITY_TIME_LAPSE_LIST_END = 1008,
-+#endif//MTK_HARDWARE
- 
-     CAMCORDER_QUALITY_HIGH_SPEED_LIST_START = 2000,
-     CAMCORDER_QUALITY_HIGH_SPEED_LOW  = 2000,
-@@ -55,7 +87,24 @@ enum camcorder_quality {
-     CAMCORDER_QUALITY_HIGH_SPEED_720P = 2003,
-     CAMCORDER_QUALITY_HIGH_SPEED_1080P = 2004,
-     CAMCORDER_QUALITY_HIGH_SPEED_2160P = 2005,
-+#ifdef MTK_HARDWARE
-+    CAMCORDER_QUALITY_MTK_SLOW_MOTION_LIST_START    = 2219,
-+    CAMCORDER_QUALITY_MTK_SLOW_MOTION_LOW           = 2219,
-+    CAMCORDER_QUALITY_MTK_SLOW_MOTION_MEDIUM        = 2220,
-+    CAMCORDER_QUALITY_MTK_SLOW_MOTION_HIGH          = 2221,
-+    CAMCORDER_QUALITY_MTK_SLOW_MOTION_FINE          = 2222,
-+
-+    CAMCORDER_QUALITY_MTK_VGA_120                   = 2231,
-+    CAMCORDER_QUALITY_MTK_720P_60                   = 2240,
-+    CAMCORDER_QUALITY_MTK_720P_120                  = 2241,
-+    CAMCORDER_QUALITY_MTK_720P_180                  = 2242,
-+    CAMCORDER_QUALITY_MTK_1080P_60                  = 2250,
-+    CAMCORDER_QUALITY_MTK_1080P_120                 = 2251,
-+    CAMCORDER_QUALITY_MTK_SLOW_MOTION_LIST_END      = 2251,
-+    CAMCORDER_QUALITY_HIGH_SPEED_LIST_END           = 2251,
-+#else //not MTK_HARDWARE
-     CAMCORDER_QUALITY_HIGH_SPEED_LIST_END = 2005,
-+#endif//MTK_HARDWARE
- 
-     CAMCORDER_QUALITY_VENDOR_START = 10000,
-     CAMCORDER_QUALITY_VGA = 10000,
-@@ -80,6 +129,17 @@ enum audio_decoder {
+@@ -132,6 +132,17 @@ enum audio_decoder {
      AUDIO_DECODER_WMA,
  };
  
@@ -107,11 +32,11 @@ index b1c7c15..bf0f90b 100644
 +    BACK_CAMERA  = 0,
 +    FRONT_CAMERA = 1,
 +};
-+#endif//MTK_HARDWARE
++#endif
  
  class MediaProfiles
  {
-@@ -183,6 +243,12 @@ public:
+@@ -235,6 +246,12 @@ public:
       */
      int getStartTimeOffsetMs(int cameraId) const;
  
@@ -119,15 +44,16 @@ index b1c7c15..bf0f90b 100644
 +    String8 getCamcorderProfilesCaps(int id = 0);
 +    size_t getCamcorderProfilesNum(int id = 0);
 +    void dumpProfiles();
-+#endif//MTK_HARDWARE
++#endif
 +
  private:
      enum {
          // Camcorder profiles (high/low) and timelapse profiles (high/low)
-@@ -460,6 +526,33 @@ private:
+@@ -512,6 +529,34 @@ private:
  
      RequiredProfiles *mRequiredProfileRefs;
      Vector<int>              mCameraIds;
++
 +#ifdef MTK_HARDWARE
 +    static video_encoder eHighestCodec;
 +    static uint32_t sMaxWdith;
@@ -154,7 +80,7 @@ index b1c7c15..bf0f90b 100644
 +    static VideoCodec *createMTKMediumVideoProfile(camcorder_mode CamMode, camera_id CamId);
 +    static VideoCodec *createMTKHighVideoProfile(camcorder_mode CamMode, camera_id CamId);
 +    static VideoCodec *createMTKFineVideoProfile(camcorder_mode CamMode, camera_id CamId);
-+#endif//MTK_HARDWARE
++#endif
  };
  
  }; // namespace android
@@ -1653,12 +1579,12 @@ index df4e4b6..b02cafa 100644
  
  # for memory heap analysis
 diff --git a/media/libmedia/MediaProfiles.cpp b/media/libmedia/MediaProfiles.cpp
-index dd72c16..c92b7e9 100644
+index 66bf05d..99b208f 100644
 --- a/media/libmedia/MediaProfiles.cpp
 +++ b/media/libmedia/MediaProfiles.cpp
-@@ -28,6 +28,12 @@
- #include <media/stagefright/foundation/ADebug.h>
- #include <OMX_Video.h>
+@@ -32,6 +32,12 @@
+ #define MTK_HARDWARE
+ #endif
  
 +#ifdef MTK_HARDWARE
 +#include <sys/sysconf.h>
@@ -1669,7 +1595,7 @@ index dd72c16..c92b7e9 100644
  namespace android {
  
  Mutex MediaProfiles::sLock;
-@@ -111,6 +117,10 @@ const MediaProfiles::NameToTagMap MediaProfiles::sCamcorderQualityNameMap[] = {
+@@ -165,6 +171,10 @@ const MediaProfiles::NameToTagMap MediaProfiles::sCamcorderQualityNameMap[] = {
  #define UNUSED
  #endif
  
@@ -1680,7 +1606,7 @@ index dd72c16..c92b7e9 100644
  /*static*/ void
  MediaProfiles::logVideoCodec(const MediaProfiles::VideoCodec& codec UNUSED)
  {
-@@ -632,21 +642,61 @@ MediaProfiles::getInstance()
+@@ -686,21 +696,61 @@ MediaProfiles::getInstance()
  /*static*/ MediaProfiles::VideoEncoderCap*
  MediaProfiles::createDefaultH263VideoEncoderCap()
  {
@@ -1700,10 +1626,10 @@ index dd72c16..c92b7e9 100644
 +        ALOGE("[ERROR] don't support H263!!");
 +        return NULL;
 +    }
-+#else//not MTK_HARDWARE
++#else
      return new MediaProfiles::VideoEncoderCap(
          VIDEO_ENCODER_H263, 192000, 420000, 176, 352, 144, 288, 1, 20);
-+#endif//MTK_HARDWARE
++#endif
  }
  
  /*static*/ MediaProfiles::VideoEncoderCap*
@@ -1725,10 +1651,10 @@ index dd72c16..c92b7e9 100644
 +        ALOGE("[ERROR] don't support MPEG4!!");
 +        return NULL;
 +    }
-+#else//not MTK_HARDWARE
++#else
      return new MediaProfiles::VideoEncoderCap(
          VIDEO_ENCODER_MPEG_4_SP, 192000, 420000, 176, 352, 144, 288, 1, 20);
-+#endif//MTK_HARDWARE
++#endif
  }
  
  
@@ -1738,29 +1664,29 @@ index dd72c16..c92b7e9 100644
 +#ifdef MTK_HARDWARE
 +    profiles->mVideoEncoders.add(createDefaultH264VideoEncoderCap());
 +    profiles->mVideoEncoders.add(createDefaultHEVCVideoEncoderCap());
-+#endif//MTK_HARDWARE
++#endif
      profiles->mVideoEncoders.add(createDefaultH263VideoEncoderCap());
      profiles->mVideoEncoders.add(createDefaultM4vVideoEncoderCap());
  }
-@@ -760,6 +810,9 @@ MediaProfiles::createDefaultCamcorderHighProfiles(
+@@ -814,6 +864,9 @@ MediaProfiles::createDefaultCamcorderHighProfiles(
  /*static*/ void
  MediaProfiles::createDefaultCamcorderProfiles(MediaProfiles *profiles)
  {
 +#ifdef MTK_HARDWARE
 +    createMTKCamcorderProfiles(profiles);
-+#else//not MTK_HARDWARE
++#else
      // low camcorder profiles.
      MediaProfiles::CamcorderProfile *lowProfile, *lowSpecificProfile;
      createDefaultCamcorderLowProfiles(&lowProfile, &lowSpecificProfile);
-@@ -789,6 +842,7 @@ MediaProfiles::createDefaultCamcorderProfiles(MediaProfiles *profiles)
+@@ -843,6 +896,7 @@ MediaProfiles::createDefaultCamcorderProfiles(MediaProfiles *profiles)
      // media_profiles.xml file, We assume that the default camera id
      // is 0 and that is the only camera available.
      profiles->mCameraIds.push(0);
-+#endif//MTK_HARDWARE
++#endif
  }
  
  /*static*/ void
-@@ -796,6 +850,22 @@ MediaProfiles::createDefaultAudioEncoders(MediaProfiles *profiles)
+@@ -850,6 +904,22 @@ MediaProfiles::createDefaultAudioEncoders(MediaProfiles *profiles)
  {
      profiles->mAudioEncoders.add(createDefaultAmrNBEncoderCap());
      profiles->mAudioEncoders.add(createDefaultLpcmEncoderCap());
@@ -1779,11 +1705,11 @@ index dd72c16..c92b7e9 100644
 +    //
 +    MediaProfiles::AudioEncoderCap* mVorbisCap = new MediaProfiles::AudioEncoderCap(AUDIO_ENCODER_VORBIS, 31980, 202960, 8000, 48000,  1, 2);
 +    profiles->mAudioEncoders.add(mVorbisCap);
-+#endif//MTK_HARDWARE
++#endif
  }
  
  /*static*/ void
-@@ -843,10 +913,26 @@ MediaProfiles::createDefaultImageEncodingQualityLevels(MediaProfiles *profiles)
+@@ -897,10 +967,26 @@ MediaProfiles::createDefaultImageEncodingQualityLevels(MediaProfiles *profiles)
  {
      ImageEncodingQualityLevels *levels = new ImageEncodingQualityLevels();
      levels->mCameraId = 0;
@@ -1791,11 +1717,11 @@ index dd72c16..c92b7e9 100644
 +    levels->mLevels.add(75);
 +    levels->mLevels.add(85);
 +    levels->mLevels.add(95);
-+#else//not MTK_HARDWARE
++#else
      levels->mLevels.add(70);
      levels->mLevels.add(80);
      levels->mLevels.add(90);
-+#endif//MTK_HARDWARE
++#endif
      profiles->mImageEncodingQualityLevels.add(levels);
 +
 +#ifdef MTK_HARDWARE
@@ -1806,11 +1732,11 @@ index dd72c16..c92b7e9 100644
 +    FrontCameraLevels->mLevels.add(85);
 +    FrontCameraLevels->mLevels.add(95);
 +    profiles->mImageEncodingQualityLevels.add(FrontCameraLevels);
-+#endif//MTK_HARDWARE
++#endif
  }
  
  /*static*/ MediaProfiles*
-@@ -1109,4 +1195,924 @@ MediaProfiles::~MediaProfiles()
+@@ -1163,4 +1249,924 @@ MediaProfiles::~MediaProfiles()
      mCamcorderProfiles.clear();
  #endif
  }
@@ -2733,8 +2659,8 @@ index dd72c16..c92b7e9 100644
 +
 +    return videoCodec;
 +}
-+#endif//MTK_HARDWARE
++#endif
  } // namespace android
 -- 
-1.9.1
+2.31.1
 

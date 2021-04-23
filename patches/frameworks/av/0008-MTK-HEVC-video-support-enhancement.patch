@@ -1,0 +1,43 @@
+From 58de2c296644cbd4c5296d5a9272ee21a02e0ba8 Mon Sep 17 00:00:00 2001
+From: bilux <i.bilux@gmail.com>
+Date: Mon, 23 Mar 2020 10:15:55 +0100
+Subject: [PATCH] MTK HEVC video support enhancement
+
+StripStartcode 00 00 01 for HEVC directlink.
+
+Signed-off-by: bilux <i.bilux@gmail.com>
+---
+ media/libstagefright/MPEG4Writer.cpp | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/media/libstagefright/MPEG4Writer.cpp b/media/libstagefright/MPEG4Writer.cpp
+index 3a79bc5..dd97c80 100644
+--- a/media/libstagefright/MPEG4Writer.cpp
++++ b/media/libstagefright/MPEG4Writer.cpp
+@@ -55,6 +55,10 @@
+ #define __predict_false(exp) __builtin_expect((exp) != 0, 0)
+ #endif
+ 
++#ifndef MTK_HARDWARE
++#define MTK_HARDWARE
++#endif
++
+ #define WARN_UNLESS(condition, message, ...) \
+ ( (__predict_false(condition)) ? false : ({ \
+     ALOGW("Condition %s failed "  message, #condition, ##__VA_ARGS__); \
+@@ -1195,6 +1199,12 @@ void MPEG4Writer::StripStartcode(MediaBuffer *buffer) {
+         buffer->set_range(
+                 buffer->range_offset() + 4, buffer->range_length() - 4);
+     }
++#ifdef MTK_HARDWARE //&& defined(MTK_VIDEO_HEVC_SUPPORT)
++	else if (!memcmp(ptr, "\x00\x00\x01", 3)) {
++		//ALOGV("StripStartcode 00 00 01 for HEVC directlink");
++		buffer->set_range(buffer->range_offset() + 3, buffer->range_length() - 3);
++	}
++#endif
+ }
+ 
+ off64_t MPEG4Writer::addMultipleLengthPrefixedSamples_l(MediaBuffer *buffer) {
+-- 
+2.31.1
+

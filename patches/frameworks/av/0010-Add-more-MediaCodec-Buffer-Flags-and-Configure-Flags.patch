@@ -1,0 +1,53 @@
+From c1fefa366d9fbde87c24d1c0c4789d523440c35e Mon Sep 17 00:00:00 2001
+From: bilux <i.bilux@gmail.com>
+Date: Fri, 23 Apr 2021 16:34:08 +0100
+Subject: [PATCH] Add more MediaCodec Buffer Flags and Configure Flags
+
+Signed-off-by: bilux <i.bilux@gmail.com>
+---
+ include/media/stagefright/MediaCodec.h | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/include/media/stagefright/MediaCodec.h b/include/media/stagefright/MediaCodec.h
+index 05f6581..5998e31 100644
+--- a/include/media/stagefright/MediaCodec.h
++++ b/include/media/stagefright/MediaCodec.h
+@@ -26,6 +26,10 @@
+ #include <media/stagefright/FrameRenderTracker.h>
+ #include <utils/Vector.h>
+ 
++#ifndef MTK_HARDWARE
++#define MTK_HARDWARE
++#endif
++
+ namespace android {
+ 
+ struct ABuffer;
+@@ -46,12 +50,24 @@ class Surface;
+ struct MediaCodec : public AHandler {
+     enum ConfigureFlags {
+         CONFIGURE_FLAG_ENCODE   = 1,
++#ifdef MTK_HARDWARE
++        CONFIGURE_FLAG_16X_SLOWMOTION = (0x1<<1),
++        CONFIGURE_FLAG_ENABLE_THUMBNAIL_OPTIMIZATION = (0x1<<2),
++#endif
+     };
+ 
+     enum BufferFlags {
+         BUFFER_FLAG_SYNCFRAME   = 1,
+         BUFFER_FLAG_CODECCONFIG = 2,
+         BUFFER_FLAG_EOS         = 4,
++#ifdef MTK_HARDWARE
++        BUFFER_FLAG_ENDOFFRAME  = 8,
++        BUFFER_FLAG_DUMMY       = 16,
++        BUFFER_FLAG_INTERPOLATE_FRAME  = 32,
++        BUFFER_FLAG_INVALID_PTS = 64,
++        BUFFER_FLAG_PARTAIL_FRAME  = 128,
++        BUFFER_FLAG_MULTISLICE = 256,
++#endif
+         BUFFER_FLAG_EXTRADATA   = 0x1000,
+         BUFFER_FLAG_DATACORRUPT = 0x2000,
+     };
+-- 
+2.31.1
+

@@ -1,0 +1,94 @@
+From 57fed31f45897b32fbda6de972167f2d227f38ab Mon Sep 17 00:00:00 2001
+From: bilux <i.bilux@gmail.com>
+Date: Thu, 22 Apr 2021 20:52:55 +0100
+Subject: [PATCH] add MediaBufferGroup:MediaBufferGroup()
+
+add Android M MediaBufferGroup:MediaBufferGroup() for libwvm.so
+add missing MediaBufferGroup::acquire_buffer symbol
+
+Signed-off-by: bilux <i.bilux@gmail.com>
+---
+ include/media/stagefright/MediaBufferGroup.h    | 10 ++++++++++
+ .../foundation/MediaBufferGroup.cpp             | 17 +++++++++++++++++
+ 2 files changed, 27 insertions(+)
+
+diff --git a/include/media/stagefright/MediaBufferGroup.h b/include/media/stagefright/MediaBufferGroup.h
+index 3051406..fb15e5f 100644
+--- a/include/media/stagefright/MediaBufferGroup.h
++++ b/include/media/stagefright/MediaBufferGroup.h
+@@ -22,6 +22,10 @@
+ #include <utils/Errors.h>
+ #include <utils/threads.h>
+ 
++#ifndef MTK_HARDWARE
++#define MTK_HARDWARE
++#endif
++
+ namespace android {
+ 
+ class MediaBuffer;
+@@ -29,6 +33,9 @@ class MetaData;
+ 
+ class MediaBufferGroup : public MediaBufferObserver {
+ public:
++#ifdef MTK_HARDWARE
++    MediaBufferGroup();
++#endif
+     MediaBufferGroup(size_t growthLimit = 0);
+ 
+     // create a media buffer group with preallocated buffers
+@@ -48,6 +55,9 @@ public:
+     // If requestedSize is 0, any free MediaBuffer will be returned.
+     // If requestedSize is > 0, the returned MediaBuffer should have buffer
+     // size of at least requstedSize.
++#ifdef MTK_HARDWARE
++    status_t acquire_buffer(MediaBuffer **buffer, bool nonBlocking = false);
++#endif
+     status_t acquire_buffer(
+             MediaBuffer **buffer, bool nonBlocking = false, size_t requestedSize = 0);
+ 
+diff --git a/media/libstagefright/foundation/MediaBufferGroup.cpp b/media/libstagefright/foundation/MediaBufferGroup.cpp
+index 8e4d064..b2188c5 100644
+--- a/media/libstagefright/foundation/MediaBufferGroup.cpp
++++ b/media/libstagefright/foundation/MediaBufferGroup.cpp
+@@ -21,6 +21,10 @@
+ #include <media/stagefright/MediaBuffer.h>
+ #include <media/stagefright/MediaBufferGroup.h>
+ 
++#ifndef MTK_HARDWARE
++#define MTK_HARDWARE
++#endif
++
+ namespace android {
+ 
+ // std::min is not constexpr in C++11
+@@ -32,6 +36,12 @@ constexpr T MIN(const T &a, const T &b) { return a <= b ? a : b; }
+ static const size_t kSharedMemoryThreshold = MIN(
+         (size_t)MediaBuffer::kSharedMemThreshold, (size_t)(4 * 1024));
+ 
++#ifdef MTK_HARDWARE
++MediaBufferGroup::MediaBufferGroup() :
++    mGrowthLimit(0) {
++}
++#endif
++
+ MediaBufferGroup::MediaBufferGroup(size_t growthLimit) :
+     mGrowthLimit(growthLimit) {
+ }
+@@ -138,6 +148,13 @@ bool MediaBufferGroup::has_buffers() {
+     return false;
+ }
+ 
++#ifdef MTK_HARDWARE
++status_t MediaBufferGroup::acquire_buffer(
++        MediaBuffer **out, bool nonBlocking) {
++    return acquire_buffer(out, nonBlocking, 0);
++}
++#endif
++
+ status_t MediaBufferGroup::acquire_buffer(
+         MediaBuffer **out, bool nonBlocking, size_t requestedSize) {
+     Mutex::Autolock autoLock(mLock);
+-- 
+2.31.1
+

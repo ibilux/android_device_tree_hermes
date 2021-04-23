@@ -1,0 +1,218 @@
+From 43083d0674ac1e502a033b3540a99cef48131e1e Mon Sep 17 00:00:00 2001
+From: bilux <i.bilux@gmail.com>
+Date: Tue, 21 Apr 2020 21:33:58 +0100
+Subject: [PATCH] MTK profiles support
+
+Signed-off-by: bilux <i.bilux@gmail.com>
+---
+ include/media/MediaProfiles.h    | 52 ++++++++++++++++++++++++++++++
+ include/media/mediarecorder.h    | 11 +++++++
+ media/libmedia/MediaProfiles.cpp | 54 ++++++++++++++++++++++++++++++++
+ 3 files changed, 117 insertions(+)
+
+diff --git a/include/media/MediaProfiles.h b/include/media/MediaProfiles.h
+index b1c7c15..b9e7564 100644
+--- a/include/media/MediaProfiles.h
++++ b/include/media/MediaProfiles.h
+@@ -21,6 +21,10 @@
+ #include <utils/threads.h>
+ #include <media/mediarecorder.h>
+ 
++#ifndef MTK_HARDWARE
++#define MTK_HARDWARE
++#endif
++
+ namespace android {
+ 
+ enum camcorder_quality {
+@@ -34,7 +38,23 @@ enum camcorder_quality {
+     CAMCORDER_QUALITY_1080P = 6,
+     CAMCORDER_QUALITY_QVGA = 7,
+     CAMCORDER_QUALITY_2160P = 8,
++#ifdef MTK_HARDWARE
++    CAMCORDER_QUALITY_MTK_LOW              = 108,
++    CAMCORDER_QUALITY_MTK_MEDIUM           = 109,
++    CAMCORDER_QUALITY_MTK_HIGH             = 110,
++    CAMCORDER_QUALITY_MTK_FINE             = 111,
++    CAMCORDER_QUALITY_MTK_NIGHT_LOW        = 112,
++    CAMCORDER_QUALITY_MTK_NIGHT_MEDIUM     = 113,
++    CAMCORDER_QUALITY_MTK_NIGHT_HIGH       = 114,
++    CAMCORDER_QUALITY_MTK_NIGHT_FINE       = 115,
++    CAMCORDER_QUALITY_MTK_LIVE_EFFECT      = 116,
++    CAMCORDER_QUALITY_MTK_H264_HIGH        = 117,
++    CAMCORDER_QUALITY_MTK_MPEG4_1080P      = 118,
++    CAMCORDER_QUALITY_MTK_FINE_4K2K        = 123,
++    CAMCORDER_QUALITY_LIST_END             = 123,
++#else
+     CAMCORDER_QUALITY_LIST_END = 8,
++#endif
+ 
+     CAMCORDER_QUALITY_TIME_LAPSE_LIST_START = 1000,
+     CAMCORDER_QUALITY_TIME_LAPSE_LOW  = 1000,
+@@ -46,7 +66,23 @@ enum camcorder_quality {
+     CAMCORDER_QUALITY_TIME_LAPSE_1080P = 1006,
+     CAMCORDER_QUALITY_TIME_LAPSE_QVGA = 1007,
+     CAMCORDER_QUALITY_TIME_LAPSE_2160P = 1008,
++#ifdef MTK_HARDWARE
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_LOW              = 1108,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_MEDIUM           = 1109,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_HIGH             = 1110,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE             = 1111,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_LOW        = 1112,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_MEDIUM     = 1113,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_HIGH       = 1114,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_FINE       = 1115,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_LIVE_EFFECT      = 1116,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_H264_HIGH        = 1117,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_MPEG4_1080P      = 1118,
++    CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE_4K2K        = 1123,
++    CAMCORDER_QUALITY_TIME_LAPSE_LIST_END             = 1123,
++#else
+     CAMCORDER_QUALITY_TIME_LAPSE_LIST_END = 1008,
++#endif
+ 
+     CAMCORDER_QUALITY_HIGH_SPEED_LIST_START = 2000,
+     CAMCORDER_QUALITY_HIGH_SPEED_LOW  = 2000,
+@@ -55,7 +91,23 @@ enum camcorder_quality {
+     CAMCORDER_QUALITY_HIGH_SPEED_720P = 2003,
+     CAMCORDER_QUALITY_HIGH_SPEED_1080P = 2004,
+     CAMCORDER_QUALITY_HIGH_SPEED_2160P = 2005,
++#ifdef MTK_HARDWARE
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_LIST_START    = 2219,
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_LOW           = 2219,
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_MEDIUM        = 2220,
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_HIGH          = 2221,
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_FINE          = 2222,
++    CAMCORDER_QUALITY_MTK_VGA_120                   = 2231,
++    CAMCORDER_QUALITY_MTK_720P_60                   = 2240,
++    CAMCORDER_QUALITY_MTK_720P_120                  = 2241,
++    CAMCORDER_QUALITY_MTK_720P_180                  = 2242,
++    CAMCORDER_QUALITY_MTK_1080P_60                  = 2250,
++    CAMCORDER_QUALITY_MTK_1080P_120                 = 2251,
++    CAMCORDER_QUALITY_MTK_SLOW_MOTION_LIST_END      = 2251,
++    CAMCORDER_QUALITY_HIGH_SPEED_LIST_END           = 2251,
++#else
+     CAMCORDER_QUALITY_HIGH_SPEED_LIST_END = 2005,
++#endif
+ 
+     CAMCORDER_QUALITY_VENDOR_START = 10000,
+     CAMCORDER_QUALITY_VGA = 10000,
+diff --git a/include/media/mediarecorder.h b/include/media/mediarecorder.h
+index c7b7840..b627215 100644
+--- a/include/media/mediarecorder.h
++++ b/include/media/mediarecorder.h
+@@ -25,6 +25,10 @@
+ #include <media/IMediaRecorderClient.h>
+ #include <media/IMediaDeathNotifier.h>
+ 
++#ifndef MTK_HARDWARE
++#define MTK_HARDWARE
++#endif
++
+ namespace android {
+ 
+ class Surface;
+@@ -103,7 +107,14 @@ enum video_encoder {
+     VIDEO_ENCODER_VP8 = 4,
+     VIDEO_ENCODER_HEVC = 5,
+ 
++#ifdef MTK_HARDWARE
++    VIDEO_ENCODER_LIST_END, // must be the last - used to validate the video encoder type
++    VIDEO_ENCODER_LIST_VENDOR_START = 1000,
++    VIDEO_ENCODER_H265 = 1001,
++    VIDEO_ENCODER_LIST_VENDOR_END
++#else
+     VIDEO_ENCODER_LIST_END // must be the last - used to validate the video encoder type
++#endif
+ };
+ 
+ /*
+diff --git a/media/libmedia/MediaProfiles.cpp b/media/libmedia/MediaProfiles.cpp
+index dd72c16..66bf05d 100644
+--- a/media/libmedia/MediaProfiles.cpp
++++ b/media/libmedia/MediaProfiles.cpp
+@@ -28,6 +28,10 @@
+ #include <media/stagefright/foundation/ADebug.h>
+ #include <OMX_Video.h>
+ 
++#ifndef MTK_HARDWARE
++#define MTK_HARDWARE
++#endif
++
+ namespace android {
+ 
+ Mutex MediaProfiles::sLock;
+@@ -38,6 +42,9 @@ const MediaProfiles::NameToTagMap MediaProfiles::sVideoEncoderNameMap[] = {
+     {"h263", VIDEO_ENCODER_H263},
+     {"h264", VIDEO_ENCODER_H264},
+     {"m4v",  VIDEO_ENCODER_MPEG_4_SP},
++#ifdef MTK_HARDWARE
++    {"h265", VIDEO_ENCODER_H265},
++#endif
+     {"hevc", VIDEO_ENCODER_HEVC}
+ };
+ 
+@@ -47,6 +54,9 @@ const MediaProfiles::NameToTagMap MediaProfiles::sAudioEncoderNameMap[] = {
+     {"aac",    AUDIO_ENCODER_AAC},
+     {"heaac",  AUDIO_ENCODER_HE_AAC},
+     {"aaceld", AUDIO_ENCODER_AAC_ELD},
++#ifdef MTK_HARDWARE
++    {"vorbis", AUDIO_ENCODER_VORBIS},
++#endif
+     {"lpcm",  AUDIO_ENCODER_LPCM},
+ };
+ 
+@@ -103,6 +113,50 @@ const MediaProfiles::NameToTagMap MediaProfiles::sCamcorderQualityNameMap[] = {
+     {"2k", CAMCORDER_QUALITY_2k},
+     {"timelapseqhd", CAMCORDER_QUALITY_TIME_LAPSE_QHD},
+     {"timelapse2k", CAMCORDER_QUALITY_TIME_LAPSE_2k},
++
++#ifdef MTK_HARDWARE
++    {"mtklow", CAMCORDER_QUALITY_MTK_LOW},
++    {"mtkmedium", CAMCORDER_QUALITY_MTK_MEDIUM},
++    {"mtkhigh", CAMCORDER_QUALITY_MTK_HIGH},
++    {"mtkfine", CAMCORDER_QUALITY_MTK_FINE},
++
++    {"mtknightlow", CAMCORDER_QUALITY_MTK_NIGHT_LOW},
++    {"mtknightmedium", CAMCORDER_QUALITY_MTK_NIGHT_MEDIUM},
++    {"mtknighthigh", CAMCORDER_QUALITY_MTK_NIGHT_HIGH},
++    {"mtknightfine", CAMCORDER_QUALITY_MTK_NIGHT_FINE},
++
++    {"mtkliveeffect", CAMCORDER_QUALITY_MTK_LIVE_EFFECT},
++    {"mtkh264high", CAMCORDER_QUALITY_MTK_H264_HIGH},
++    {"mtkmpeg41080p", CAMCORDER_QUALITY_MTK_MPEG4_1080P},
++    {"mtkfine4k2k", CAMCORDER_QUALITY_MTK_FINE_4K2K},
++
++    {"mtktimelapselow", CAMCORDER_QUALITY_MTK_TIME_LAPSE_LOW},
++    {"mtktimelapsemedium", CAMCORDER_QUALITY_MTK_TIME_LAPSE_MEDIUM},
++    {"mtktimelapsehigh", CAMCORDER_QUALITY_MTK_TIME_LAPSE_HIGH},
++    {"mtktimelapsefine", CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE},
++
++    {"mtktimelapsenightlow", CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_LOW},
++    {"mtktimelapsenightmedium", CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_MEDIUM},
++    {"mtktimelapsenighthigh", CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_HIGH},
++    {"mtktimelapsenightfine", CAMCORDER_QUALITY_MTK_TIME_LAPSE_NIGHT_FINE},
++
++    {"mtktimelapseliveeffect", CAMCORDER_QUALITY_MTK_TIME_LAPSE_LIVE_EFFECT},
++    {"mtktimelapseh264high", CAMCORDER_QUALITY_MTK_TIME_LAPSE_H264_HIGH},
++    {"mtktimelapsempeg41080p", CAMCORDER_QUALITY_MTK_TIME_LAPSE_MPEG4_1080P},
++    {"mtktimelapsefine4k2k", CAMCORDER_QUALITY_MTK_TIME_LAPSE_FINE_4K2K},
++
++    {"mtkslowmotionlow", CAMCORDER_QUALITY_MTK_SLOW_MOTION_LOW},
++    {"mtkslowmotionmedium", CAMCORDER_QUALITY_MTK_SLOW_MOTION_MEDIUM},
++    {"mtkslowmotionhigh", CAMCORDER_QUALITY_MTK_SLOW_MOTION_HIGH},
++    {"mtkslowmotionfine", CAMCORDER_QUALITY_MTK_SLOW_MOTION_FINE},
++
++    {"mtkvga120", CAMCORDER_QUALITY_MTK_VGA_120},
++    {"mtk720p60", CAMCORDER_QUALITY_MTK_720P_60},
++    {"mtk720p120", CAMCORDER_QUALITY_MTK_720P_120},
++    {"mtk720p180", CAMCORDER_QUALITY_MTK_720P_180},
++    {"mtk1080p60", CAMCORDER_QUALITY_MTK_1080P_60},
++    {"mtk1080p120", CAMCORDER_QUALITY_MTK_1080P_120},
++#endif
+ };
+ 
+ #if LOG_NDEBUG
+-- 
+2.31.1
+
