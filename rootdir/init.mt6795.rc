@@ -56,12 +56,12 @@ on post-fs
     chmod 0770 /protect_s
 
 # Workaround for old nvram and ril blobs
-    mkdir /dev/block/platform/mtk-msdc.0/by-name 0755 root system
-    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/nvram /dev/block/platform/mtk-msdc.0/by-name/nvram
-    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/proinfo /dev/block/platform/mtk-msdc.0/by-name/proinfo
-    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/secro /dev/block/platform/mtk-msdc.0/by-name/secro
-    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/seccfg /dev/block/platform/mtk-msdc.0/by-name/seccfg
-    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/otp /dev/block/platform/mtk-msdc.0/by-name/otp
+#    mkdir /dev/block/platform/mtk-msdc.0/by-name 0755 root system
+#    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/nvram /dev/block/platform/mtk-msdc.0/by-name/nvram
+#    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/proinfo /dev/block/platform/mtk-msdc.0/by-name/proinfo
+#    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/secro /dev/block/platform/mtk-msdc.0/by-name/secro
+#    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/seccfg /dev/block/platform/mtk-msdc.0/by-name/seccfg
+#    symlink /dev/block/platform/mtk-msdc.0/11230000.MSDC0/by-name/otp /dev/block/platform/mtk-msdc.0/by-name/otp
 
 on post-fs-data
 # Create nvram folder
@@ -481,6 +481,18 @@ service thermal_manager /vendor/bin/thermal_manager
     group system
     oneshot
 
+service thermal_perfmode /system/bin/thermal_manager /vendor/etc/.tp/thermal.off.conf
+    user root
+    group system
+    oneshot
+    disabled
+
+service thermal_normalmode /system/bin/thermal_manager /vendor/etc/.tp/thermal.conf
+    user root
+    group system
+    oneshot
+    disabled
+
 # Charging
 service charger /charger
     class charger
@@ -583,11 +595,11 @@ on property:sys.boot_completed=1
     chmod 0664 /sys/devices/platform/mt-pmic/pmic_access
 
 # GPS
-    chmod 0660 /dev/gps
-    chown system gps /dev/gps
+#    chmod 0660 /dev/gps
+#    chown system gps /dev/gps
 
-    chmod 0660 /dev/stpgps
-    chown gps gps /dev/stpgps
+#    chmod 0660 /dev/stpgps
+#    chown gps gps /dev/stpgps
 
 # Display
     chmod 0660 /dev/graphics/fb0
