@@ -30,6 +30,7 @@ PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 
 # Apps
 PRODUCT_PACKAGES += \
+    Snap \
     FootejCamera2 \
     SpectrumSuper \
     init.spectrum \
