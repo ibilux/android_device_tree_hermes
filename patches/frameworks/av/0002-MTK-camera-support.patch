@@ -1,4 +1,4 @@
-From 0cc2977f43e11d538bf59cf396394a88faa80fa3 Mon Sep 17 00:00:00 2001
+From 58b2b1543198b0cb463cfb865b4e718636e53569 Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Sun, 22 Mar 2020 22:58:33 +0100
 Subject: [PATCH] MTK camera support
@@ -10,16 +10,14 @@ Subject: [PATCH] MTK camera support
 Signed-off-by: bilux <i.bilux@gmail.com>
 ---
  camera/Android.mk                             |   6 +-
- camera/CameraParameters.cpp                   |  28 +
  camera/MtkCamera.cpp                          | 212 ++++++
  camera/MtkCameraParameters.cpp                | 515 ++++++++++++++
- include/camera/CameraParameters.h             |  22 +
  include/camera/MtkCamera.h                    | 333 +++++++++
  include/camera/MtkCameraParameters.h          | 651 ++++++++++++++++++
  services/camera/libcameraservice/Android.mk   |   2 +-
  .../libcameraservice/api1/CameraClient.cpp    | 342 ++++++++-
  .../libcameraservice/api1/CameraClient.h      |  27 +
- 10 files changed, 2134 insertions(+), 4 deletions(-)
+ 8 files changed, 2084 insertions(+), 4 deletions(-)
  create mode 100644 camera/MtkCamera.cpp
  create mode 100644 camera/MtkCameraParameters.cpp
  create mode 100644 include/camera/MtkCamera.h
@@ -49,73 +47,6 @@ index 8a32299..d40fa55 100644
  
  ifneq ($(TARGET_SPECIFIC_CAMERA_PARAMETER_LIBRARY),)
  LOCAL_WHOLE_STATIC_LIBRARIES += $(TARGET_SPECIFIC_CAMERA_PARAMETER_LIBRARY)
-diff --git a/camera/CameraParameters.cpp b/camera/CameraParameters.cpp
-index 76f92e7..b93a3c2 100644
---- a/camera/CameraParameters.cpp
-+++ b/camera/CameraParameters.cpp
-@@ -24,6 +24,10 @@
- #include <camera/CameraParametersExtra.h>
- #include <system/graphics.h>
- 
-+#ifndef MTK_HARDWARE
-+#define MTK_HARDWARE
-+#endif
-+
- namespace android {
- // Parameter keys to communicate between camera application and driver.
- const char CameraParameters::KEY_PREVIEW_SIZE[] = "preview-size";
-@@ -37,6 +41,11 @@ const char CameraParameters::KEY_SUPPORTED_PREVIEW_FPS_RANGE[] = "preview-fps-ra
- const char CameraParameters::KEY_PICTURE_SIZE[] = "picture-size";
- const char CameraParameters::KEY_SUPPORTED_PICTURE_SIZES[] = "picture-size-values";
- const char CameraParameters::KEY_PICTURE_FORMAT[] = "picture-format";
-+#ifdef MTK_HARDWARE
-+const char CameraParameters::SNAPSHOT_PICTURE_FLIP[] = "snapshot-picture-flip";//add by xueweifeng
-+const char CameraParameters::KEY_VIDEO_HDR_MODE[] = "video-hdr";
-+const char CameraParameters::KEY_VIDEO_HDR_MODES[] = "video-hdr-values";
-+#endif
- const char CameraParameters::KEY_SUPPORTED_PICTURE_FORMATS[] = "picture-format-values";
- const char CameraParameters::KEY_JPEG_THUMBNAIL_WIDTH[] = "jpeg-thumbnail-width";
- const char CameraParameters::KEY_JPEG_THUMBNAIL_HEIGHT[] = "jpeg-thumbnail-height";
-@@ -93,6 +102,9 @@ const char CameraParameters::KEY_VIDEO_SNAPSHOT_SUPPORTED[] = "video-snapshot-su
- const char CameraParameters::KEY_VIDEO_STABILIZATION[] = "video-stabilization";
- const char CameraParameters::KEY_VIDEO_STABILIZATION_SUPPORTED[] = "video-stabilization-supported";
- const char CameraParameters::KEY_LIGHTFX[] = "light-fx";
-+#ifdef MTK_HARDWARE
-+const char CameraParameters::KEY_SNAPSHOT_PICTURE_FLIP[] = "snapshot-picture-filp";
-+#endif
- 
- const char CameraParameters::TRUE[] = "true";
- const char CameraParameters::FALSE[] = "false";
-@@ -131,6 +143,10 @@ const char CameraParameters::FLASH_MODE_AUTO[] = "auto";
- const char CameraParameters::FLASH_MODE_ON[] = "on";
- const char CameraParameters::FLASH_MODE_RED_EYE[] = "red-eye";
- const char CameraParameters::FLASH_MODE_TORCH[] = "torch";
-+#ifdef MTK_HARDWARE
-+const char CameraParameters::FLASH_MODE_TORCH1[] = "torch1";
-+const char CameraParameters::FLASH_MODE_TORCH2[] = "torch2";
-+#endif
- 
- // Values for scene mode settings.
- const char CameraParameters::SCENE_MODE_AUTO[] = "auto";
-@@ -471,6 +487,18 @@ const char *CameraParameters::getPictureFormat() const
-     return get(KEY_PICTURE_FORMAT);
- }
- 
-+#ifdef MTK_HARDWARE
-+void CameraParameters::setCameraPictureFlip(const int format)
-+{
-+    set(SNAPSHOT_PICTURE_FLIP, format);
-+}
-+
-+int CameraParameters::getCameraPictureFlip() const
-+{
-+    return getInt(SNAPSHOT_PICTURE_FLIP);
-+}
-+#endif
-+
- void CameraParameters::dump() const
- {
-     ALOGD("dump: mMap.size = %zu", mMap.size());
 diff --git a/camera/MtkCamera.cpp b/camera/MtkCamera.cpp
 new file mode 100644
 index 0000000..29b7e1e
@@ -855,74 +786,6 @@ index 0000000..3cd4723
 +
 +
 +}; // namespace android
-diff --git a/include/camera/CameraParameters.h b/include/camera/CameraParameters.h
-index 74517b4..a141f4c 100644
---- a/include/camera/CameraParameters.h
-+++ b/include/camera/CameraParameters.h
-@@ -21,6 +21,10 @@
- #include <utils/String8.h>
- #include <camera/CameraParametersExtra.h>
- 
-+#ifndef MTK_HARDWARE
-+#define MTK_HARDWARE
-+#endif
-+
- namespace android {
- 
- struct Size {
-@@ -100,6 +104,11 @@ public:
-     void setPictureFormat(const char *format);
-     const char *getPictureFormat() const;
- 
-+#ifdef MTK_HARDWARE
-+    void setCameraPictureFlip(const int format);
-+    int getCameraPictureFlip() const;
-+#endif
-+
-     void dump() const;
-     status_t dump(int fd, const Vector<String16>& args) const;
- 
-@@ -163,6 +172,11 @@ public:
-     static const char KEY_PICTURE_FORMAT[];
-     // Supported image formats for captured pictures.
-     // Example value: "jpeg,rgb565". Read only.
-+
-+#ifdef MTK_HARDWARE
-+    static const char SNAPSHOT_PICTURE_FLIP[];//add by xueweifeng
-+#endif
-+
-     static const char KEY_SUPPORTED_PICTURE_FORMATS[];
-     // The width (in pixels) of EXIF thumbnail in Jpeg picture.
-     // Example value: "512". Read/write.
-@@ -538,6 +552,9 @@ public:
-     // Supported modes for special effects with light.
-     // Example values: "lowlight,hdr".
-     static const char KEY_LIGHTFX[];
-+#ifdef MTK_HARDWARE
-+    static const char KEY_SNAPSHOT_PICTURE_FLIP[];
-+#endif
- 
-     // Value for KEY_ZOOM_SUPPORTED or KEY_SMOOTH_ZOOM_SUPPORTED.
-     static const char TRUE[];
-@@ -587,6 +604,8 @@ public:
-     // Constant emission of light during preview, auto-focus and snapshot.
-     // This can also be used for video recording.
-     static const char FLASH_MODE_TORCH[];
-+    static const char FLASH_MODE_TORCH1[];
-+    static const char FLASH_MODE_TORCH2[];
- 
-     // Values for scene mode settings.
-     static const char SCENE_MODE_AUTO[];
-@@ -684,6 +703,9 @@ public:
-     // High-dynamic range mode
-     static const char LIGHTFX_HDR[];
- 
-+    static const char KEY_VIDEO_HDR_MODE[];
-+    static const char KEY_VIDEO_HDR_MODES[];
-+
- #ifdef CAMERA_PARAMETERS_EXTRA_H
- CAMERA_PARAMETERS_EXTRA_H
- #endif
 diff --git a/include/camera/MtkCamera.h b/include/camera/MtkCamera.h
 new file mode 100644
 index 0000000..fe2c391

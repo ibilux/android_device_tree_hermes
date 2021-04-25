@@ -686,7 +686,11 @@ public:
     static const char LIGHTFX_HDR[];
 
     // Picture flip
-    static const char SNAPSHOT_PICTURE_FLIP[];
+    static const char KEY_SNAPSHOT_PICTURE_FLIP[];
+
+    // HDR mode
+    static const char KEY_VIDEO_HDR_MODE[];
+    static const char KEY_VIDEO_HDR_MODES[];
 
     /**
      * Returns the the supported preview formats as an enum given in graphics.h

@@ -174,7 +174,11 @@ const char CameraParameters::LIGHTFX_LOWLIGHT[] = "low-light";
 const char CameraParameters::LIGHTFX_HDR[] = "high-dynamic-range";
 
 // Value for picture flip
-const char CameraParameters::SNAPSHOT_PICTURE_FLIP[] = "snapshot-picture-flip";
+const char CameraParameters::KEY_SNAPSHOT_PICTURE_FLIP[] = "snapshot-picture-flip";
+
+// Value for HDR mode
+const char CameraParameters::KEY_VIDEO_HDR_MODE[] = "video-hdr";
+const char CameraParameters::KEY_VIDEO_HDR_MODES[] = "video-hdr-values";
 
 CameraParameters::CameraParameters()
                 : mMap()
@@ -471,12 +475,12 @@ const char *CameraParameters::getPictureFormat() const
 
 void CameraParameters::setCameraPictureFlip(const int format)
 {
-    set(SNAPSHOT_PICTURE_FLIP, format);
+    set(KEY_SNAPSHOT_PICTURE_FLIP, format);
 }
 
 const int CameraParameters::getCameraPictureFlip() const
 {
-    return getInt(SNAPSHOT_PICTURE_FLIP);
+    return getInt(KEY_SNAPSHOT_PICTURE_FLIP);
 }
 
 void CameraParameters::dump() const
