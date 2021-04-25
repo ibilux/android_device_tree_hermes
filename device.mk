@@ -53,7 +53,7 @@ PRODUCT_PACKAGES += \
     libui_ext
 
 # Doze
-#PRODUCT_PACKAGES += XiaomiDoze
+PRODUCT_PACKAGES += XiaomiDoze
 
 # GPS
 PRODUCT_PACKAGES += libcurl
