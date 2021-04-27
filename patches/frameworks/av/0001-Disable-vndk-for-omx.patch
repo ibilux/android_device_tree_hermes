@@ -1,4 +1,4 @@
-From dd547d70b2a38fb3ef7184f9568053530a558266 Mon Sep 17 00:00:00 2001
+From 12e070372cef354366c1fb4ea837e63430a33ef0 Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Sun, 22 Mar 2020 21:58:25 +0100
 Subject: [PATCH] Disable vndk for omx
@@ -36,5 +36,5 @@ index 51619f6..5defdf3 100644
      ::android::hardware::configureRpcThreadpool(64, false);
  
 -- 
-2.25.1
+2.31.1
 

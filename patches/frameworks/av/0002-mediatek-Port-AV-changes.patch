@@ -1,4 +1,4 @@
-From fea437e06b834383f9def7f3410767b034bd00b7 Mon Sep 17 00:00:00 2001
+From 6fa400b5f5e84c55384a01f82782a68bb6de30c1 Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Mon, 23 Mar 2020 10:45:36 +0100
 Subject: [PATCH] mediatek: Port AV changes
@@ -17,7 +17,7 @@ Signed-off-by: bilux <i.bilux@gmail.com>
  1 file changed, 12 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 0ecb8bd..0242e95 100644
+index 014dfa9..5b5156f 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
 @@ -60,6 +60,10 @@
@@ -56,5 +56,5 @@ index 0ecb8bd..0242e95 100644
              mRotationDegrees,
              usage,
 -- 
-2.25.1
+2.31.1
 

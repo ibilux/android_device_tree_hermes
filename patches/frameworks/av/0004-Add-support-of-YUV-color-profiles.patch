@@ -1,4 +1,4 @@
-From 1059f515f20ce3d75b74b45d348743b761639734 Mon Sep 17 00:00:00 2001
+From 1d38b7cb159c9fb0bc1130a074aad5000f997b07 Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Mon, 23 Mar 2020 10:28:19 +0100
 Subject: [PATCH] Add support of YUV color profiles
@@ -21,7 +21,7 @@ Signed-off-by: bilux <i.bilux@gmail.com>
  create mode 100644 media/libstagefright/colorconversion/inc/DpDataType.h
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 0242e95..71f3138 100644
+index 5b5156f..6331bff 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
 @@ -3224,7 +3224,12 @@ status_t ACodec::setSupportedOutputFormat(bool getLegacyFlexibleFormat) {
@@ -39,7 +39,7 @@ index 0242e95..71f3138 100644
          }
          // find best legacy non-standard format
 diff --git a/media/libstagefright/Android.bp b/media/libstagefright/Android.bp
-index 924d460..a0f3d83 100644
+index d8f96fd..cd5672a 100644
 --- a/media/libstagefright/Android.bp
 +++ b/media/libstagefright/Android.bp
 @@ -175,6 +175,7 @@ cc_library_shared {
@@ -1284,5 +1284,5 @@ index f7b569d..4ec234f 100644
              if (params.bUsingNativeBuffers) {
                  size_t ystride = align(params.nStride, 16);
 -- 
-2.25.1
+2.31.1
 

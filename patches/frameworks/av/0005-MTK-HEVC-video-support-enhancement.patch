@@ -1,4 +1,4 @@
-From 0313f94ee442fa2912b287dc46324dbb7f6f671f Mon Sep 17 00:00:00 2001
+From a0c02c47fe02a6a7c8c715177f8382778e06561e Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Mon, 23 Mar 2020 10:15:55 +0100
 Subject: [PATCH] MTK HEVC video support enhancement
@@ -7,14 +7,25 @@ StripStartcode 00 00 01 for HEVC directlink.
 
 Signed-off-by: bilux <i.bilux@gmail.com>
 ---
- media/libstagefright/MPEG4Writer.cpp | 6 ++++++
- 1 file changed, 6 insertions(+)
+ media/libstagefright/MPEG4Writer.cpp | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/media/libstagefright/MPEG4Writer.cpp b/media/libstagefright/MPEG4Writer.cpp
-index 6ff3d78..76514e6 100644
+index 6ff3d78..40a8041 100644
 --- a/media/libstagefright/MPEG4Writer.cpp
 +++ b/media/libstagefright/MPEG4Writer.cpp
-@@ -1391,6 +1391,12 @@ static void StripStartcode(MediaBuffer *buffer) {
+@@ -61,6 +61,10 @@
+     true; \
+ }))
+ 
++#ifndef MTK_HARDWARE
++#define MTK_HARDWARE
++#endif
++
+ namespace android {
+ 
+ static const int64_t kMinStreamableFileSizeInBytes = 5 * 1024 * 1024;
+@@ -1391,6 +1395,12 @@ static void StripStartcode(MediaBuffer *buffer) {
          buffer->set_range(
                  buffer->range_offset() + 4, buffer->range_length() - 4);
      }
@@ -28,5 +39,5 @@ index 6ff3d78..76514e6 100644
  
  void MPEG4Writer::addMultipleLengthPrefixedSamples_l(MediaBuffer *buffer) {
 -- 
-2.25.1
+2.31.1
 

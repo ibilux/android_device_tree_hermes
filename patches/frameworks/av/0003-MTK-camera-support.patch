@@ -381,7 +381,7 @@ index 0000000..3cd4723
 +//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 +//  Face Beauty
 +//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-+const char MtkCameraParameters::KEY_SNAPSHOT_PICTURE_FLIP[] = "snapshot-picture-filp";
++const char MtkCameraParameters::KEY_SNAPSHOT_PICTURE_FLIP[] = "snapshot-picture-flip";
 +const char MtkCameraParameters::FLASH_MODE_TORCH1[] = "torch1";
 +const char MtkCameraParameters::FLASH_MODE_TORCH2[] = "torch2";
 +const char MtkCameraParameters::KEY_FB_SMOOTH_LEVEL[]       = "fb-smooth-level";
