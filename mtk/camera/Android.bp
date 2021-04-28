@@ -1,0 +1,5 @@
+cc_library_static {
+    name: "libcamera_parameters_mtk",
+    include_dirs: ["device/xiaomi/hermes/include"],
+    srcs: ["CameraParameters.cpp"],
+}
