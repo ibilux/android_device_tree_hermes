@@ -1,4 +1,4 @@
-From c9f6d491a51a104b480240a017dff1bc95738cf5 Mon Sep 17 00:00:00 2001
+From 86610c32529cdb24e5205470ba9b982c905b790c Mon Sep 17 00:00:00 2001
 From: bilux <i.bilux@gmail.com>
 Date: Sun, 22 Mar 2020 23:08:33 +0100
 Subject: [PATCH] add MediaBufferGroup:MediaBufferGroup()
@@ -8,12 +8,12 @@ add missing MediaBufferGroup::acquire_buffer symbol
 
 Signed-off-by: bilux <i.bilux@gmail.com>
 ---
- media/libmediaextractor/MediaBufferGroup.cpp      | 15 +++++++++++++++
- .../include/media/stagefright/MediaBufferGroup.h  | 15 +++++++++++++++
- 2 files changed, 30 insertions(+)
+ media/libmediaextractor/MediaBufferGroup.cpp     | 16 ++++++++++++++++
+ .../include/media/stagefright/MediaBufferGroup.h | 11 +++++++++++
+ 2 files changed, 27 insertions(+)
 
 diff --git a/media/libmediaextractor/MediaBufferGroup.cpp b/media/libmediaextractor/MediaBufferGroup.cpp
-index 2a8dd41..a11953b 100644
+index 2a8dd41..3351872 100644
 --- a/media/libmediaextractor/MediaBufferGroup.cpp
 +++ b/media/libmediaextractor/MediaBufferGroup.cpp
 @@ -25,6 +25,10 @@
@@ -40,12 +40,13 @@ index 2a8dd41..a11953b 100644
  MediaBufferGroup::MediaBufferGroup(size_t growthLimit)
      : mInternal(new InternalData()) {
      mInternal->mGrowthLimit = growthLimit;
-@@ -152,6 +162,11 @@ bool MediaBufferGroup::has_buffers() {
+@@ -152,6 +162,12 @@ bool MediaBufferGroup::has_buffers() {
      return false;
  }
  
 +#ifdef MTK_HARDWARE
-+status_t MediaBufferGroup::acquire_buffer(MediaBufferBase **out, bool nonBlocking) {
++status_t MediaBufferGroup::acquire_buffer(
++        MediaBufferBase **out, bool nonBlocking) {
 +    return acquire_buffer(out, nonBlocking, 0);
 +}
 +#endif
@@ -53,10 +54,10 @@ index 2a8dd41..a11953b 100644
          MediaBufferBase **out, bool nonBlocking, size_t requestedSize) {
      Mutex::Autolock autoLock(mInternal->mLock);
 diff --git a/media/libmediaextractor/include/media/stagefright/MediaBufferGroup.h b/media/libmediaextractor/include/media/stagefright/MediaBufferGroup.h
-index 75d5df7..2252d4d 100644
+index 75d5df7..d9fe371 100644
 --- a/media/libmediaextractor/include/media/stagefright/MediaBufferGroup.h
 +++ b/media/libmediaextractor/include/media/stagefright/MediaBufferGroup.h
-@@ -24,13 +24,22 @@
+@@ -24,12 +24,19 @@
  #include <utils/Errors.h>
  #include <utils/threads.h>
  
@@ -72,27 +73,20 @@ index 75d5df7..2252d4d 100644
  public:
 +#ifdef MTK_HARDWARE
 +    MediaBufferGroup();
-+    MediaBufferGroup(size_t growthLimit = 0);
-+#else
-     MediaBufferGroup(size_t growthLimit = 0);
 +#endif
+     MediaBufferGroup(size_t growthLimit = 0);
  
      // create a media buffer group with preallocated buffers
-     MediaBufferGroup(size_t buffers, size_t buffer_size, size_t growthLimit = 0);
-@@ -49,8 +58,14 @@ public:
+@@ -49,6 +56,10 @@ public:
      // If requestedSize is 0, any free MediaBuffer will be returned.
      // If requestedSize is > 0, the returned MediaBuffer should have buffer
      // size of at least requstedSize.
 +#ifdef MTK_HARDWARE
-+    status_t acquire_buffer(MediaBufferBase **buffer, bool nonBlocking = false);
 +    status_t acquire_buffer(
-+            MediaBufferBase **buffer, bool nonBlocking = false, size_t requestedSize = 0);
-+#else
++            MediaBufferBase **buffer, bool nonBlocking = false);
++#endif
      status_t acquire_buffer(
              MediaBufferBase **buffer, bool nonBlocking = false, size_t requestedSize = 0);
-+#endif
- 
-     size_t buffers() const;
  
 -- 
 2.31.1
