@@ -470,7 +470,7 @@ void CameraParameters::setCameraPictureFlip(const int format)
     set(KEY_SNAPSHOT_PICTURE_FLIP, format);
 }
 
-const int CameraParameters::getCameraPictureFlip() const
+int CameraParameters::getCameraPictureFlip() const
 {
     return getInt(KEY_SNAPSHOT_PICTURE_FLIP);
 }

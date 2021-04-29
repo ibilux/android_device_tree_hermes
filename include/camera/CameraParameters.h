@@ -100,7 +100,7 @@ public:
     const char *getPictureFormat() const;
 
     void setCameraPictureFlip(const int format);
-    const int getCameraPictureFlip() const;
+    int getCameraPictureFlip() const;
 
     void dump() const;
     status_t dump(int fd, const Vector<String16>& args) const;
