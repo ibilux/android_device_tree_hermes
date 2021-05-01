@@ -3,7 +3,7 @@
 rootdirectory="$PWD"
 dirs="frameworks/av frameworks/base frameworks/native frameworks/opt/telephony hardware/interfaces packages/apps/FMRadio system/core system/netd"
 
-git checkout -- . && git clean -df
+# git checkout -- . && git clean -df
 
 for dir in $dirs ; do
 	cd $rootdirectory
