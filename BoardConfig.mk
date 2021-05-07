@@ -24,7 +24,7 @@ TARGET_2ND_CPU_VARIANT := cortex-a53
 BLOCK_BASED_OTA := false
 
 # Kernel
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
+TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
 ifneq ($(TARGET_BUILD_VARIANT),user)
 BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 androidboot.selinux=permissive
 else
