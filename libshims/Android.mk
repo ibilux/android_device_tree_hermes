@@ -5,7 +5,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := misc/libc.cpp
 LOCAL_MODULE := mtkc
-LOCAL_SHARED_LIBRARIES := libc libutilscallstack
+LOCAL_SHARED_LIBRARIES := libc
 LOCAL_CFLAGS := -O3 -Wno-unused-variable -Wno-unused-parameter
 LOCAL_PROPRIETARY_MODULE := true
 include $(BUILD_SHARED_LIBRARY)
