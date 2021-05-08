@@ -23,8 +23,20 @@ TARGET_2ND_CPU_VARIANT := cortex-a53
 # Build old-style zip files (required for ota updater)
 BLOCK_BASED_OTA := false
 
-# Kernel
+# Prebuilt kernel
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
+TARGET_PREBUILT_RECOVERY_KERNEL := $(DEVICE_PATH)/kernel
+
+ifeq ($(TARGET_PREBUILT_KERNEL),)
+    LOCAL_KERNEL := $(DEVICE_PATH)/kernel
+else
+    LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
+endif
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_KERNEL):kernel
+
+# Kernel
 ifneq ($(TARGET_BUILD_VARIANT),user)
 BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 androidboot.selinux=permissive
 else
