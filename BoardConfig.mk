@@ -24,17 +24,7 @@ TARGET_2ND_CPU_VARIANT := cortex-a53
 BLOCK_BASED_OTA := false
 
 # Prebuilt kernel
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel
-TARGET_PREBUILT_RECOVERY_KERNEL := $(DEVICE_PATH)/kernel
-
-ifeq ($(TARGET_PREBUILT_KERNEL),)
-    LOCAL_KERNEL := $(DEVICE_PATH)/kernel
-else
-    LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
-endif
-
-PRODUCT_COPY_FILES += \
-    $(LOCAL_KERNEL):kernel
+include $(DEVICE_PATH)/bootimg/kernel_prebuilt.mk
 
 # Kernel
 ifneq ($(TARGET_BUILD_VARIANT),user)
