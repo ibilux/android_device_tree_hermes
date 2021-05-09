@@ -2,4 +2,6 @@ type hwmsensor_device, dev_type;
 type nvram_block_device, dev_type;
 type protect1_block_device, dev_type;
 type protect2_block_device, dev_type;
+type protect1_device, dev_type;
+type protect2_device, dev_type;
 type wmtdetect_device, dev_type;
